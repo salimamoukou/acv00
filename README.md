@@ -135,10 +135,9 @@ N_star (list): index of the remaining variables
 Let assume we have a categorical variable Y with k modalities that we encoded by introducing the dummy variables <img src="https://latex.codecogs.com/gif.latex?Y_1%2C%5Cdots%2C%20Y_%7Bk-1%7D" />. As show in the paper, we must take the coalition of the dummy variables to correctly calculate the Shapley values.
 
 ```python
-from acv_tools import *
 
 cat_index = [[i for i in data.columns if data.dtypes[i] =='category']] # get the index of categorical variables
-forest_sv = forest_shap_clf(forest, x, algo, data, C=cat_index)
+forest_sv = acvtree.shap_values(x, C=cat_index)
 ```
 In addition, we can compute the SV given any coalitions. For example, if we want the following coalition <img src="https://latex.codecogs.com/gif.latex?C_0%20%3D%20%28X_0%2C%20X_1%2C%20X_2%29%2C%20C_1%3D%28X_3%2C%20X_4%29%2C%20C_2%3D%28X_5%2C%20X_6%29" />
 
@@ -150,16 +149,16 @@ forest_sv = acvtree.shap_values(x, C=coalition)
 *Remarks:* The computation for a regressor is similar, we just need to remove "_clf" in each function. 
 
 ## Examples and tutorials (a lot more to come...)
-We can find a tutorial of the usages of ACV in [demo_acv](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/demo_acv_tools.ipynb) and 
+We can find a tutorial of the usages of ACV in [demo_acv](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_tools.ipynb) and 
 the notebooks below demonstrate different use cases for ACV. Look inside the notebook directory of the repository if you want to try playing with the original notebooks yourself.
-* [SDP on toy regression model](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/sdp_on_regression.ipynb)
-* [SDP on lung cancer classification](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/sdp_on_lucas_data.ipynb)
+* [SDP on toy regression model](https://github.com/salimamoukou/acv00/blob/main/notebooks/sdp_on_regression.ipynb)
+* [SDP on lung cancer classification](https://github.com/salimamoukou/acv00/blob/main/notebooks/sdp_on_lucas_data.ipynb)
 
 ## Experiments of the papers
-* [Comparisons of the different estimators](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/comparisons_of_the_different_estimators.ipynb)
-* [Comparisons of SV on toy model: Coalition or SUM ?](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/coalition_or_sum_toy_model.ipynb)
-* [Comparisons of SV on Census: Coalition or SUM ?](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/coalition_or_sum_adult.ipynb)
-* [Active Shapley + SDP on toy model](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/sdp_on_regression.ipynb)
-* [SDP and global SDP on Lucas](https://github.com/salimamoukou/shap-explainer/blob/master/notebook/sdp_on_lucas_data.ipynb)
+* [Comparisons of the different estimators](https://github.com/salimamoukou/acv00/blob/main/notebooks/comparisons_of_the_different_estimators.ipynb)
+* [Comparisons of SV on toy model: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/coalition_or_sum_toy_model.ipynb)
+* [Comparisons of SV on Census: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/coalition_or_sum_adult.ipynb)
+* [Active Shapley + SDP on toy model](https://github.com/salimamoukou/acv00/blob/main/notebooks/sdp_on_regression.ipynb)
+* [SDP and global SDP on Lucas](https://github.com/salimamoukou/acv00/blob/main/notebooks/sdp_on_lucas_data.ipynb)
 
 
