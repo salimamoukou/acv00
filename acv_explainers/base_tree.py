@@ -8,6 +8,7 @@ from .py_acv import *
 from distutils.version import LooseVersion
 
 
+# This is based on https://github.com/slundberg/shap/blob/master/shap/explainers/_tree.py
 class BaseTree:
     """ An ensemble of decision trees.
 
@@ -615,14 +616,13 @@ class BaseTree:
 
     @abstractmethod
     def global_sdp_importance_clf(self, data, data_bground, columns_names, global_proba, decay, threshold,
-                          proba, C, verbose):
+                                  proba, C, verbose):
         pass
 
     @abstractmethod
     def global_sdp_importance_reg(self, data, data_bground, columns_names, global_proba, decay, threshold,
-                          proba, C, verbose):
+                                  proba, C, verbose):
         pass
-
 
     def predict(self, X, y=None, output=None, tree_limit=None):
         """ A consistent interface to make predictions from this model.

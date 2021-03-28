@@ -30,7 +30,7 @@ To use it, we need to transform our model into ACVTree.
 ```python
 from acv_explainers import ACVTree
 
-forest = RandomForestClassifier(), any ML models
+forest = RandomForestClassifier() # or any Tree Based models
 #...trained the model
 
 acvtree = ACVTree(forest, data)
@@ -81,7 +81,7 @@ C (list[list]): list of the index of variables group together
 
 *  **How to compute the Global SDP importance ?**
 ```python
-forest = RandomForestClassifier()
+forest = RandomForestClassifier()  # or any Tree Based models
 #...trained the model
 
 acvtree.global_sdp_importance_clf(data, data_bground, columns_names, 
@@ -107,7 +107,7 @@ The Active Shapley values is a SV based on a new game defined in the Paper ("The
 * **How to compute Active Shapley values ?**
 
 ```python
-forest = RandomForestClassifier()
+forest = RandomForestClassifier()  # or any Tree Based models
 #...trained the model
 
 # First, we need to compute the Sufficient coalition 

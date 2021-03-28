@@ -3,26 +3,22 @@ import numpy as np
 from tqdm import tqdm
 from scipy.special import comb
 
-"""
-For each function here, see their call in acv_tree.py for the implementation in C.
-"""
-
 
 def shap_values_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx, weight_samples, v, C,
                        num_outputs):
     """
     Compute SV using multi-game algorithm
     Args:
-        x (array): Input of shape (N, D)
-        partition_leaves (array): It contains the hype-rectangle of each leaves, its shape = nb_leaves x 2 x D
-        data_leaves (array): Boolean matrix of shape = nb_leaves x D * N, if data_leaves[i, j, z ] = 1 means that obs
+        x (np.array): Input of shape = (# samples, # features)
+        partition_leaves (np.array): It contains the hype-rectangle of each leaves, shape = # leaves x D x 2
+        data_leaves (np.array): Boolean matrix of shape = # leaves x D * N, if data_leaves[i, j, z ] = 1 means that obs
         z fall in rectangle j of leaf i.
-        node_idx (list): node_idx[i] is the index of the node that it is in the path of leaf i
+        node_idx (list): node_idx[i] is the indexes of the nodes that it is in the path of leaf i
         leaf_idx (list): Index of the leaves nodes
-        weight_samples (array): weight_samples[i] is the number of obs that fall in leaf node i
-        v (array): v[i] is the value of node i, its shape = nb_nodes x num_outputs
-        C (list): Index of the variables group together (coalition variables)
-        num_outputs (int): Dimension of the output
+        weight_samples (array): weight_samples[i] is the number of samples that fall in leaf node i
+        v (array): v[i] is the value of node i, shape = # nodes x num_outputs
+        C (list): Indexes of the variables group together (coalition variables)
+        num_outputs (int): size of the output
 
     Returns:
             (array): SV with multi-game algorithm, Shape = N x D x num_outputs
@@ -101,18 +97,18 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
     """
         Compute ACV-SV using multi-game algorithm
         Args:
-            x (narray): Input of shape (N, D)
-            partition_leaves (narray): It contains the hype-rectangle of each leaves, its shape = nb_leaves x 2 x D
-            data_leaves (narray): Boolean matrix of shape = nb_leaves x D * N, if data_leaves[i, j, z ] = 1 means that data
+            x (np.array): Input of shape = (# samples, # features)
+            partition_leaves (np.array): It contains the hype-rectangle of each leaves, shape = # leaves x D x 2
+            data_leaves (np.array): Boolean matrix of shape = # leaves x D * N, if data_leaves[i, j, z ] = 1 means that obs
             z fall in rectangle j of leaf i.
-            node_idx (list): node_idx[i] is the index of the node that it is in the path of leaf i
+            node_idx (list): node_idx[i] is the indexes of the nodes that it is in the path of leaf i
             leaf_idx (list): Index of the leaves nodes
-            weight_samples (narray): weight_samples[i] is the number of obs that fall in leaf node i
-            v (narray): v[i] is the value of node i, its shape = nb_nodes x num_outputs
-            C (list): Index of the variables group together (coalition variables)
-            num_outputs (int): Dimension of the output
-            S_star (list): Index of the Active variables, see section ACV of the papers
-            N_star (list): Index of the Null variables, see section ACV of papers
+            weight_samples (array): weight_samples[i] is the number of samples that fall in leaf node i
+            v (array): v[i] is the value of node i, shape = # nodes x num_outputs
+            C (list): Indexes of the variables group together (coalition variables)
+            num_outputs (int): size of the output
+            S_star (list): Indexes of the Active variables, see section ACV of the papers
+            N_star (list): Indexes of the Null variables, see section ACV of papers
 
         Returns:
                 (array): ACV-SV with multi-game algorithm, Shape = N x D x num_outputs
@@ -206,14 +202,14 @@ def cond_sdp_forest_clf(x, fx, tx, forest, S, data):
     Compute SDP(x, forest_classifier) of variables in S
     Args:
         x (array): observation
-        fx (float): tree(x)
+        fx (float): forest(x)
         tx (float): threshold of the classifier
         forest (All TreeBased models): model
         S (list): index of variables on which we want to compute the SDP
         data (array): data used to compute the SDP
 
     Returns:
-        float: SDP(x, tree_classifier)
+        float: SDP(x, forest_classifier)
     """
     if len(S) == len(x):
         return 1
@@ -249,14 +245,14 @@ def cond_sdp_forest(x, fx, tx, forest, S, data):
 
         Args:
             x (array): observation
-            fx (float): tree(x)
+            fx (float): forest(x)
             tx (float): threshold of the classifier
             forest (All TreeBased models): model
             S (list): index of variables on which we want to compute the SDP
             data (array): data used to compute the SDP
 
         Returns:
-            float: SDP_S(x, forest_regressor)
+            float: SDP_S(x, treeBased models)
         """
     if len(S) == len(x):
         return 1
@@ -275,8 +271,8 @@ def cond_sdp_forest(x, fx, tx, forest, S, data):
                     p = part_forest[i][0][name].sum(axis=1).astype(np.float64)
                     p_s = part_forest[i][0]['s_{}'.format(name)].sum(axis=1).astype(np.float64)
                     prob = np.true_divide(p, p_s, out=np.zeros_like(p), where=p_s != 0)
-                    if np.sum(prob) != 0:
-                        prob = prob / np.sum(prob)
+                    # if np.sum(prob) != 0:
+                    #     prob = prob / np.sum(prob)
 
                     mean_forest[name] += (np.sum(prob * value ** 2)) / (n_trees ** 2) - (
                             2 * fx * np.sum(prob * value)) / n_trees
@@ -294,8 +290,8 @@ def cond_sdp_forest(x, fx, tx, forest, S, data):
                                      part_forest[j][0]['s_{}'.format(name)].T).astype(np.float64)
 
                     prob_ij = np.true_divide(p_ij, s_ij, out=np.zeros_like(p_ij), where=s_ij != 0)
-                    if np.sum(prob_ij) != 0:
-                        prob_ij = prob_ij / np.sum(prob_ij)
+                    # if np.sum(prob_ij) != 0:
+                    #     prob_ij = prob_ij / np.sum(prob_ij)
 
                     mean_forest[name] += np.sum(np.multiply(prob_ij, value_ij)) / n_trees ** 2
 
@@ -360,13 +356,12 @@ def local_sdp(x, f, threshold, proba, index, data, final_coal, decay, C, verbose
     "decay" for all tree-based models
 
     Args:
-        x (array): observation
+        x (np.array): observation
         f (float): forest(x)
         forest (All TreeBased models): model
         threshold (float): threshold of the classification in (0, 1)
         proba (float): the level of the Sufficient Coalition \pi
         index (list): index of the variables of x
-        algo (string): name of the estimators, recommended 'plugin'
         data (array): data used for the estimation
         final_coal (list): the list that will contain the cluster find by SDP, empty [] at initialization
         decay (float): the probability decay used in the recursion step
