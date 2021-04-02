@@ -1,5 +1,7 @@
 from .base_tree import *
 from .py_acv import *
+from .utils_exp import *
+from .utils_sdp import *
 import numpy as np
 
 
@@ -24,52 +26,55 @@ class ACVTree(BaseTree):
                                           self.num_outputs)
         return out
 
-    # def compute_sdp_clf_v1(self, x, fx, tx, S, data):
-    #     sdp = 0
-    #     ntrees = len(self.trees)
-    #     for i in range(ntrees):
-    #         sdp += cond_sdp_tree_clf_v1(x, fx, tx, self.trees[i], S, data, ntrees=ntrees)
-    #     return sdp / ntrees
+    def compute_sdp_reg(self, X, tX, S, data):
+        return compute_sdp_reg(X, tX, self, S, data=data)
 
-    def compute_sdp_reg(self, x, fx, tx, S, data):
-        sdp = cond_sdp_forest(x, fx, tx, self.trees, S, data=data)
-        return sdp
+    def compute_sdp_clf(self, X, tX, S, data):
+        return compute_sdp_clf(X, tX, self, S, data=data)
 
-    def compute_sdp_clf(self, x, fx, tx, S, data):
-        sdp = cond_sdp_forest_clf(x, fx, tx, self.trees, S, data=data)
-        return sdp
+    def compute_sdp_reg_cat(self, X, tX, S, data):
+        return compute_sdp_reg_cat(X, tX, model=self, S=S, data=data)
 
-    def compute_local_sdp_clf(self, x, f, threshold, proba, index, data, final_coal, decay, C, verbose):
-        return local_sdp(x, f, threshold, proba, index, data, final_coal, decay, C, verbose,
+    def compute_sdp_clf_cat(self, X, tX, S, data):
+        return compute_sdp_clf_cat(X, tX, model=self, S=S, data=data)
+
+    def compute_cond_exp(self, X, S, data):
+        return compute_exp(X=X, model=self, S=S, data=data)
+
+    def compute_cond_exp_cat(self, X, S, data):
+        return compute_exp_cat(X=X, model=self, S=S, data=data)
+
+    def compute_local_sdp_clf(self, x, threshold, proba, index, data, final_coal, decay, C, verbose):
+        return local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose,
                          self.compute_sdp_clf)
 
-    def compute_local_sdp_reg(self, x, f, threshold, proba, index, data, final_coal, decay, C, verbose):
-        return local_sdp(x, f, threshold, proba, index, data, final_coal, decay, C, verbose, self.compute_sdp_reg)
+    def compute_local_sdp_reg(self, x, threshold, proba, index, data, final_coal, decay, C, verbose):
+        return local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose, self.compute_sdp_reg)
 
-    def swing_values_clf(self, x, fx, tx, S, data, threshold):
-        return int(self.compute_sdp_clf(x, fx, tx, S, data) >= threshold)
+    def swing_values_clf(self, x,  tx, S, data, threshold):
+        return np.array(self.compute_sdp_clf(x, tx, S, data) >= threshold, dtype=float)
 
-    def swing_values_reg(self, x, fx, tx, S, data, threshold):
-        return int(self.compute_sdp_reg(x, fx, tx, S, data) >= threshold)
+    def swing_values_reg(self, x, tx, S, data, threshold):
+        return np.array(self.compute_sdp_reg(x, tx, S, data) >= threshold, dtype=float)
 
-    def shap_values_swing_clf(self, x, fx, tx, data, C, threshold):
-        kwargs = {'x': x, 'fx': fx, 'tx': tx, 'data': data, 'threshold': threshold}
-        return brute_force_tree_shap(x, self.num_outputs, C, self.swing_values_clf, kwargs, swing=True)
+    def shap_values_swing_clf(self, x, tx, data, threshold, C):
+        kwargs = {'x': x, 'tx': tx, 'data': data, 'threshold': threshold}
+        return brute_force_tree_shap(x, 1, C, self.swing_values_clf, kwargs, swing=True)
 
-    def shap_values_swing_reg(self, x, fx, tx, data, C, threshold):
-        kwargs = {'x': x, 'fx': fx, 'tx': tx, 'data': data, 'threshold': threshold}
-        return brute_force_tree_shap(x, self.num_outputs, C, self.swing_values_reg, kwargs, swing=True)
+    def shap_values_swing_reg(self, x, tx, data, threshold, C):
+        kwargs = {'x': x, 'tx': tx, 'data': data, 'threshold': threshold}
+        return brute_force_tree_shap(x, 1, C, self.swing_values_reg, kwargs, swing=True)
 
     def global_sdp_importance_clf(self, data, data_bground, columns_names, global_proba, decay, threshold,
                           proba, C, verbose):
 
         return global_sdp_importance(data, data_bground, columns_names, global_proba, decay, threshold,
-                          proba, C, verbose, self.compute_sdp_clf, self.predict)
+                          proba, C, verbose, self.compute_sdp_clf)
 
     def global_sdp_importance_reg(self, data, data_bground, columns_names, global_proba, decay, threshold,
                           proba, C, verbose):
         return global_sdp_importance(data, data_bground, columns_names, global_proba, decay, threshold,
-                          proba, C, verbose, self.compute_sdp_reg, self.predict)
+                          proba, C, verbose, self.compute_sdp_reg)
 
 
 

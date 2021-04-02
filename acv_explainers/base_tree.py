@@ -542,20 +542,20 @@ class BaseTree:
                 self.leaf_idx = [idx for idx in range(len(self.trees[i].features))
                                  if self.trees[i].children_left[idx] < 0]
 
-                self.partition_leaves = {}
-                self.node_idx = {}
-                self.data_leaves = {}
+                self.partition_leaves = []
+                self.node_idx = []
+                self.data_leaves = []
                 for leaf_id in self.leaf_idx:
                     node_id = [-1]
                     partition_leaf = [np.array([[-np.inf, np.inf]]) for idx2 in range(self.data.shape[1])]
                     _ = get_partition(leaf_id, partition_leaf, node_id, self.trees[i].children_left,
                                       self.trees[i].children_right, self.trees[i].features, self.trees[i].thresholds)
 
-                    self.partition_leaves[leaf_id] = np.squeeze(np.array(partition_leaf))
-                    self.node_idx[leaf_id] = node_id[1:]
-                    self.data_leaves[leaf_id] = np.array([(self.data[:, s] <= self.partition_leaves[leaf_id][s, 1]) * \
-                                                          (self.data[:, s] >= self.partition_leaves[leaf_id][s, 0])
-                                                          for s in range(self.partition_leaves[leaf_id].shape[0])])
+                    self.partition_leaves.append(np.squeeze(np.array(partition_leaf)))
+                    self.node_idx.append(node_id[1:])
+                    self.data_leaves.append(np.array([(self.data[:, s] <= self.partition_leaves[-1][s, 1]) * \
+                                                          (self.data[:, s] >= self.partition_leaves[-1][s, 0])
+                                                          for s in range(self.data.shape[1])]))
                 self.partition_leaves_trees.append(self.partition_leaves)
                 self.node_idx_trees.append(self.node_idx)
                 self.data_leaves_trees.append(self.data_leaves)
@@ -571,7 +571,7 @@ class BaseTree:
             assert len(self.base_offset) == self.num_outputs
 
     @abstractmethod
-    def compute_cond_exp(self, x, S):
+    def compute_cond_exp(self, X, S, data):
         pass
 
     @abstractmethod
@@ -583,35 +583,35 @@ class BaseTree:
         pass
 
     @abstractmethod
-    def compute_sdp_clf(self, x, fx, tx, S, data):
+    def compute_sdp_clf(self, X, tX, S, data):
         pass
 
     @abstractmethod
-    def compute_sdp_reg(self, x, fx, tx, S, data):
+    def compute_sdp_reg(self, X, tX, S, data):
         pass
 
     @abstractmethod
-    def compute_local_sdp_clf(self, x, f, threshold, proba, index, data, final_coal, decay, C, verbose):
+    def compute_local_sdp_clf(self, x, threshold, proba, index, data, final_coal, decay, C, verbose):
         pass
 
     @abstractmethod
-    def compute_local_sdp_reg(self, x, f, threshold, proba, index, data, final_coal, decay, C, verbose):
+    def compute_local_sdp_reg(self, x, threshold, proba, index, data, final_coal, decay, C, verbose):
         pass
 
     @abstractmethod
-    def swing_values_clf(self, x, fx, tx, S, data, threshold):
+    def swing_values_clf(self, x,  tx, S, data, threshold):
         pass
 
     @abstractmethod
-    def swing_values_reg(self, x, fx, tx, S, data, threshold):
+    def swing_values_reg(self, x,  tx, S, data, threshold):
         pass
 
     @abstractmethod
-    def shap_values_swing_clf(self, x, fx, tx, data, C, threshold):
+    def shap_values_swing_clf(self, x, tx, data, threshold, C):
         pass
 
     @abstractmethod
-    def shap_values_swing_reg(self, x, fx, tx, data, C, threshold):
+    def shap_values_swing_reg(self, x, tx, data, threshold, C):
         pass
 
     @abstractmethod
@@ -780,7 +780,6 @@ class SingleTree:
     """
 
     def __init__(self, tree, normalize=False, scaling=1.0, data=None, data_missing=None):
-        assert_import("cext")
         self.scaling = scaling
         if safe_isinstance(tree, ["sklearn.tree._tree.Tree", "econml.tree._tree.Tree"]):
             self.children_left = tree.children_left.astype(np.int32)
