@@ -458,3 +458,357 @@ cpdef np.ndarray[long, ndim=1] global_sdp_clf(np.ndarray[dtype_t, ndim=2] X, np.
 def powerset(iterable):
     s = list(iterable)
     return itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s) + 1))
+
+
+cpdef np.ndarray[long, ndim=1] global_sdp_clf_dist(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] fX,
+            np.ndarray[long, ndim=1] y_pred, np.ndarray[dtype_t, ndim=2] data,
+            np.ndarray[dtype_t, ndim=3] values, np.ndarray[dtype_t, ndim=4] partition_leaves_trees,
+            np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling,
+            float global_proba):
+
+    cdef int N = X.shape[0]
+    cdef int m = X.shape[1]
+
+    cdef Py_ssize_t n_trees = values.shape[0]
+    cdef np.ndarray[dtype_t, ndim=3] leaves_tree
+    cdef np.ndarray[dtype_t, ndim=2] leaf_part
+    cdef np.ndarray[dtype_t, ndim=1] value
+
+    cdef np.ndarray[dtype_t, ndim=2] mean_forest
+    mean_forest = np.zeros((N, 3))
+
+    # cdef np.ndarray[dtype_t, ndim=1] sdp
+    cdef np.ndarray[dtype_t, ndim=1] sdp_global
+    sdp = np.zeros((N))
+    sdp_global = np.zeros((m))
+
+    cdef np.ndarray[long, ndim=1] lm, lm_u, lm_d, lm_s
+    cdef int it, it_s, a_it, b_it, o_all
+    cdef dtype_t p, p_s, ss, p_u, p_d, p_su, p_sd
+    cdef unsigned int b, leaf_numb, nb_leaf, i, s, down, up, s_1, set_size, pow_set_size, counter, ci, cj, ite
+    cdef list power, va_id, R, r
+    cdef np.ndarray[long, ndim=1] S
+
+    va_id = [[i] for i in range(m)]
+    set_size = len(va_id)
+    m = len(va_id)
+    S = -np.ones(shape=(m), dtype=np.int)
+    pow_set_size = 2**set_size-1
+
+    for counter in range(1, pow_set_size):
+        S_size = 0
+        for ci in range(set_size):
+            if((counter & (1 << ci)) > 0):
+                for cj in range(len(va_id[ci])):
+                    S[S_size] = va_id[ci][cj]
+                    S_size += 1
+
+        mean_forest = np.zeros((X.shape[0], 3))
+
+        for b in range(n_trees):
+            leaves_tree = partition_leaves_trees[b]
+            nb_leaf = leaves_nb[b]
+
+            for leaf_numb in range(nb_leaf):
+                leaf_part = leaves_tree[leaf_numb]
+                value = values[b, leaf_idx_trees[b, leaf_numb]] / scaling
+
+                lm = np.zeros(data.shape[0], dtype=np.int)
+                lm_s = np.zeros(data.shape[0], dtype=np.int)
+
+                for i in range(data.shape[0]):
+                    a_it = 0
+                    b_it = 0
+                    for s in range(m):
+                        if ((data[i, s] <= leaf_part[s, 1]) and (data[i, s] >= leaf_part[s, 0])):
+                            a_it += 1
+                    for s in range(S_size):
+                        if ((data[i, S[s]] <= leaf_part[S[s], 1]) and (data[i, S[s]] >= leaf_part[S[s], 0])):
+                            b_it +=1
+
+                    if a_it == m:
+                        lm[i] = 1
+
+                    if b_it == S_size:
+                        lm_s[i] = 1
+
+                for i in range(N):
+                    o_all = 0
+                    for s in range(S_size):
+                        if ((X[i, S[s]] > leaf_part[S[s], 1]) or (X[i, S[s]] < leaf_part[S[s], 0])):
+                            o_all +=1
+                    if o_all > 0:
+                        continue
+
+                    p = 0
+                    p_u = 0
+                    p_d = 0
+                    p_s = 0
+                    p_su = 0
+                    p_sd = 0
+                    for j in range(data.shape[0]):
+                        p += lm[j]
+                        p_s += lm_s[j]
+                        if fX[i] == y_pred[j]:
+                            p_u += lm[j]
+                            p_su += lm_s[j]
+                        else:
+                            p_d += lm[j]
+                            p_sd += lm_s[j]
+
+                    mean_forest[i, 0] += (p * value[fX[i]]) / p_s if p_s != 0 else 0
+                    mean_forest[i, 1] += (p_u * value[fX[i]]) / p_su if p_su != 0 else 0
+                    mean_forest[i, 2] += (p_d * value[fX[i]]) / p_sd if p_sd != 0 else 0
+
+        for i in range(N):
+            ss = (mean_forest[i, 0] - mean_forest[i, 2])/(n_trees*(mean_forest[i, 1] - mean_forest[i, 2]))
+            if ss >= global_proba:
+                    for s in range(S_size):
+                        sdp_global[S[s]] += 1
+
+    return sdp_global/(X.shape[0] * pow_set_size)
+
+
+cpdef np.ndarray[long, ndim=1] global_sdp_clf_coal(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] fX,
+            np.ndarray[long, ndim=1] y_pred, np.ndarray[dtype_t, ndim=2] data,
+            np.ndarray[dtype_t, ndim=3] values, np.ndarray[dtype_t, ndim=4] partition_leaves_trees,
+            np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling,
+            float global_proba, list C):
+
+    cdef int N = X.shape[0]
+    cdef int m = X.shape[1]
+
+    cdef Py_ssize_t n_trees = values.shape[0]
+    cdef np.ndarray[dtype_t, ndim=3] leaves_tree
+    cdef np.ndarray[dtype_t, ndim=2] leaf_part
+    cdef np.ndarray[dtype_t, ndim=1] value
+
+    cdef np.ndarray[dtype_t, ndim=2] mean_forest
+    mean_forest = np.zeros((N, 3))
+
+    cdef np.ndarray[dtype_t, ndim=1] sdp
+    cdef np.ndarray[dtype_t, ndim=1] sdp_global
+    sdp = np.zeros((N))
+    sdp_global = np.zeros((m))
+
+    cdef np.ndarray[long, ndim=1] lm, lm_u, lm_d, lm_s
+    cdef int it, it_s, a_it, b_it, o_all
+    cdef dtype_t p, p_s, ss, p_u, p_d, p_su, p_sd
+    cdef unsigned int b, leaf_numb, nb_leaf, i, s, down, up, s_1, ci, cj
+    cdef np.ndarray[long, ndim=1] S
+    cdef list power, va_id, R, r
+
+    R = list(range(N))
+    if C[0] != []:
+        remove_va = [C[ci][cj] for cj in range(len(C[ci])) for ci in range(len(C))]
+        va_id = [[i] for i in range(m) if i not in remove_va] + C
+    else:
+        va_id = [[i] for i in range(m)]
+
+    power = [co for co in powerset(va_id)]
+
+    S = np.zeros((m), dtype=np.int)
+    for s_1 in range(1, len(power)-1):
+        S_size = 0
+        for ci in range(len(power[s_1])):
+            for cj in range(len(power[s_1][ci])):
+                S[S_size] = power[s_1][ci][cj]
+                S_size += 1
+
+        r = []
+        N = len(R)
+        mean_forest = np.zeros((X.shape[0], 3))
+
+        for b in range(n_trees):
+            leaves_tree = partition_leaves_trees[b]
+            nb_leaf = leaves_nb[b]
+
+            for leaf_numb in range(nb_leaf):
+                leaf_part = leaves_tree[leaf_numb]
+                value = values[b, leaf_idx_trees[b, leaf_numb]] / scaling
+
+                lm = np.zeros(data.shape[0], dtype=np.int)
+                lm_s = np.zeros(data.shape[0], dtype=np.int)
+
+                for i in range(data.shape[0]):
+                    a_it = 0
+                    b_it = 0
+                    for s in range(m):
+                        if ((data[i, s] <= leaf_part[s, 1]) and (data[i, s] >= leaf_part[s, 0])):
+                            a_it += 1
+                    for s in range(S_size):
+                        if ((data[i, S[s]] <= leaf_part[S[s], 1]) and (data[i, S[s]] >= leaf_part[S[s], 0])):
+                            b_it +=1
+
+                    if a_it == m:
+                        lm[i] = 1
+
+                    if b_it == S_size:
+                        lm_s[i] = 1
+
+                for i in range(N):
+                    o_all = 0
+                    for s in range(S_size):
+                        if ((X[R[i], S[s]] > leaf_part[S[s], 1]) or (X[R[i], S[s]] < leaf_part[S[s], 0])):
+                            o_all +=1
+                    if o_all > 0:
+                        continue
+
+                    p = 0
+                    p_u = 0
+                    p_d = 0
+                    p_s = 0
+                    p_su = 0
+                    p_sd = 0
+                    for j in range(data.shape[0]):
+                        p += lm[j]
+                        p_s += lm_s[j]
+                        if fX[R[i]] == y_pred[j]:
+                            p_u += lm[j]
+                            p_su += lm_s[j]
+                        else:
+                            p_d += lm[j]
+                            p_sd += lm_s[j]
+
+                    mean_forest[R[i], 0] += (p * value[fX[R[i]]]) / p_s if p_s != 0 else 0
+                    mean_forest[R[i], 1] += (p_u * value[fX[R[i]]]) / p_su if p_su != 0 else 0
+                    mean_forest[R[i], 2] += (p_d * value[fX[R[i]]]) / p_sd if p_sd != 0 else 0
+
+        for i in range(N):
+            ss = (mean_forest[R[i], 0] - mean_forest[R[i], 2])/(n_trees*(mean_forest[R[i], 1] - mean_forest[R[i], 2]))
+            if((ss <= 1) and (ss>=0)):
+                sdp[R[i]] = ss
+                if ss >= global_proba:
+                    r.append(R[i])
+                    for s in range(S_size):
+                        sdp_global[S[s]] += 1
+
+            elif(ss > 1):
+                sdp[R[i]] = 1
+                r.append(R[i])
+                for s in range(S_size):
+                    sdp_global[S[s]] += 1
+            else:
+                sdp[R[i]] = 0
+
+        for i in range(len(r)):
+            R.remove(r[i])
+
+        if len(R) == 0:
+            continue
+
+    return sdp_global/X.shape[0]
+
+
+cpdef np.ndarray[long, ndim=1] global_sdp_clf_dist_coal(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] fX,
+            np.ndarray[long, ndim=1] y_pred, np.ndarray[dtype_t, ndim=2] data,
+            np.ndarray[dtype_t, ndim=3] values, np.ndarray[dtype_t, ndim=4] partition_leaves_trees,
+            np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling,
+            float global_proba, list C):
+
+    cdef int N = X.shape[0]
+    cdef int m = X.shape[1]
+
+    cdef Py_ssize_t n_trees = values.shape[0]
+    cdef np.ndarray[dtype_t, ndim=3] leaves_tree
+    cdef np.ndarray[dtype_t, ndim=2] leaf_part
+    cdef np.ndarray[dtype_t, ndim=1] value
+
+    cdef np.ndarray[dtype_t, ndim=2] mean_forest
+    mean_forest = np.zeros((N, 3))
+
+    # cdef np.ndarray[dtype_t, ndim=1] sdp
+    cdef np.ndarray[dtype_t, ndim=1] sdp_global
+    sdp = np.zeros((N))
+    sdp_global = np.zeros((m))
+
+    cdef np.ndarray[long, ndim=1] lm, lm_u, lm_d, lm_s
+    cdef int it, it_s, a_it, b_it, o_all
+    cdef dtype_t p, p_s, ss, p_u, p_d, p_su, p_sd
+    cdef unsigned int b, leaf_numb, nb_leaf, i, s, down, up, s_1, set_size, pow_set_size, counter, ci, cj, ite
+    cdef list power, va_id, R, r
+
+    cdef np.ndarray[long, ndim=1] S
+    S = -np.ones(shape=(m), dtype=np.int)
+
+    if C[0] != []:
+        remove_va = [C[ci][cj] for cj in range(len(C[ci])) for ci in range(len(C))]
+        va_id = [[i] for i in range(m) if i not in remove_va] + C
+    else:
+        va_id = [[i] for i in range(m)]
+
+    set_size = len(va_id)
+    pow_set_size = 2**set_size-1
+
+    for counter in range(1, pow_set_size):
+        S_size = 0
+        for ci in range(set_size):
+            if((counter & (1 << ci)) > 0):
+                for cj in range(len(va_id[ci])):
+                    S[S_size] = va_id[ci][cj]
+                    S_size += 1
+
+        mean_forest = np.zeros((X.shape[0], 3))
+
+        for b in range(n_trees):
+            leaves_tree = partition_leaves_trees[b]
+            nb_leaf = leaves_nb[b]
+
+            for leaf_numb in range(nb_leaf):
+                leaf_part = leaves_tree[leaf_numb]
+                value = values[b, leaf_idx_trees[b, leaf_numb]] / scaling
+
+                lm = np.zeros(data.shape[0], dtype=np.int)
+                lm_s = np.zeros(data.shape[0], dtype=np.int)
+
+                for i in range(data.shape[0]):
+                    a_it = 0
+                    b_it = 0
+                    for s in range(m):
+                        if ((data[i, s] <= leaf_part[s, 1]) and (data[i, s] >= leaf_part[s, 0])):
+                            a_it += 1
+                    for s in range(S_size):
+                        if ((data[i, S[s]] <= leaf_part[S[s], 1]) and (data[i, S[s]] >= leaf_part[S[s], 0])):
+                            b_it +=1
+
+                    if a_it == m:
+                        lm[i] = 1
+
+                    if b_it == S_size:
+                        lm_s[i] = 1
+
+                for i in range(N):
+                    o_all = 0
+                    for s in range(S_size):
+                        if ((X[i, S[s]] > leaf_part[S[s], 1]) or (X[i, S[s]] < leaf_part[S[s], 0])):
+                            o_all +=1
+                    if o_all > 0:
+                        continue
+
+                    p = 0
+                    p_u = 0
+                    p_d = 0
+                    p_s = 0
+                    p_su = 0
+                    p_sd = 0
+                    for j in range(data.shape[0]):
+                        p += lm[j]
+                        p_s += lm_s[j]
+                        if fX[i] == y_pred[j]:
+                            p_u += lm[j]
+                            p_su += lm_s[j]
+                        else:
+                            p_d += lm[j]
+                            p_sd += lm_s[j]
+
+                    mean_forest[i, 0] += (p * value[fX[i]]) / p_s if p_s != 0 else 0
+                    mean_forest[i, 1] += (p_u * value[fX[i]]) / p_su if p_su != 0 else 0
+                    mean_forest[i, 2] += (p_d * value[fX[i]]) / p_sd if p_sd != 0 else 0
+
+        for i in range(N):
+            ss = (mean_forest[i, 0] - mean_forest[i, 2])/(n_trees*(mean_forest[i, 1] - mean_forest[i, 2]))
+            if ss >= global_proba:
+                    for s in range(S_size):
+                        sdp_global[S[s]] += 1
+
+    return sdp_global/(X.shape[0] * pow_set_size)
