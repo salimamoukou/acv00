@@ -301,7 +301,7 @@ def cond_sdp_forest(x, fx, tx, forest, S, data):
     return sdp
 
 
-def brute_force_tree_shap(X, num_output, C, value_function, kwargs, swing=False):
+def swing_tree_shap(X, tX, threshold, data, C, value_function):
     N = X.shape[0]
     m = X.shape[1]
     va_id = list(range(m))
@@ -314,10 +314,10 @@ def brute_force_tree_shap(X, num_output, C, value_function, kwargs, swing=False)
         for c in C:
             va_id += [c]
 
-    phi = np.zeros(shape=(X.shape[0], X.shape[1], num_output))
-    if swing:
-        swings = {va: np.zeros((N, 2)) for va in va_id}
-        swings_prop = {va: np.zeros((N, 3)) for va in va_id}
+    phi = np.zeros(shape=(X.shape[0], X.shape[1]))
+
+    swings = np.zeros((N, m, 2))
+    swings_prop = np.zeros((N, m, 3))
 
     for i in tqdm(va_id):
         Sm = list(set(va_buffer) - set(convert_list(i)))
@@ -333,35 +333,25 @@ def brute_force_tree_shap(X, num_output, C, value_function, kwargs, swing=False)
 
         for S in powerset(Sm):
             weight = comb(m - 1, len(S), exact=True) ** (-1)
-            v_plus = value_function(**kwargs, S=chain_l(S) + convert_list(i))
-            v_minus = value_function(**kwargs, S=chain_l(S))
+            v_plus = value_function(x=X, tx=tX, threshold=threshold, data=data, S=chain_l(S) + convert_list(i))
+            v_minus = value_function(x=X, tx=tX, threshold=threshold, data=data, S=chain_l(S))
+
             phi[:, chain_l(i)] += weight * (v_plus - v_minus)
 
-            if swing:
-                dif_pos = (v_plus - v_minus) > 0
-                dif_neg = (v_plus - v_minus) < 0
-                dif_null = (v_plus - v_minus) == 0
-                value = ((v_plus - v_minus) * weight) / m
+            dif_pos = (v_plus - v_minus) > 0
+            dif_neg = (v_plus - v_minus) < 0
+            dif_null = (v_plus - v_minus) == 0
+            value = ((v_plus - v_minus) * weight) / m
 
-                swings[i][:, 0] += dif_pos * value
-                swings[i][:, 1] += dif_neg * value
+            swings[:, chain_l(i), 0] += dif_pos * value
+            swings[:, chain_l(i), 1] += dif_neg * value
 
-                swings_prop[i][:, 0] += dif_pos
-                swings_prop[i][:, 1] += dif_neg
-                swings_prop[i][:, 2] += dif_null
+            swings_prop[:, chain_l(i), 0] += dif_pos
+            swings_prop[:, chain_l(i), 1] += dif_neg
+            swings_prop[:, chain_l(i), 2] += dif_null
 
-                # if v_plus - v_minus == 1:
-                #     swings[i][0] += ((v_plus - v_minus) * weight) / m
-                #     swings_prop[i][0] += 1
-                # elif v_plus - v_minus == -1:
-                #     swings[i][1] += ((v_plus - v_minus) * weight) / m
-                #     swings_prop[i][1] += 1
-                # else:
-                #     swings_prop[i][2] += 1
-    if swing:
-        return phi / m, swings, swings_prop
-    else:
-        return phi / m
+    return phi / m, swings, swings_prop
+
 
 
 def local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose, cond_func):

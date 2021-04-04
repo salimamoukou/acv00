@@ -58,12 +58,10 @@ class ACVTree(BaseTree):
         return np.array(self.compute_sdp_reg(x, tx, S, data) >= threshold, dtype=float)
 
     def shap_values_swing_clf(self, x, tx, data, threshold, C):
-        kwargs = {'x': x, 'tx': tx, 'data': data, 'threshold': threshold}
-        return brute_force_tree_shap(x, 1, C, self.swing_values_clf, kwargs, swing=True)
+        return swing_tree_shap(x, tx, threshold, data, C, self.swing_values_clf)
 
     def shap_values_swing_reg(self, x, tx, data, threshold, C):
-        kwargs = {'x': x, 'tx': tx, 'data': data, 'threshold': threshold}
-        return brute_force_tree_shap(x, 1, C, self.swing_values_reg, kwargs, swing=True)
+        return swing_tree_shap(x, tx, threshold, data, C, self.swing_values_reg)
 
     def global_sdp_importance_clf(self, data, data_bground, columns_names, global_proba, decay, threshold,
                           proba, C, verbose):
