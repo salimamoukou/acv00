@@ -521,6 +521,7 @@ class BaseTree:
             self.node_idx_trees = []
             self.data_leaves_trees = []
             self.leaf_idx_trees = []
+            self.leaves_nb = []
             for i in range(num_trees):
                 self.children_left[i, :len(self.trees[i].children_left)] = self.trees[i].children_left
                 self.children_right[i, :len(self.trees[i].children_right)] = self.trees[i].children_right
@@ -542,6 +543,8 @@ class BaseTree:
                 self.leaf_idx = [idx for idx in range(len(self.trees[i].features))
                                  if self.trees[i].children_left[idx] < 0]
 
+                self.leaves_nb.append(len(self.leaf_idx))
+
                 self.partition_leaves = []
                 self.node_idx = []
                 self.data_leaves = []
@@ -556,10 +559,25 @@ class BaseTree:
                     self.data_leaves.append(np.array([(self.data[:, s] <= self.partition_leaves[-1][s, 1]) * \
                                                           (self.data[:, s] >= self.partition_leaves[-1][s, 0])
                                                           for s in range(self.data.shape[1])]))
+
                 self.partition_leaves_trees.append(self.partition_leaves)
-                self.node_idx_trees.append(self.node_idx)
                 self.data_leaves_trees.append(self.data_leaves)
+
+                self.node_idx_trees.append(self.node_idx)
                 self.leaf_idx_trees.append(self.leaf_idx)
+
+            leaf_idx_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb)), dtype=np.int)
+            partition_leaves_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb), self.data.shape[1], 2))
+            for i in range(len(self.leaves_nb)):
+                leaf_idx_trees[i, :self.leaves_nb[i]] = np.array(self.leaf_idx_trees[i], dtype=np.int)
+                partition_leaves_trees[i, :self.leaves_nb[i]] = np.array(self.partition_leaves_trees[i])
+            self.leaf_idx_trees = leaf_idx_trees
+            self.partition_leaves_trees = partition_leaves_trees
+            self.leaves_nb = np.array(self.leaves_nb, dtype=np.int)
+
+
+
+
 
             self.num_nodes = np.array([len(t.values) for t in self.trees], dtype=np.int32)
             self.max_depth = np.max([t.max_depth for t in self.trees])

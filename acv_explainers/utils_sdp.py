@@ -20,8 +20,9 @@ def compute_sdp_reg(X, tX, model, S, data):
             if b == l:
                 leaves_tree = model.partition_leaves_trees[b]
 
-                for leaf_numb, leaf_id in enumerate(model.leaf_idx_trees[b]):
+                for leaf_numb in range(model.leaves_nb[b]):
                     leaf_part = leaves_tree[leaf_numb]
+                    leaf_id = model.leaf_id_trees[b, leaf_numb]
                     value = model.values[b, leaf_id] / model.trees[b].scaling
 
                     leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S],
@@ -62,8 +63,10 @@ def compute_sdp_reg(X, tX, model, S, data):
                         mean_forest[i, 2] -= (2 * fX[i] * np.sum(lm * down_tx) * value) / (
                                     p_sd * n_trees) if p_sd != 0 else 0
             else:
-                for leaf_numb_b, leaf_id_b in enumerate(model.leaf_idx_trees[b]):
-                    for leaf_numb_l, leaf_id_l in enumerate(model.leaf_idx_trees[l]):
+                for leaf_numb_b in range(model.leaves_nb[b]):
+                    leaf_id_b = model.leaf_id_trees[b, leaf_numb_b]
+                    for leaf_numb_l in range(model.leaves_nb[l]):
+                        leaf_id_l = model.leaf_id_trees[l, leaf_numb_l]
 
                         leaf_part_b = model.partition_leaves_trees[b][leaf_numb_b]
                         value_b = model.values[b, leaf_id_b] / model.trees[b].scaling
@@ -135,8 +138,9 @@ def compute_sdp_reg_cat(X, tX, model, S, data):
             if b == l:
                 leaves_tree = model.partition_leaves_trees[b]
                 #             leaves_tree = model.partition_leaves_trees[l]
-                for leaf_numb, leaf_id in enumerate(model.leaf_idx_trees[b]):
+                for leaf_numb in range(model.leaves_nb[b]):
                     leaf_part = leaves_tree[leaf_numb]
+                    leaf_id = model.leaf_idx_trees[b, leaf_numb]
                     value = model.values[b, leaf_id] / model.trees[b].scaling
 
                     leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S],
@@ -175,8 +179,10 @@ def compute_sdp_reg_cat(X, tX, model, S, data):
                         mean_forest[i, 2] -= (2 * fX[i] * np.sum(lm * p_s * down_tx) * value) / (
                                     p_sd * n_trees) if p_sd != 0 else 0
             else:
-                for leaf_numb_b, leaf_id_b in enumerate(model.leaf_idx_trees[b]):
-                    for leaf_numb_l, leaf_id_l in enumerate(model.leaf_idx_trees[l]):
+                for leaf_numb_b in range(model.leaves_nb[b]):
+                    leaf_id_b = model.leaf_idx_trees[b, leaf_numb_b]
+                    for leaf_numb_l in range(model.leaves_nb[l]):
+                        leaf_id_l = model.leaf_idx_trees[l, leaf_numb_l]
 
                         leaf_part_b = model.partition_leaves_trees[b][leaf_numb_b]
                         value_b = model.values[b, leaf_id_b] / model.trees[b].scaling
@@ -250,8 +256,9 @@ def compute_sdp_clf_cat(X, tX, model, S, data):
     for b in range(n_trees):
         leaves_tree = model.partition_leaves_trees[b]
 
-        for leaf_numb, leaf_id in enumerate(model.leaf_idx_trees[b]):
+        for leaf_numb in range(model.leaves_nb[b]):
             leaf_part = leaves_tree[leaf_numb]
+            leaf_id = model.leaf_idx_trees[b, leaf_numb]
             value = model.values[b, leaf_id] / model.trees[b].scaling
 
             leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S], axis=0)
@@ -314,8 +321,9 @@ def compute_sdp_clf(X, tX, model, S, data):
     for b in range(n_trees):
         leaves_tree = model.partition_leaves_trees[b]
 
-        for leaf_numb, leaf_id in enumerate(model.leaf_idx_trees[b]):
+        for leaf_numb in range(model.leaves_nb[b]):
             leaf_part = leaves_tree[leaf_numb]
+            leaf_id = model.leaf_idx_trees[b, leaf_numb]
             value = model.values[b, leaf_id] / model.trees[b].scaling
 
             leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S], axis=0)

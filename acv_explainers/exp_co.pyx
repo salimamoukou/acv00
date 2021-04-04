@@ -9,7 +9,7 @@ import itertools
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cpdef compute_exp(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] S, np.ndarray[dtype_t, ndim=2] data, np.ndarray[dtype_t, ndim=3] values,
-        np.ndarray[dtype_t, ndim=4] partition_leaves_trees, np.ndarray[long, ndim=2] leaf_idx_trees, float scaling):
+        np.ndarray[dtype_t, ndim=4] partition_leaves_trees, np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling):
 
     cdef int N = X.shape[0]
     cdef int m = X.shape[1]
@@ -34,7 +34,7 @@ cpdef compute_exp(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] S, np.
 
     for b in range(n_trees):
         leaves_tree = partition_leaves_trees[b]
-        nb_leaf = leaf_idx_trees[b].shape[0]
+        nb_leaf = leaves_nb[b]
 
         for leaf_numb in range(nb_leaf):
             leaf_part = leaves_tree[leaf_numb]
@@ -71,7 +71,7 @@ cpdef compute_exp(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] S, np.
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cpdef compute_exp_cat(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] S, np.ndarray[dtype_t, ndim=2] data, np.ndarray[dtype_t, ndim=3] values,
-        np.ndarray[dtype_t, ndim=4] partition_leaves_trees, np.ndarray[long, ndim=2] leaf_idx_trees, float scaling):
+        np.ndarray[dtype_t, ndim=4] partition_leaves_trees, np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling):
 
     cdef int N = X.shape[0]
     cdef int m = X.shape[1]
@@ -99,7 +99,7 @@ cpdef compute_exp_cat(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] S,
 
     for b in range(n_trees):
         leaves_tree = partition_leaves_trees[b]
-        nb_leaf = leaf_idx_trees[b].shape[0]
+        nb_leaf = leaves_nb[b]
 
         for leaf_numb in range(nb_leaf):
             leaf_part = leaves_tree[leaf_numb]
@@ -141,7 +141,7 @@ cpdef compute_exp_cat(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] S,
 cpdef np.ndarray[long, ndim=1] compute_sdp_clf_cat(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] fX,
             np.ndarray[long, ndim=1] y_pred, np.ndarray[long, ndim=1] S, np.ndarray[dtype_t, ndim=2] data,
             np.ndarray[dtype_t, ndim=3] values, np.ndarray[dtype_t, ndim=4] partition_leaves_trees,
-            np.ndarray[long, ndim=2] leaf_idx_trees, float scaling):
+            np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling):
 
     cdef int N = X.shape[0]
     cdef int m = X.shape[1]
@@ -170,7 +170,7 @@ cpdef np.ndarray[long, ndim=1] compute_sdp_clf_cat(np.ndarray[dtype_t, ndim=2] X
 
     for b in range(n_trees):
         leaves_tree = partition_leaves_trees[b]
-        nb_leaf = leaf_idx_trees[b].shape[0]
+        nb_leaf = leaves_nb[b]
 
         for leaf_numb in range(nb_leaf):
             leaf_part = leaves_tree[leaf_numb]
@@ -240,7 +240,7 @@ cpdef np.ndarray[long, ndim=1] compute_sdp_clf_cat(np.ndarray[dtype_t, ndim=2] X
 cpdef np.ndarray[long, ndim=1] compute_sdp_clf(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] fX,
             np.ndarray[long, ndim=1] y_pred, np.ndarray[long, ndim=1] S, np.ndarray[dtype_t, ndim=2] data,
             np.ndarray[dtype_t, ndim=3] values, np.ndarray[dtype_t, ndim=4] partition_leaves_trees,
-            np.ndarray[long, ndim=2] leaf_idx_trees, float scaling):
+            np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling):
 
     cdef int N = X.shape[0]
     cdef int m = X.shape[1]
@@ -269,7 +269,7 @@ cpdef np.ndarray[long, ndim=1] compute_sdp_clf(np.ndarray[dtype_t, ndim=2] X, np
 
     for b in range(n_trees):
         leaves_tree = partition_leaves_trees[b]
-        nb_leaf = leaf_idx_trees[b].shape[0]
+        nb_leaf = leaves_nb[b]
 
         for leaf_numb in range(nb_leaf):
             leaf_part = leaves_tree[leaf_numb]
@@ -338,7 +338,7 @@ cpdef np.ndarray[long, ndim=1] compute_sdp_clf(np.ndarray[dtype_t, ndim=2] X, np
 cpdef np.ndarray[long, ndim=1] global_sdp_clf(np.ndarray[dtype_t, ndim=2] X, np.ndarray[long, ndim=1] fX,
             np.ndarray[long, ndim=1] y_pred, np.ndarray[dtype_t, ndim=2] data,
             np.ndarray[dtype_t, ndim=3] values, np.ndarray[dtype_t, ndim=4] partition_leaves_trees,
-            np.ndarray[long, ndim=2] leaf_idx_trees, float scaling, float global_proba):
+            np.ndarray[long, ndim=2] leaf_idx_trees, np.ndarray[long, ndim=1] leaves_nb, float scaling, float global_proba):
 
     cdef int N = X.shape[0]
     cdef int m = X.shape[1]
@@ -377,7 +377,7 @@ cpdef np.ndarray[long, ndim=1] global_sdp_clf(np.ndarray[dtype_t, ndim=2] X, np.
 
         for b in range(n_trees):
             leaves_tree = partition_leaves_trees[b]
-            nb_leaf = leaf_idx_trees[b].shape[0]
+            nb_leaf = leaves_nb[b]
 
             for leaf_numb in range(nb_leaf):
                 leaf_part = leaves_tree[leaf_numb]
