@@ -3,6 +3,7 @@ from .py_acv import *
 from .utils_exp import *
 from .utils_sdp import *
 import numpy as np
+import exp_co
 
 
 class ACVTree(BaseTree):
@@ -31,6 +32,26 @@ class ACVTree(BaseTree):
 
     def compute_sdp_clf(self, X, tX, S, data):
         return compute_sdp_clf(X, tX, self, S, data=data)
+
+    def cyext_compute_sdp_clf(self, X, S, data):
+        fX = np.argmax(self.predict(X), axis=1)
+        y_pred = np.argmax(self.predict(data), axis=1)
+        return exp_co.compute_sdp_clf(X, fX, y_pred, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.trees[0].scaling)
+
+    def cyext_compute_sdp_clf_cat(self, X, S, data):
+        fX = np.argmax(self.predict(X), axis=1)
+        y_pred = np.argmax(self.predict(data), axis=1)
+        return exp_co.compute_sdp_clf_cat(X, fX, y_pred, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.trees[0].scaling)
+
+    def cyext_compute_exp(self, X, S, data):
+        return exp_co.compute_exp(X, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.trees[0].scaling)
+
+    def cyext_compute_exp_cat(self, X, S, data):
+        return exp_co.compute_exp_cat(X, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.trees[0].scaling)
 
     def compute_sdp_reg_cat(self, X, tX, S, data):
         return compute_sdp_reg_cat(X, tX, model=self, S=S, data=data)
