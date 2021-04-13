@@ -4,7 +4,7 @@ from tqdm import tqdm
 from scipy.special import comb
 
 
-def shap_values_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx, weight_samples, v, C,
+def shap_values_leaves(x, partition_leaves, data, node_idx, leaf_idx, leaves_nb, weight_samples, v, C,
                        num_outputs):
     """
     Compute SV using multi-game algorithm
@@ -25,16 +25,15 @@ def shap_values_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx, wei
     """
     phi = np.zeros((x.shape[0], x.shape[1], num_outputs)).astype(np.float64)
 
-    for leaf_numb, leaf_id in enumerate(leaf_idx):
-
+    for leaf_numb in range(leaves_nb):
+        leaf_id = leaf_idx[leaf_numb]
         partition_leaf = partition_leaves[leaf_numb]
-        data_leaf = data_leaves[leaf_numb]
         node_id = node_idx[leaf_numb]
-        Lm = weight_samples[leaf_id]
-
         d = x.shape[1]
         va_id = list(range(d))
 
+        lm = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                             for s in range(d)], axis=0))
         # start handle coalition
         if C[0] != []:
             for c in C:
@@ -65,34 +64,133 @@ def shap_values_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx, wei
 
             for S in powerset(Sm):
 
-                comp_si = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] >= partition_leaf[s, 0])
-                                   for s in chain_l(S) + convert_list(i)], axis=0)
-                comp_s = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] >= partition_leaf[s, 0])
-                                  for s in chain_l(S)], axis=0)
+                csi = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] > partition_leaf[s, 0])
+                               for s in chain_l(S) + convert_list(i)], axis=0)
+                cs = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] > partition_leaf[s, 0])
+                              for s in chain_l(S)], axis=0)
 
                 coef = 0
                 for l in range(1, d - len(Sm)):
-                    coef += comb(d - len(Sm) - 1, l) * comb(d - 1, l + len(S)) ** (-1)
+                    coef += comb(d - len(Sm) - 1, l, exact=True) * comb(d - 1, l + len(S), exact=True) ** (-1)
 
-                Lsi = np.sum(np.prod(data_leaf[chain_l(S) + convert_list(i), :], axis=0))
-                Ls = np.sum(np.prod(data_leaf[chain_l(S), :], axis=0))
+                lm_si = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                                        for s in chain_l(S) + convert_list(i)], axis=0))
 
-                P_si = (comp_si * Lm) / Lsi
+                lm_s = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                                       for s in chain_l(S)], axis=0))
+
+                p_si = (csi * lm) / lm_si
 
                 if len(S) == 0:
-                    P_s = Lm / np.sum(weight_samples[leaf_idx])
+                    p_s = lm / data.shape[0]
                 else:
-                    P_s = (comp_s * Lm) / Ls
+                    p_s = (cs * lm) / lm_s
 
-                for a in convert_list(i):
-                    phi[:, a, :] += (comb(d - 1, len(S), exact=True) ** (-1) + coef) * (P_si - P_s)[:, None] * v[
+                for j in convert_list(i):
+                    phi[:, j, :] += (comb(d - 1, len(S), exact=True) ** (-1) + coef) * (p_si - p_s)[:, None] * v[
                                                                                                                    leaf_id][
                                                                                                                None, :]
-
     return phi / d
 
 
-def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx, weight_samples, v, C, S_star, N_star,
+def shap_values_leaves_v2(x, partition_leaves, data, node_idx, leaf_idx, leaves_nb, weight_samples, v, C,
+                          num_outputs):
+    """
+    Compute SV using multi-game algorithm
+    Args:
+        x (np.array): Input of shape = (# samples, # features)
+        partition_leaves (np.array): It contains the hype-rectangle of each leaves, shape = # leaves x D x 2
+        data_leaves (np.array): Boolean matrix of shape = # leaves x D * N, if data_leaves[i, j, z ] = 1 means that obs
+        z fall in rectangle j of leaf i.
+        node_idx (list): node_idx[i] is the indexes of the nodes that it is in the path of leaf i
+        leaf_idx (list): Index of the leaves nodes
+        weight_samples (array): weight_samples[i] is the number of samples that fall in leaf node i
+        v (array): v[i] is the value of node i, shape = # nodes x num_outputs
+        C (list): Indexes of the variables group together (coalition variables)
+        num_outputs (int): size of the output
+
+    Returns:
+            (array): SV with multi-game algorithm, Shape = N x D x num_outputs
+    """
+    phi = np.zeros((x.shape[0], x.shape[1], num_outputs)).astype(np.float64)
+
+    if C[0] != []:
+        coal_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
+        remove_va = [[i] for i in range(x.shape[1]) if i not in coal_va]
+        va_id = remove_va + C
+    else:
+        va_id = [[i] for i in range(x.shape[1])]
+
+    d = len(va_id)
+
+    for leaf_numb in range(leaves_nb):
+        leaf_id = leaf_idx[leaf_numb]
+        partition_leaf = partition_leaves[leaf_numb]
+        node_id = node_idx[leaf_numb]
+
+        lm = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                             for s in range(data.shape[1])], axis=0))
+        # start handle coalition
+        node_id_v2 = []
+        C_b = C.copy()
+        if C[0] != []:
+            for va in node_id:
+                if va in remove_va:
+                    node_id_v2 += [[va]]
+                else:
+                    for ci in C_b:
+                        if va in ci:
+                            node_id_v2 += [ci]
+                            C_b.remove(ci)
+                            continue
+        else:
+            node_id_v2 = [[i] for i in node_id]
+
+        node_id = node_id_v2.copy()
+        # end handle coalition
+
+        for i in va_id:
+            if not i in node_id:
+                continue
+
+            Sm = node_id.copy()
+            Sm.remove(i)
+
+            for S in powerset(Sm):
+                S_size = len(S)
+                S = sum(list(S), [])
+                Si = S + i
+
+                csi = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] > partition_leaf[s, 0])
+                               for s in Si], axis=0)
+                cs = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] > partition_leaf[s, 0])
+                              for s in S], axis=0)
+
+                coef = 0
+                for l in range(1, d - len(Sm)):
+                    coef += comb(d - len(Sm) - 1, l, exact=True) * comb(d - 1, l + S_size, exact=True) ** (-1)
+
+                lm_si = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                                        for s in Si], axis=0))
+
+                lm_s = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                                       for s in S], axis=0))
+
+                p_si = (csi * lm) / lm_si
+
+                if len(S) == 0:
+                    p_s = lm / data.shape[0]
+                else:
+                    p_s = (cs * lm) / lm_s
+                for j in convert_list(i):
+                    phi[:, j, :] += (comb(d - 1, S_size, exact=True) ** (-1) + coef) * (p_si - p_s)[:, None] * v[
+                                                                                                                   leaf_id][
+                                                                                                             None, :]
+    return phi / d
+
+
+def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx, leaves_nb, weight_samples, v, C,
+                           S_star, N_star,
                            num_outputs):
     """
         Compute ACV-SV using multi-game algorithm
@@ -114,13 +212,12 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
                 (array): ACV-SV with multi-game algorithm, Shape = N x D x num_outputs
         """
     phi = np.zeros((x.shape[0], x.shape[1], num_outputs)).astype(np.float64)
-
-    for leaf_numb, leaf_id in enumerate(leaf_idx):
-
+    for leaf_numb in range(leaves_nb):
+        leaf_id = leaf_idx[leaf_numb]
         partition_leaf = partition_leaves[leaf_numb]
         data_leaf = data_leaves[leaf_numb]
         node_id = node_idx[leaf_numb]
-        Lm = weight_samples[leaf_id]
+        Lm = np.sum(np.prod(data_leaf, axis=0))
 
         va_id = S_star
         d = len(va_id)
@@ -353,7 +450,6 @@ def swing_tree_shap(X, tX, threshold, data, C, value_function):
     return phi / m, swings, swings_prop
 
 
-
 def local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose, cond_func):
     """
     Find the Sufficient coalition S* at level "proba", then recompute recursively S* by decreasing the "proba" with
@@ -501,4 +597,3 @@ def global_sdp_importance(data, data_bground, columns_names, global_proba, decay
     sdp_coal_proba = {key: np.mean(sdp_coal_proba[key]) for key in sdp_coal_proba.keys()}
 
     return sdp_importance_m, sdp_importance, sdp_coal_proba, sdp_importance_coal_count, sdp_importance_variable_count
-

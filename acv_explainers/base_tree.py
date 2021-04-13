@@ -557,7 +557,7 @@ class BaseTree:
                     self.partition_leaves.append(np.squeeze(np.array(partition_leaf)))
                     self.node_idx.append(node_id[1:])
                     self.data_leaves.append(np.array([(self.data[:, s] <= self.partition_leaves[-1][s, 1]) * \
-                                                          (self.data[:, s] >= self.partition_leaves[-1][s, 0])
+                                                          (self.data[:, s] > self.partition_leaves[-1][s, 0])
                                                           for s in range(self.data.shape[1])]))
 
                 self.partition_leaves_trees.append(self.partition_leaves)

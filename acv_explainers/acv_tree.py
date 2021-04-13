@@ -11,9 +11,19 @@ class ACVTree(BaseTree):
     def shap_values(self, x, C):
         out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))
         for i in range(len(self.trees)):
-            out += shap_values_leaves(x, self.partition_leaves_trees[i], self.data_leaves_trees[i],
+            out += shap_values_leaves(x, self.partition_leaves_trees[i], self.data,
                                       self.node_idx_trees[i],
-                                      self.leaf_idx_trees[i], self.node_sample_weight[i], self.values[i], C,
+                                      self.leaf_idx_trees[i], self.leaves_nb[i], self.node_sample_weight[i], self.values[i], C,
+                                      self.num_outputs)
+        return out
+
+    def shap_valuesv2(self, x, C):
+        out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))
+        for i in range(len(self.trees)):
+            out += shap_values_leaves_v2(x, self.partition_leaves_trees[i], self.data,
+                                      self.node_idx_trees[i],
+                                      self.leaf_idx_trees[i], self.leaves_nb[i], self.node_sample_weight[i],
+                                      self.values[i], C,
                                       self.num_outputs)
         return out
 
@@ -22,7 +32,7 @@ class ACVTree(BaseTree):
         for i in range(len(self.trees)):
             out += shap_values_acv_leaves(x, self.partition_leaves_trees[i], self.data_leaves_trees[i],
                                           self.node_idx_trees[i],
-                                          self.leaf_idx_trees[i], self.node_sample_weight[i], self.values[i], C, S_star,
+                                          self.leaf_idx_trees[i], self.leaves_nb[i], self.node_sample_weight[i], self.values[i], C, S_star,
                                           N_star,
                                           self.num_outputs)
         return out
