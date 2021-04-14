@@ -1,4 +1,5 @@
 from distutils.core import setup, Extension
+from Cython.Distutils import build_ext
 import numpy
 # from setuptools.command.build_ext import build_ext as _build_ext
 
@@ -21,6 +22,8 @@ import numpy
 #         self.include_dirs.append(numpy.get_include())
 
 module1 = Extension('cext_acv', sources=['cext_acv/_cext.cc'])
+module2 = Extension('exp_co', ['acv_explainers/exp_co.pyx'], extra_compile_args=['-fopenmp'],
+                    extra_link_args=['-fopenmp'])
 
 setup(name='acv',
       author='Salim I.Amoukou',
@@ -28,7 +31,8 @@ setup(name='acv',
       version='1.0',
       description='ACV function optimized in C',
       include_dirs=[numpy.get_include()],
-      ext_modules=[module1],
+      cmdclass={'build_ext': build_ext},
+      ext_modules=[module1, module2],
       # cmdclass={'build_ext': build_ext},
       # setup_requires=['numpy'],
       # install_requires=['numpy', 'scipy', 'scikit-learn', 'matplotlib', 'pandas', 'tqdm', 'ipython'],

@@ -522,7 +522,9 @@ class BaseTree:
             self.data_leaves_trees = []
             self.leaf_idx_trees = []
             self.leaves_nb = []
+            self.scalings = []
             for i in range(num_trees):
+                self.scalings.append(self.trees[i].scaling)
                 self.children_left[i, :len(self.trees[i].children_left)] = self.trees[i].children_left
                 self.children_right[i, :len(self.trees[i].children_right)] = self.trees[i].children_right
                 self.children_default[i, :len(self.trees[i].children_default)] = self.trees[i].children_default
@@ -574,6 +576,7 @@ class BaseTree:
             self.leaf_idx_trees = leaf_idx_trees
             self.partition_leaves_trees = partition_leaves_trees
             self.leaves_nb = np.array(self.leaves_nb, dtype=np.int)
+            self.scalings = np.array(self.scalings, dtype=np.float)
 
 
 

@@ -1370,7 +1370,8 @@ cdef unsigned long _comb_int_long(unsigned long N, unsigned long k) nogil:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-cpdef shap_values_leaves_pa(const double[:, :] X,
+# @cython.cdivision(True)
+def shap_values_leaves_pa(const double[:, :] X,
     const double[:, :] data,
     const double[:, :, :] values,
     const double[:, :, :, :] partition_leaves_trees,
@@ -1543,7 +1544,7 @@ cpdef shap_values_leaves_pa(const double[:, :] X,
 
                         coef = 0
                         for l in range(1, m - set_size):
-                            coef = coef + binomialC(m - set_size - 1, l)/binomialC(m - 1, l + va_size) if binomialC(m - 1, l + va_size) !=0 else 0
+                            coef = coef + (1.*binomialC(m - set_size - 1, l))/binomialC(m - 1, l + va_size) if binomialC(m - 1, l + va_size) !=0 else 0
 
                         coef_0 = 1./binomialC(m-1, va_size) if binomialC(m-1, va_size) !=0 else 0
 
