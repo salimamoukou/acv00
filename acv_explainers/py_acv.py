@@ -222,7 +222,6 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
         va_id = S_star
         d = len(va_id)
         node_id = list(set(node_id) - set(N_star))
-
         # start handle coalition
         if C[0] != []:
             for c in C:
@@ -246,10 +245,10 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
                 Lsi = np.sum(np.prod(data_leaf[N_star, :], axis=0))
                 P_si = comp_si * Lm / Lsi
                 P_s = Lm / np.sum(weight_samples[leaf_idx])
-
                 for a in convert_list(i):
                     phi[:, a] += ((P_si - P_s)[:, None] * v[leaf_id][None, :])
                 continue
+
 
             Sm = list(set(node_id) - set(convert_list(i)))
             buffer_Sm = Sm.copy()
@@ -261,7 +260,6 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
                 for c in C:
                     if set(c).issubset(S_star) and set(c).issubset(buffer_Sm):
                         Sm += [c]
-
             for S in powerset(Sm):
 
                 comp_si = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] >= partition_leaf[s, 0])
@@ -278,7 +276,6 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
 
                 P_si = comp_si * Lm / Lsi
                 P_s = comp_s * Lm / Ls
-
                 if len(S) != 0:
                     for a in convert_list(i):
                         phi[:, a] += (
