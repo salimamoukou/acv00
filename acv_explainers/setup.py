@@ -13,7 +13,7 @@ directive_defaults['linetrace'] = True
 directive_defaults['binding'] = True
 
 setup(cmdclass={'build_ext': build_ext},
-      ext_modules=[Extension('exp_co', ['exp_co.pyx'])],
+      ext_modules=[Extension('cyext_acv', ['cyext_acv.pyx'])],
       include_dirs=[numpy.get_include()],
       define_macros=[('CYTHON_TRACE_NOGIL', '1')]
 )

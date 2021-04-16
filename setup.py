@@ -23,7 +23,7 @@ import numpy
 from Cython.Build import cythonize
 
 module1 = Extension('cext_acv', sources=['cext_acv/_cext.cc'])
-module2 = Extension('exp_co', ['acv_explainers/exp_co.pyx'], extra_compile_args=['-fopenmp'],
+module2 = Extension('cyext_acv', ['acv_explainers/cyext_acv.pyx'], extra_compile_args=['-fopenmp'],
                     extra_link_args=['-fopenmp'])
 
 setup(name='acv',

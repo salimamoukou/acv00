@@ -577,6 +577,7 @@ class BaseTree:
             self.partition_leaves_trees = partition_leaves_trees
             self.leaves_nb = np.array(self.leaves_nb, dtype=np.int)
             self.scalings = np.array(self.scalings, dtype=np.float)
+            self.data = np.array(self.data, dtype=np.float)
 
 
 

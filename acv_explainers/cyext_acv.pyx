@@ -332,7 +332,7 @@ cpdef compute_sdp_clf(double[:, :] X, long[:] fX,
 cpdef global_sdp_clf(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, float global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, double global_proba,
             int num_threads):
 
     cdef unsigned int N = X.shape[0]
@@ -455,7 +455,7 @@ cpdef global_sdp_clf_coal(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
             long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling,
-            float global_proba, list C):
+            list C, double global_proba):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -1416,11 +1416,11 @@ cpdef shap_values_leaves_pa(const double[:, :] X,
             node_id_v2 = []
 
             lm = 0
-            for i in range(data.shape[0]):
+            for i in prange(data.shape[0], nogil=True, num_threads=num_threads):
                 a_it = 0
                 for s in range(data.shape[1]):
                     if (data[i, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[i, s] > partition_leaves_trees[b, leaf_numb, s, 0]):
-                        a_it += 1
+                        a_it = a_it + 1
                 if a_it == data.shape[1]:
                     lm += 1
 
@@ -1621,11 +1621,11 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
             node_id_v2 = []
 
             lm = 0
-            for i in range(data.shape[0]):
+            for i in prange(data.shape[0], nogil=True, num_threads=num_threads):
                 a_it = 0
                 for s in range(data.shape[1]):
                     if (data[i, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[i, s] > partition_leaves_trees[b, leaf_numb, s, 0]):
-                        a_it += 1
+                        a_it = a_it + 1
                 if a_it == data.shape[1]:
                     lm += 1
 
@@ -1668,7 +1668,7 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
 
                 if na_bool == 0:
                     lm_star = 0
-                    for i in range(data.shape[0]):
+                    for i in prange(data.shape[0], nogil=True, num_threads=num_threads):
                         b_it = 0
                         for s in range(len_n_star):
                             if ((data[i, N_star_a[s]] <= partition_leaves_trees[b, leaf_numb, N_star_a[s], 1]) * (data[i, N_star_a[s]] > partition_leaves_trees[b, leaf_numb, N_star_a[s], 0])):
@@ -1677,7 +1677,7 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
                         if b_it == len_n_star:
                             lm_star += 1
 
-                    for i in range(N):
+                    for i in prange(N, nogil=True, num_threads=num_threads):
                         p_s = 0
                         p_si = 0
 
@@ -1797,7 +1797,7 @@ cdef compute_sdp_swing(const double[:, :] X, const long[:] fX,
             const long[:] y_pred, long[::1] S, unsigned long S_size, const double[:, :] data,
             const double[:, :, :] values,const  double[:, :, :, :] partition_leaves_trees,
             const long[:, :] leaf_idx_trees, const long[:] leaves_nb, const double[:] scaling,
-            const double thresholds,int num_threads):
+            const double thresholds, int num_threads):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -2021,7 +2021,7 @@ cpdef swing_sv_clf(const double[:, :] X,
 cpdef global_sdp_clf_cpp_pa_coal(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, float global_proba, list C,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
             int num_threads):
 
     cdef unsigned int N = X.shape[0]
@@ -2178,7 +2178,7 @@ cpdef global_sdp_clf_cpp_pa_coal(double[:, :] X, long[:] fX,
 cpdef global_sdp_clf_pa_coal(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, float global_proba, list C,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
             int num_threads):
 
     cdef unsigned int N = X.shape[0]
