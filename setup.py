@@ -20,6 +20,7 @@ import numpy
 #         import numpy
 #         print("numpy.get_include()", numpy.get_include())
 #         self.include_dirs.append(numpy.get_include())
+from Cython.Build import cythonize
 
 module1 = Extension('cext_acv', sources=['cext_acv/_cext.cc'])
 module2 = Extension('exp_co', ['acv_explainers/exp_co.pyx'], extra_compile_args=['-fopenmp'],
@@ -32,8 +33,10 @@ setup(name='acv',
       description='ACV function optimized in C',
       include_dirs=[numpy.get_include()],
       cmdclass={'build_ext': build_ext},
-      ext_modules=[module1, module2],
+      ext_modules=cythonize([module1, module2]),
       # cmdclass={'build_ext': build_ext},
       # setup_requires=['numpy'],
       # install_requires=['numpy', 'scipy', 'scikit-learn', 'matplotlib', 'pandas', 'tqdm', 'ipython'],
-      packages=['acv_explainers', 'experiments'])
+      packages=['acv_explainers', 'experiments'],
+      # language="c++"
+      )

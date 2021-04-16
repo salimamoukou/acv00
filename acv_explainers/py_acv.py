@@ -410,8 +410,8 @@ def swing_tree_shap(X, tX, threshold, data, C, value_function):
 
     phi = np.zeros(shape=(X.shape[0], X.shape[1]))
 
-    swings = np.zeros((N, m, 2))
-    swings_prop = np.zeros((N, m, 3))
+    swings = np.zeros((N, X.shape[1], 2))
+    swings_prop = np.zeros((N, X.shape[1], 3))
 
     for i in tqdm(va_id):
         Sm = list(set(va_buffer) - set(convert_list(i)))
@@ -426,23 +426,24 @@ def swing_tree_shap(X, tX, threshold, data, C, value_function):
                     Sm += [c]
 
         for S in powerset(Sm):
-            weight = comb(m - 1, len(S), exact=True) ** (-1)
+            weight = comb(m - 1, len(S)) ** (-1)
             v_plus = value_function(x=X, tx=tX, threshold=threshold, data=data, S=chain_l(S) + convert_list(i))
             v_minus = value_function(x=X, tx=tX, threshold=threshold, data=data, S=chain_l(S))
-
-            phi[:, chain_l(i)] += weight * (v_plus - v_minus)
 
             dif_pos = (v_plus - v_minus) > 0
             dif_neg = (v_plus - v_minus) < 0
             dif_null = (v_plus - v_minus) == 0
             value = ((v_plus - v_minus) * weight) / m
 
-            swings[:, chain_l(i), 0] += dif_pos * value
-            swings[:, chain_l(i), 1] += dif_neg * value
+            for a in convert_list(i):
+                phi[:, a] += weight * (v_plus - v_minus)
 
-            swings_prop[:, chain_l(i), 0] += dif_pos
-            swings_prop[:, chain_l(i), 1] += dif_neg
-            swings_prop[:, chain_l(i), 2] += dif_null
+                swings[:, a, 0] += dif_pos * value
+                swings[:, a, 1] += dif_neg * value
+
+                swings_prop[:, a, 0] += dif_pos
+                swings_prop[:, a, 1] += dif_neg
+                swings_prop[:, a, 2] += dif_null
 
     return phi / m, swings, swings_prop
 

@@ -45,6 +45,12 @@ class ACVTree(BaseTree):
         return exp_co.compute_sdp_clf(X, fX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
+    def cyext_shap_values_swing_clf(self, X, data, C, thresholds, num_threads=5):
+        fX = np.argmax(self.predict(X), axis=1)
+        y_pred = np.argmax(self.predict(data), axis=1)
+        return exp_co.swing_sv_clf(X, fX, y_pred, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings,  C, thresholds, num_threads)
+
     def cyext_compute_sdp_clf_cat(self, X, S, data, num_threads=5):
         fX = np.argmax(self.predict(X), axis=1)
         y_pred = np.argmax(self.predict(data), axis=1)
