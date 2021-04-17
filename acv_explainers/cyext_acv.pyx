@@ -44,26 +44,25 @@ cpdef compute_exp(double[:, :] X, long[:] S, double[:, :] data, double[:, :, :] 
     cdef unsigned int it, it_s, nb_leaf, lm, p_ss, o_all
     cdef int b, leaf_numb, i, s, j
 
-    for b in prange(n_trees, nogil=True, num_threads=num_threads):
-
+    for b in range(n_trees):
         for leaf_numb in range(leaves_nb[b]):
             lm = 0
             p_ss = 0
-            for i in range(data.shape[0]):
+            for i in prange(data.shape[0], nogil=True, num_threads=num_threads):
                 it = 0
                 it_s = 0
                 for s in range(m):
                     if((data[i, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[i, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
                         it = it + 1
                 for s in range(S_size):
-                    if((data[i, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[i, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
+                    if((data[i, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 0])):
                         it_s = it_s + 1
                 if it == m:
                     lm += 1
                 if it_s == S_size:
                     p_ss += 1
 
-            for i in range(N):
+            for i in prange(N, nogil=True, num_threads=num_threads):
                 o_all = 0
                 for s in range(S_size):
                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -71,9 +70,9 @@ cpdef compute_exp(double[:, :] X, long[:] S, double[:, :] data, double[:, :, :] 
                 if o_all > 0:
                     continue
                 for j in range(d):
-                    mean_forest[i, j] += (lm * values[b, leaf_idx_trees[b, leaf_numb], j]) / (scaling[b] *p_ss) if p_ss != 0 else 0
+                    mean_forest[i, j] += (lm * values[b, leaf_idx_trees[b, leaf_numb], j]) / p_ss if p_ss != 0 else 0
 
-    return np.asarray(mean_forest) / n_trees
+    return np.asarray(mean_forest)
 
 
 
@@ -102,11 +101,11 @@ cpdef compute_exp_cat(double[:, :] X, long[:] S, double[:, :] data, double[:, :,
     cdef unsigned int it, it_s, p_ss, o_all, nb_leaf, lm
     cdef int b, leaf_numb, i, s, j1, j
 
-    for b in prange(n_trees, nogil=True, num_threads=num_threads):
+    for b in range(n_trees ):
 
         for leaf_numb in range(leaves_nb[b]):
 
-            for i in range(N):
+            for i in prange(N, nogil=True, num_threads=num_threads):
                 o_all = 0
                 for s in range(S_size):
                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -134,9 +133,9 @@ cpdef compute_exp_cat(double[:, :] X, long[:] S, double[:, :] data, double[:, :,
                             lm += 1
 
                 for j1 in range(d):
-                    mean_forest[i, j1] += (lm * values[b, leaf_idx_trees[b, leaf_numb], j1]) / (scaling[b]*p_ss) if p_ss != 0 else 0
+                    mean_forest[i, j1] += (lm * values[b, leaf_idx_trees[b, leaf_numb], j1]) / (p_ss) if p_ss != 0 else 0
 
-    return np.asarray(mean_forest) / n_trees
+    return np.asarray(mean_forest)
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -171,11 +170,11 @@ cpdef compute_sdp_clf_cat(double[:, :] X, long[:] fX,
     cdef double ss
     cdef int b, leaf_numb, i, s, j, lm
 
-    for b in prange(n_trees, nogil=True, num_threads=num_threads):
+    for b in range(n_trees):
 
         for leaf_numb in range(leaves_nb[b]):
 
-            for i in range(N):
+            for i in prange(N, nogil=True, num_threads=num_threads):
                 o_all = 0
                 for s in range(S_size):
                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -267,10 +266,10 @@ cpdef compute_sdp_clf(double[:, :] X, long[:] fX,
     cdef double ss
     cdef int b, leaf_numb, i, s, j, lm, lm_s
 
-    for b in prange(n_trees, nogil=True, num_threads=num_threads):
+    for b in range(n_trees ):
 
         for leaf_numb in range(leaves_nb[b]):
-            for i in range(N):
+            for i in prange(N,  nogil=True, num_threads=num_threads):
                 o_all = 0
                 for s in range(S_size):
                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -376,7 +375,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
             R_buf[i] = R[i]
         mean_forest = np.zeros((X.shape[0], 3))
 
-        for b in prange(n_trees, nogil=True, num_threads=num_threads):
+        for b in range(n_trees ):
 
             for leaf_numb in range(leaves_nb[b]):
                 for i in range(N):
@@ -1188,6 +1187,7 @@ cpdef shap_values_leaves(double[:, :] X, double[:, :] data,
         m = len(va_id)
     else:
         va_id = [[i] for i in range(m)]
+        remove_va = [[i] for i in range(m)]
 
 
     for b in range(n_trees):
@@ -1538,9 +1538,8 @@ cpdef shap_values_leaves_pa(const double[:, :] X,
                         if S_size == 0:
                             p_s = lm/data.shape[0]
                         else:
-                            p_s = (cs * lm)/lm_s
-
-                        p_si = (csi * lm)/lm_si
+                            p_s = (cs * lm)/lm_s if lm_s !=0 else 0
+                        p_si = (csi * lm)/lm_si if lm_si !=0 else 0
                         for nv in range(len_va_c):
                             for i2 in range(d):
                                 phi[i, va_c[nv], i2] += (coef_0 + coef) * (p_si - p_s) * values[b, leaf_idx_trees[b, leaf_numb], i2]
@@ -1556,7 +1555,7 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
     const double[:, :, :, :] partition_leaves_trees,
     const long[:, :] leaf_idx_trees,
     const long[::1] leaves_nb,
-    float scaling,
+    double[:] scaling,
     list node_idx_trees, list S_star, list N_star,
     list C, int num_threads):
 
@@ -1826,9 +1825,9 @@ cdef compute_sdp_swing(const double[:, :] X, const long[:] fX,
     cdef double ss
     cdef int b, leaf_numb, i, s, j, lm, lm_s
 
-    for b in prange(n_trees, nogil=True, num_threads=num_threads):
+    for b in range(n_trees):
         for leaf_numb in range(leaves_nb[b]):
-            for i in range(N):
+            for i in prange(N, nogil=True, num_threads=num_threads):
                 o_all = 0
                 for s in range(S_size):
                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -1843,7 +1842,7 @@ cdef compute_sdp_swing(const double[:, :] X, const long[:] fX,
                 p_su = 0
                 p_sd = 0
 
-                for j in range(data.shape[0]):
+                for j in prange(data.shape[0], nogil=True, num_threads=num_threads):
                     a_it = 0
                     b_it = 0
                     lm = 0
@@ -1996,7 +1995,7 @@ cpdef swing_sv_clf(const double[:, :] X,
                       partition_leaves_trees, leaf_idx_trees, leaves_nb, scaling,
                       thresholds, num_threads)
 
-            for i in range(N):
+            for i in prange(N, nogil=True, num_threads=num_threads):
                 dif_pos = 1 if (v_plus[i] - v_minus[i]) > 0 else 0
                 dif_neg = 1 if (v_plus[i] - v_minus[i]) < 0 else 0
                 dif_null = 1 if (v_plus[i] - v_minus[i]) == 0 else 0
@@ -2091,10 +2090,10 @@ cpdef global_sdp_clf_cpp_pa_coal(double[:, :] X, long[:] fX,
             for j in range(3):
                 mean_forest[R_buf[i], j] = 0
 
-        for b in prange(n_trees, nogil=True, num_threads=num_threads):
+        for b in range(n_trees):
 
             for leaf_numb in range(leaves_nb[b]):
-                for i in range(N):
+                for i in prange(N, nogil=True, num_threads=num_threads):
                     o_all = 0
                     for s in range(S_size):
                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -2108,7 +2107,7 @@ cpdef global_sdp_clf_cpp_pa_coal(double[:, :] X, long[:] fX,
                     p_s = 0
                     p_su = 0
                     p_sd = 0
-                    for j in range(data.shape[0]):
+                    for j in prange(data.shape[0], nogil=True, num_threads=num_threads):
 #                         print('debug', j)
                         a_it = 0
                         b_it = 0
@@ -2140,7 +2139,7 @@ cpdef global_sdp_clf_cpp_pa_coal(double[:, :] X, long[:] fX,
                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0
                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
 
-        for i in range(N):
+        for i in prange(N, nogil=True, num_threads=num_threads):
             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
             if((ss <= 1) and (ss>=0)):
                 sdp[R_buf[i]] = ss
@@ -2230,10 +2229,10 @@ cpdef global_sdp_clf_pa_coal(double[:, :] X, long[:] fX,
             R_buf[i] = R[i]
         mean_forest = np.zeros((X.shape[0], 3))
 
-        for b in prange(n_trees, nogil=True, num_threads=num_threads):
+        for b in range(n_trees):
 
             for leaf_numb in range(leaves_nb[b]):
-                for i in range(N):
+                for i in prange(N, nogil=True, num_threads=num_threads):
                     o_all = 0
                     for s in range(S_size):
                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -2247,7 +2246,7 @@ cpdef global_sdp_clf_pa_coal(double[:, :] X, long[:] fX,
                     p_s = 0
                     p_su = 0
                     p_sd = 0
-                    for j in range(data.shape[0]):
+                    for j in prange(data.shape[0], nogil=True, num_threads=num_threads):
                         a_it = 0
                         b_it = 0
                         lm = 0
@@ -2278,7 +2277,7 @@ cpdef global_sdp_clf_pa_coal(double[:, :] X, long[:] fX,
                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0
                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
 
-        for i in range(N):
+        for i in prange(N, nogil=True, num_threads=num_threads):
             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
             if((ss <= 1) and (ss>=0)):
                 sdp[R_buf[i]] = ss
@@ -2341,10 +2340,10 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
     cdef double ss, ss_m
     cdef unsigned int b, leaf_numb, i, s, j, lm, lm_m, lm_s, lm_s_m,  p_m, p_s_m, p_u_m, p_d_m, p_su_m, p_sd_m, nv_bool
 
-    for b in prange(n_trees, nogil=True, num_threads=num_threads):
+    for b in range(n_trees):
         for leaf_numb in range(leaves_nb[b]):
-            csm = 0
-            for i in range(N):
+            for i in prange(N, nogil=True, num_threads=num_threads):
+                csm = 0
                 o_all = 0
                 for s in range(S_size):
                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):

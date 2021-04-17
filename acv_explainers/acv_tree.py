@@ -8,42 +8,42 @@ import cyext_acv
 
 class ACVTree(BaseTree):
 
-    def cyext_shap_values(self, X, C, num_threads):
+    def cyext_shap_values(self, X, C, num_threads=10):
 
         return cyext_acv.shap_values_leaves_pa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
                                        self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                        self.node_idx_trees, C, num_threads)
 
-    def cyext_shap_values_acv(self, X, S_star, N_star, C, num_threads):
+    def cyext_shap_values_acv(self, X, S_star, N_star, C, num_threads=10):
 
         return cyext_acv.shap_values_acv_leaves(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
                                        self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                        self.node_idx_trees, S_star, N_star, C, num_threads)
 
-    def cyext_compute_exp(self, X, S, data, num_threads=5):
+    def cyext_compute_exp(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                   num_threads)
 
-    def cyext_compute_exp_cat(self, X, S, data, num_threads=5):
+    def cyext_compute_exp_cat(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp_cat(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                       num_threads)
 
-    def cyext_compute_sdp_clf(self, X, S, data, num_threads=5):
+    def cyext_compute_sdp_clf(self, X, S, data, num_threads=10):
         fX = np.argmax(self.predict(X), axis=1)
         y_pred = np.argmax(self.predict(data), axis=1)
         return cyext_acv.compute_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
-    def cyext_compute_sdp_clf_cat(self, X, S, data, num_threads=5):
+    def cyext_compute_sdp_clf_cat(self, X, S, data, num_threads=10):
         fX = np.argmax(self.predict(X), axis=1)
         y_pred = np.argmax(self.predict(data), axis=1)
         return cyext_acv.compute_sdp_clf_cat(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
 
-    def cyext_swing_sv_clf(self, X, data, C, thresholds, num_threads=5):
+    def cyext_swing_sv_clf(self, X, data, C, thresholds, num_threads=10):
         fX = np.argmax(self.predict(X), axis=1)
         y_pred = np.argmax(self.predict(data), axis=1)
         return cyext_acv.swing_sv_clf_direct(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
@@ -56,13 +56,13 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, thresholds, num_threads)
 
 
-    def cyext_importance_sdp_clf(self, X, data, C, global_proba, num_threads=5):
+    def cyext_importance_sdp_clf(self, X, data, C, global_proba, num_threads=10):
         fX = np.argmax(self.predict(X), axis=1)
         y_pred = np.argmax(self.predict(data), axis=1)
         return cyext_acv.global_sdp_clf_cpp_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, num_threads)
 
-    def cyext_importance_sdp_clf_slow(self, X, data, C, global_proba, num_threads=5):
+    def cyext_importance_sdp_clf_slow(self, X, data, C, global_proba, num_threads=10):
         fX = np.argmax(self.predict(X), axis=1)
         y_pred = np.argmax(self.predict(data), axis=1)
         return cyext_acv.global_sdp_clf_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
@@ -83,7 +83,17 @@ class ACVTree(BaseTree):
                                       self.num_outputs)
         return out
 
-    def shap_values_acv(self, x, C, S_star, N_star):
+    def shap_valuesv2(self, x, C):
+        out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))
+        for i in range(len(self.trees)):
+            out += shap_values_leaves_v2(x, self.partition_leaves_trees[i], self.data,
+                                         self.node_idx_trees[i],
+                                         self.leaf_idx_trees[i], self.leaves_nb[i], self.node_sample_weight[i],
+                                         self.values[i], C,
+                                         self.num_outputs)
+        return out
+
+    def shap_values_acv(self, x, S_star, N_star, C):
         out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))
         for i in range(len(self.trees)):
             out += shap_values_acv_leaves(x, self.partition_leaves_trees[i], self.data_leaves_trees[i],
@@ -93,43 +103,43 @@ class ACVTree(BaseTree):
                                           self.num_outputs)
         return out
 
-    def compute_sdp_reg(self, X, tX, S, data):
+    def compute_sdp_reg(self, X, S, data, tX=0):
         return compute_sdp_reg(X, tX, self, S, data=data)
 
-    def compute_sdp_clf(self, X, tX, S, data):
+    def compute_sdp_clf(self, X, S, data, tX=0):
         return compute_sdp_clf(X, tX, self, S, data=data)
 
 
     def compute_sdp_reg_cat(self, X, tX, S, data):
         return compute_sdp_reg_cat(X, tX, model=self, S=S, data=data)
 
-    def compute_sdp_clf_cat(self, X, tX, S, data):
+    def compute_sdp_clf_cat(self, X, S, data, tX=0):
         return compute_sdp_clf_cat(X, tX, model=self, S=S, data=data)
 
-    def compute_cond_exp(self, X, S, data):
+    def compute_exp(self, X, S, data):
         return compute_exp(X=X, model=self, S=S, data=data)
 
-    def compute_cond_exp_cat(self, X, S, data):
+    def compute_exp_cat(self, X, S, data):
         return compute_exp_cat(X=X, model=self, S=S, data=data)
 
-    def compute_local_sdp_clf(self, x, threshold, proba, index, data, final_coal, decay, C, verbose):
-        return local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose,
+    def compute_local_sdp_clf(self, X, threshold, proba, index, data, final_coal, decay, C, verbose):
+        return local_sdp(X, threshold, proba, index, data, final_coal, decay, C, verbose,
                          self.compute_sdp_clf)
 
-    def compute_local_sdp_reg(self, x, threshold, proba, index, data, final_coal, decay, C, verbose):
-        return local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose, self.compute_sdp_reg)
+    def compute_local_sdp_reg(self, X, threshold, proba, index, data, final_coal, decay, C, verbose):
+        return local_sdp(X, threshold, proba, index, data, final_coal, decay, C, verbose, self.compute_sdp_reg)
 
-    def swing_values_clf(self, x,  tx, S, data, threshold):
-        return np.array(self.compute_sdp_clf(x, tx, S, data) >= threshold, dtype=float)
+    def swing_values_clf(self, X, S, data, threshold, tX=0):
+        return np.array(self.compute_sdp_clf(X=X, tX=tX, S=S, data=data) >= threshold, dtype=float)
 
-    def swing_values_reg(self, x, tx, S, data, threshold):
-        return np.array(self.compute_sdp_reg(x, tx, S, data) >= threshold, dtype=float)
+    def swing_values_reg(self, X, tX, S, data, threshold):
+        return np.array(self.compute_sdp_reg(X=X, tX=tX, S=S, data=data) >= threshold, dtype=float)
 
-    def shap_values_swing_clf(self, x, tx, data, threshold, C):
-        return swing_tree_shap(x, tx, threshold, data, C, self.swing_values_clf)
+    def swing_sv_clf(self, X, data, threshold, C, tX=0):
+        return swing_tree_shap(X, tX, threshold, data, C, self.swing_values_clf)
 
-    def shap_values_swing_reg(self, x, tx, data, threshold, C):
-        return swing_tree_shap(x, tx, threshold, data, C, self.swing_values_reg)
+    def swing_sv_reg(self, X, data, threshold, C,  tX=0):
+        return swing_tree_shap(X, tX, threshold, data, C, self.swing_values_reg)
 
     def global_sdp_importance_clf(self, data, data_bground, columns_names, global_proba, decay, threshold,
                           proba, C, verbose):

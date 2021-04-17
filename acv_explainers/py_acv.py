@@ -85,7 +85,6 @@ def shap_values_leaves(x, partition_leaves, data, node_idx, leaf_idx, leaves_nb,
                     p_s = lm / data.shape[0]
                 else:
                     p_s = (cs * lm) / lm_s
-
                 for j in convert_list(i):
                     phi[:, j, :] += (comb(d - 1, len(S), exact=True) ** (-1) + coef) * (p_si - p_s)[:, None] * v[
                                                                                                                    leaf_id][
@@ -120,6 +119,7 @@ def shap_values_leaves_v2(x, partition_leaves, data, node_idx, leaf_idx, leaves_
         va_id = remove_va + C
     else:
         va_id = [[i] for i in range(x.shape[1])]
+        remove_va = [[i] for i in range(x.shape[1])]
 
     d = len(va_id)
 
@@ -142,20 +142,18 @@ def shap_values_leaves_v2(x, partition_leaves, data, node_idx, leaf_idx, leaves_
                         if va in ci:
                             node_id_v2 += [ci]
                             C_b.remove(ci)
-                            continue
+                            break
         else:
             node_id_v2 = [[i] for i in node_id]
 
         node_id = node_id_v2.copy()
         # end handle coalition
-
         for i in va_id:
             if not i in node_id:
                 continue
 
             Sm = node_id.copy()
             Sm.remove(i)
-
             for S in powerset(Sm):
                 S_size = len(S)
                 S = sum(list(S), [])
@@ -413,7 +411,7 @@ def swing_tree_shap(X, tX, threshold, data, C, value_function):
     swings = np.zeros((N, X.shape[1], 2))
     swings_prop = np.zeros((N, X.shape[1], 3))
 
-    for i in tqdm(va_id):
+    for i in va_id:
         Sm = list(set(va_buffer) - set(convert_list(i)))
 
         if C[0] != []:
@@ -427,8 +425,8 @@ def swing_tree_shap(X, tX, threshold, data, C, value_function):
 
         for S in powerset(Sm):
             weight = comb(m - 1, len(S)) ** (-1)
-            v_plus = value_function(x=X, tx=tX, threshold=threshold, data=data, S=chain_l(S) + convert_list(i))
-            v_minus = value_function(x=X, tx=tX, threshold=threshold, data=data, S=chain_l(S))
+            v_plus = value_function(X=X, tX=tX, threshold=threshold, data=data, S=chain_l(S) + convert_list(i))
+            v_minus = value_function(X=X, tX=tX, threshold=threshold, data=data, S=chain_l(S))
 
             dif_pos = (v_plus - v_minus) > 0
             dif_neg = (v_plus - v_minus) < 0

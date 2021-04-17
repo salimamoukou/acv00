@@ -19,7 +19,7 @@ def compute_exp(X, model, S, data):
         for leaf_numb in range(model.leaves_nb[b]):
             leaf_part = leaves_tree[leaf_numb]
             leaf_id = model.leaf_idx_trees[b, leaf_numb]
-            value = model.values[b, leaf_id] / model.trees[b].scaling
+            value = model.values[b, leaf_id]
 
             leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S], axis=0)
 
@@ -38,7 +38,7 @@ def compute_exp(X, model, S, data):
 
                 mean_forest[i] += (np.sum(lm) * value) / p_ss if p_ss != 0 else 0
 
-    return mean_forest / n_trees
+    return mean_forest
 
 
 def compute_exp_cat(X, model, S, data):
@@ -65,7 +65,7 @@ def compute_exp_cat(X, model, S, data):
             if np.sum(leaf_bool) == 0:
                 continue
 
-            value = model.values[b, leaf_id] / model.trees[b].scaling
+            value = model.values[b, leaf_id]
             lm = np.prod([(data[:, s] <= leaf_part[s, 1]) * (data[:, s] >= leaf_part[s, 0]) for s in index], axis=0)
 
             for i, x in enumerate(X):
@@ -77,4 +77,4 @@ def compute_exp_cat(X, model, S, data):
 
                 mean_forest[i] += (np.sum(lm * p_s) * value) / p_ss if p_ss != 0 else 0
 
-    return mean_forest / n_trees
+    return mean_forest
