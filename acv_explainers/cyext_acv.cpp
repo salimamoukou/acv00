@@ -2116,9 +2116,6 @@ static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *o
 /* None.proto */
 static CYTHON_INLINE long __Pyx_pow_long(long, long);
 
-/* None.proto */
-static CYTHON_INLINE Py_ssize_t __Pyx_pow_Py_ssize_t(Py_ssize_t, Py_ssize_t);
-
 /* CppExceptionConversion.proto */
 #ifndef __Pyx_CppExn2PyErr
 #include <new>
@@ -2164,6 +2161,9 @@ static void __Pyx_CppExn2PyErr() {
 /* MemviewDtypeToObject.proto */
 static CYTHON_INLINE PyObject *__pyx_memview_get_long(const char *itemp);
 static CYTHON_INLINE int __pyx_memview_set_long(const char *itemp, PyObject *obj);
+
+/* None.proto */
+static CYTHON_INLINE Py_ssize_t __Pyx_pow_Py_ssize_t(Py_ssize_t, Py_ssize_t);
 
 /* RealImag.proto */
 #if CYTHON_CCOMPLEX
@@ -2573,7 +2573,6 @@ static const char __pyx_k_dtype[] = "dtype";
 static const char __pyx_k_empty[] = "empty";
 static const char __pyx_k_error[] = "error";
 static const char __pyx_k_flags[] = "flags";
-static const char __pyx_k_nogil[] = "nogil";
 static const char __pyx_k_numpy[] = "numpy";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_shape[] = "shape";
@@ -2753,7 +2752,6 @@ static PyObject *__pyx_n_s_ndim;
 static PyObject *__pyx_n_s_new;
 static PyObject *__pyx_kp_s_no_default___reduce___due_to_non;
 static PyObject *__pyx_n_s_node_idx_trees;
-static PyObject *__pyx_n_s_nogil;
 static PyObject *__pyx_n_s_np;
 static PyObject *__pyx_n_s_num_threads;
 static PyObject *__pyx_n_s_numpy;
@@ -24022,7 +24020,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                         if node_id[nv] == remove_va[ns]:
  *                             add = 1             # <<<<<<<<<<<<<<
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue
+ *                             break
  */
               __pyx_v_add = 1;
 
@@ -24030,7 +24028,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                         if node_id[nv] == remove_va[ns]:
  *                             add = 1
  *                             node_id_v2 += [[node_id[nv]]]             # <<<<<<<<<<<<<<
- *                             continue
+ *                             break
  *                     if add == 0:
  */
               if (unlikely(__pyx_v_node_id == Py_None)) {
@@ -24056,11 +24054,11 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
               /* "cyext_acv.pyx":1435
  *                             add = 1
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue             # <<<<<<<<<<<<<<
+ *                             break             # <<<<<<<<<<<<<<
  *                     if add == 0:
  *                         for ci in range(len(C_b)):
  */
-              goto __pyx_L37_continue;
+              goto __pyx_L38_break;
 
               /* "cyext_acv.pyx":1432
  *                     add = 0
@@ -24070,12 +24068,12 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                             node_id_v2 += [[node_id[nv]]]
  */
             }
-            __pyx_L37_continue:;
           }
+          __pyx_L38_break:;
 
           /* "cyext_acv.pyx":1436
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue
+ *                             break
  *                     if add == 0:             # <<<<<<<<<<<<<<
  *                         for ci in range(len(C_b)):
  *                             for cj in range(len(C_b[ci])):
@@ -24084,7 +24082,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
           if (__pyx_t_18) {
 
             /* "cyext_acv.pyx":1437
- *                             continue
+ *                             break
  *                     if add == 0:
  *                         for ci in range(len(C_b)):             # <<<<<<<<<<<<<<
  *                             for cj in range(len(C_b[ci])):
@@ -24146,7 +24144,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                                 if C_b[ci][cj] == node_id[nv]:
  *                                     add = 1             # <<<<<<<<<<<<<<
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue
+ *                                     break
  */
                   __pyx_v_add = 1;
 
@@ -24154,7 +24152,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                                 if C_b[ci][cj] == node_id[nv]:
  *                                     add = 1
  *                                     node_id_v2 += [C_b[ci]]             # <<<<<<<<<<<<<<
- *                                     continue
+ *                                     break
  *                             if add == 1:
  */
                   if (unlikely(__pyx_v_C_b == Py_None)) {
@@ -24175,11 +24173,11 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
                   /* "cyext_acv.pyx":1442
  *                                     add = 1
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue             # <<<<<<<<<<<<<<
+ *                                     break             # <<<<<<<<<<<<<<
  *                             if add == 1:
  *                                 C_b.remove(C_b[ci])
  */
-                  goto __pyx_L43_continue;
+                  goto __pyx_L44_break;
 
                   /* "cyext_acv.pyx":1439
  *                         for ci in range(len(C_b)):
@@ -24189,24 +24187,24 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                                     node_id_v2 += [C_b[ci]]
  */
                 }
-                __pyx_L43_continue:;
               }
+              __pyx_L44_break:;
 
               /* "cyext_acv.pyx":1443
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue
+ *                                     break
  *                             if add == 1:             # <<<<<<<<<<<<<<
  *                                 C_b.remove(C_b[ci])
- *                                 continue
+ *                                 break
  */
               __pyx_t_18 = ((__pyx_v_add == 1) != 0);
               if (__pyx_t_18) {
 
                 /* "cyext_acv.pyx":1444
- *                                     continue
+ *                                     break
  *                             if add == 1:
  *                                 C_b.remove(C_b[ci])             # <<<<<<<<<<<<<<
- *                                 continue
+ *                                 break
  * 
  */
                 if (unlikely(__pyx_v_C_b == Py_None)) {
@@ -24220,26 +24218,26 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
                 /* "cyext_acv.pyx":1445
  *                             if add == 1:
  *                                 C_b.remove(C_b[ci])
- *                                 continue             # <<<<<<<<<<<<<<
+ *                                 break             # <<<<<<<<<<<<<<
  * 
  *                 node_id = node_id_v2
  */
-                goto __pyx_L41_continue;
+                goto __pyx_L42_break;
 
                 /* "cyext_acv.pyx":1443
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue
+ *                                     break
  *                             if add == 1:             # <<<<<<<<<<<<<<
  *                                 C_b.remove(C_b[ci])
- *                                 continue
+ *                                 break
  */
               }
-              __pyx_L41_continue:;
             }
+            __pyx_L42_break:;
 
             /* "cyext_acv.pyx":1436
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue
+ *                             break
  *                     if add == 0:             # <<<<<<<<<<<<<<
  *                         for ci in range(len(C_b)):
  *                             for cj in range(len(C_b[ci])):
@@ -24248,7 +24246,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
         }
 
         /* "cyext_acv.pyx":1447
- *                                 continue
+ *                                 break
  * 
  *                 node_id = node_id_v2             # <<<<<<<<<<<<<<
  *             else:
@@ -24688,14 +24686,14 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                     lm_s = 0
  *                     lm_si = 0             # <<<<<<<<<<<<<<
  * 
- *                     for i in prange(data.shape[0],  nogil=True, num_threads=num_threads):
+ *                     for i in prange(data.shape[0], nogil=True, num_threads=num_threads):
  */
           __pyx_v_lm_si = 0.0;
 
           /* "cyext_acv.pyx":1490
  *                     lm_si = 0
  * 
- *                     for i in prange(data.shape[0],  nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                     for i in prange(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                         b_it = 0
  *                         for s in range(S_size):
  */
@@ -24737,7 +24735,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
 
                                     /* "cyext_acv.pyx":1491
  * 
- *                     for i in prange(data.shape[0],  nogil=True, num_threads=num_threads):
+ *                     for i in prange(data.shape[0], nogil=True, num_threads=num_threads):
  *                         b_it = 0             # <<<<<<<<<<<<<<
  *                         for s in range(S_size):
  *                             if ((data[i, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) * (data[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -24745,7 +24743,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
                                     __pyx_v_b_it = 0;
 
                                     /* "cyext_acv.pyx":1492
- *                     for i in prange(data.shape[0],  nogil=True, num_threads=num_threads):
+ *                     for i in prange(data.shape[0], nogil=True, num_threads=num_threads):
  *                         b_it = 0
  *                         for s in range(S_size):             # <<<<<<<<<<<<<<
  *                             if ((data[i, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) * (data[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 0])):
@@ -24919,7 +24917,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
  *                             if nv_bool == 0:
  *                                 lm_si += 1             # <<<<<<<<<<<<<<
  * 
- *                     for i in prange(N,  nogil=True, num_threads=num_threads):
+ *                     for i in prange(N, nogil=True, num_threads=num_threads):
  */
                                         __pyx_v_lm_si = (__pyx_v_lm_si + 1.0);
 
@@ -24956,7 +24954,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
               /* "cyext_acv.pyx":1490
  *                     lm_si = 0
  * 
- *                     for i in prange(data.shape[0],  nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                     for i in prange(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                         b_it = 0
  *                         for s in range(S_size):
  */
@@ -24982,7 +24980,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
           /* "cyext_acv.pyx":1508
  *                                 lm_si += 1
  * 
- *                     for i in prange(N,  nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                     for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  * 
  *                         p_s = 0
  */
@@ -25054,7 +25052,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
                                     __pyx_v_s = ((unsigned int)0xbad0bad0);
 
                                     /* "cyext_acv.pyx":1510
- *                     for i in prange(N,  nogil=True, num_threads=num_threads):
+ *                     for i in prange(N, nogil=True, num_threads=num_threads):
  * 
  *                         p_s = 0             # <<<<<<<<<<<<<<
  *                         p_si = 0
@@ -25611,7 +25609,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice __p
               /* "cyext_acv.pyx":1508
  *                                 lm_si += 1
  * 
- *                     for i in prange(N,  nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                     for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  * 
  *                         p_s = 0
  */
@@ -26507,7 +26505,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                     if i in c:
  *                         va_id.append(c)             # <<<<<<<<<<<<<<
  *                         C_buff.remove(c)
- *                         continue
+ *                         break
  */
             __pyx_t_18 = __Pyx_PyList_Append(__pyx_v_va_id, __pyx_v_c); if (unlikely(__pyx_t_18 == ((int)-1))) __PYX_ERR(0, 1599, __pyx_L1_error)
 
@@ -26515,7 +26513,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                     if i in c:
  *                         va_id.append(c)
  *                         C_buff.remove(c)             # <<<<<<<<<<<<<<
- *                         continue
+ *                         break
  * 
  */
             __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_C_buff, __pyx_n_s_remove); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1600, __pyx_L1_error)
@@ -26540,11 +26538,11 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
             /* "cyext_acv.pyx":1601
  *                         va_id.append(c)
  *                         C_buff.remove(c)
- *                         continue             # <<<<<<<<<<<<<<
+ *                         break             # <<<<<<<<<<<<<<
  * 
  *     else:
  */
-            goto __pyx_L11_continue;
+            goto __pyx_L12_break;
 
             /* "cyext_acv.pyx":1598
  *             else:
@@ -26562,8 +26560,8 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                     if i in c:
  *                         va_id.append(c)
  */
-          __pyx_L11_continue:;
         }
+        __pyx_L12_break:;
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
       __pyx_L10:;
@@ -26643,7 +26641,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
   /* "cyext_acv.pyx":1609
  * 
  *     cdef long[:, :] sm_buf
- *     sm_buf = np.zeros((2**data.shape[1], data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
+ *     sm_buf = np.zeros((data.shape[1], data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
  * 
  *     cdef long[:] sm_size
  */
@@ -26652,7 +26650,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
   __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_zeros); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1609, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = PyInt_FromSsize_t(__Pyx_pow_Py_ssize_t(2, (__pyx_v_data.shape[1]))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1609, __pyx_L1_error)
+  __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_data.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1609, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_t_1 = PyInt_FromSsize_t((__pyx_v_data.shape[1])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1609, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -26692,7 +26690,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
   /* "cyext_acv.pyx":1612
  * 
  *     cdef long[:] sm_size
- *     sm_size = np.zeros((2**data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
+ *     sm_size = np.zeros((data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
  * 
  *     cdef double p_s, p_si, lm_s, lm_si, coef, coef_0, p_off
  */
@@ -26701,7 +26699,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
   __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1612, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyInt_FromSsize_t(__Pyx_pow_Py_ssize_t(2, (__pyx_v_data.shape[1]))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1612, __pyx_L1_error)
+  __pyx_t_3 = PyInt_FromSsize_t((__pyx_v_data.shape[1])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1612, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1612, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -27073,7 +27071,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                         if node_id[nv] == remove_va[ns]:
  *                             add = 1             # <<<<<<<<<<<<<<
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue
+ *                             break
  */
               __pyx_v_add = 1;
 
@@ -27081,7 +27079,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                         if node_id[nv] == remove_va[ns]:
  *                             add = 1
  *                             node_id_v2 += [[node_id[nv]]]             # <<<<<<<<<<<<<<
- *                             continue
+ *                             break
  *                     if add == 0:
  */
               __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1639, __pyx_L1_error)
@@ -27103,11 +27101,11 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
               /* "cyext_acv.pyx":1640
  *                             add = 1
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue             # <<<<<<<<<<<<<<
+ *                             break             # <<<<<<<<<<<<<<
  *                     if add == 0:
  *                         for ci in range(len(C_b)):
  */
-              goto __pyx_L40_continue;
+              goto __pyx_L41_break;
 
               /* "cyext_acv.pyx":1637
  *                     add = 0
@@ -27117,12 +27115,12 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                             node_id_v2 += [[node_id[nv]]]
  */
             }
-            __pyx_L40_continue:;
           }
+          __pyx_L41_break:;
 
           /* "cyext_acv.pyx":1641
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue
+ *                             break
  *                     if add == 0:             # <<<<<<<<<<<<<<
  *                         for ci in range(len(C_b)):
  *                             for cj in range(len(C_b[ci])):
@@ -27131,7 +27129,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
           if (__pyx_t_10) {
 
             /* "cyext_acv.pyx":1642
- *                             continue
+ *                             break
  *                     if add == 0:
  *                         for ci in range(len(C_b)):             # <<<<<<<<<<<<<<
  *                             for cj in range(len(C_b[ci])):
@@ -27189,7 +27187,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                                 if C_b[ci][cj] == node_id[nv]:
  *                                     add = 1             # <<<<<<<<<<<<<<
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue
+ *                                     break
  */
                   __pyx_v_add = 1;
 
@@ -27197,7 +27195,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                                 if C_b[ci][cj] == node_id[nv]:
  *                                     add = 1
  *                                     node_id_v2 += [C_b[ci]]             # <<<<<<<<<<<<<<
- *                                     continue
+ *                                     break
  *                             if add == 1:
  */
                   if (unlikely(__pyx_v_C_b == Py_None)) {
@@ -27218,11 +27216,11 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
                   /* "cyext_acv.pyx":1647
  *                                     add = 1
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue             # <<<<<<<<<<<<<<
+ *                                     break             # <<<<<<<<<<<<<<
  *                             if add == 1:
  *                                 C_b.remove(C_b[ci])
  */
-                  goto __pyx_L46_continue;
+                  goto __pyx_L47_break;
 
                   /* "cyext_acv.pyx":1644
  *                         for ci in range(len(C_b)):
@@ -27232,24 +27230,24 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
  *                                     node_id_v2 += [C_b[ci]]
  */
                 }
-                __pyx_L46_continue:;
               }
+              __pyx_L47_break:;
 
               /* "cyext_acv.pyx":1648
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue
+ *                                     break
  *                             if add == 1:             # <<<<<<<<<<<<<<
  *                                 C_b.remove(C_b[ci])
- *                                 continue
+ *                                 break
  */
               __pyx_t_10 = ((__pyx_v_add == 1) != 0);
               if (__pyx_t_10) {
 
                 /* "cyext_acv.pyx":1649
- *                                     continue
+ *                                     break
  *                             if add == 1:
  *                                 C_b.remove(C_b[ci])             # <<<<<<<<<<<<<<
- *                                 continue
+ *                                 break
  * 
  */
                 if (unlikely(__pyx_v_C_b == Py_None)) {
@@ -27263,26 +27261,26 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
                 /* "cyext_acv.pyx":1650
  *                             if add == 1:
  *                                 C_b.remove(C_b[ci])
- *                                 continue             # <<<<<<<<<<<<<<
+ *                                 break             # <<<<<<<<<<<<<<
  * 
  *                 node_id = node_id_v2
  */
-                goto __pyx_L44_continue;
+                goto __pyx_L45_break;
 
                 /* "cyext_acv.pyx":1648
  *                                     node_id_v2 += [C_b[ci]]
- *                                     continue
+ *                                     break
  *                             if add == 1:             # <<<<<<<<<<<<<<
  *                                 C_b.remove(C_b[ci])
- *                                 continue
+ *                                 break
  */
               }
-              __pyx_L44_continue:;
             }
+            __pyx_L45_break:;
 
             /* "cyext_acv.pyx":1641
  *                             node_id_v2 += [[node_id[nv]]]
- *                             continue
+ *                             break
  *                     if add == 0:             # <<<<<<<<<<<<<<
  *                         for ci in range(len(C_b)):
  *                             for cj in range(len(C_b[ci])):
@@ -27291,7 +27289,7 @@ static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice __
         }
 
         /* "cyext_acv.pyx":1652
- *                                 continue
+ *                                 break
  * 
  *                 node_id = node_id_v2             # <<<<<<<<<<<<<<
  *             else:
@@ -29629,7 +29627,7 @@ static PyObject *__pyx_pf_9cyext_acv_26shap_values_acv_leaves(CYTHON_UNUSED PyOb
  *             const double[:, :, :] values,const  double[:, :, :, :] partition_leaves_trees,
  */
 
-static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_S, unsigned long __pyx_v_S_size, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, double const __pyx_v_thresholds, int __pyx_v_num_threads) {
+static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_S, unsigned long __pyx_v_S_size, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, double const __pyx_v_thresholds, CYTHON_UNUSED int __pyx_v_num_threads) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   __Pyx_memviewslice __pyx_v_out = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -29669,28 +29667,30 @@ static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing(__Pyx_memviewslice __pyx_v
   long __pyx_t_12;
   long __pyx_t_13;
   int __pyx_t_14;
-  Py_ssize_t __pyx_t_15;
-  PyObject *(*__pyx_t_16)(PyObject *);
-  int __pyx_t_17;
+  unsigned int __pyx_t_15;
+  unsigned int __pyx_t_16;
+  unsigned int __pyx_t_17;
   unsigned long __pyx_t_18;
   unsigned long __pyx_t_19;
-  Py_ssize_t __pyx_t_20;
+  int __pyx_t_20;
   Py_ssize_t __pyx_t_21;
   Py_ssize_t __pyx_t_22;
   Py_ssize_t __pyx_t_23;
   Py_ssize_t __pyx_t_24;
   Py_ssize_t __pyx_t_25;
   Py_ssize_t __pyx_t_26;
-  int __pyx_t_27;
-  Py_ssize_t __pyx_t_28;
-  PyObject *(*__pyx_t_29)(PyObject *);
-  unsigned int __pyx_t_30;
+  Py_ssize_t __pyx_t_27;
+  int __pyx_t_28;
+  Py_ssize_t __pyx_t_29;
+  Py_ssize_t __pyx_t_30;
   unsigned int __pyx_t_31;
-  double __pyx_t_32;
-  Py_ssize_t __pyx_t_33;
-  Py_ssize_t __pyx_t_34;
+  unsigned int __pyx_t_32;
+  int __pyx_t_33;
+  double __pyx_t_34;
   Py_ssize_t __pyx_t_35;
   Py_ssize_t __pyx_t_36;
+  Py_ssize_t __pyx_t_37;
+  Py_ssize_t __pyx_t_38;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -29930,7 +29930,7 @@ static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing(__Pyx_memviewslice __pyx_v
  * 
  *     for b in range(n_trees):             # <<<<<<<<<<<<<<
  *         for leaf_numb in range(leaves_nb[b]):
- *             for i in range(N, nogil=True, num_threads=num_threads):
+ *             for i in prange(N, nogil=True, num_threads=num_threads):
  */
   __pyx_t_8 = __pyx_v_n_trees;
   __pyx_t_9 = __pyx_t_8;
@@ -29941,7 +29941,7 @@ static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing(__Pyx_memviewslice __pyx_v
  * 
  *     for b in range(n_trees):
  *         for leaf_numb in range(leaves_nb[b]):             # <<<<<<<<<<<<<<
- *             for i in range(N, nogil=True, num_threads=num_threads):
+ *             for i in prange(N, nogil=True, num_threads=num_threads):
  *                 o_all = 0
  */
     __pyx_t_11 = __pyx_v_b;
@@ -29953,833 +29953,758 @@ static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing(__Pyx_memviewslice __pyx_v
       /* "cyext_acv.pyx":1830
  *     for b in range(n_trees):
  *         for leaf_numb in range(leaves_nb[b]):
- *             for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *             for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                 o_all = 0
  *                 for s in range(S_size):
  */
-      __pyx_t_3 = __Pyx_PyInt_From_unsigned_int(__pyx_v_N); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1830, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1830, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_GIVEREF(__pyx_t_3);
-      PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3);
-      __pyx_t_3 = 0;
-      __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1830, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 1830, __pyx_L1_error)
-      __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1830, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_num_threads, __pyx_t_2) < 0) __PYX_ERR(0, 1830, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_6, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1830, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (likely(PyList_CheckExact(__pyx_t_2)) || PyTuple_CheckExact(__pyx_t_2)) {
-        __pyx_t_3 = __pyx_t_2; __Pyx_INCREF(__pyx_t_3); __pyx_t_15 = 0;
-        __pyx_t_16 = NULL;
-      } else {
-        __pyx_t_15 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1830, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_16 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 1830, __pyx_L1_error)
-      }
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      for (;;) {
-        if (likely(!__pyx_t_16)) {
-          if (likely(PyList_CheckExact(__pyx_t_3))) {
-            if (__pyx_t_15 >= PyList_GET_SIZE(__pyx_t_3)) break;
-            #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_2 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_15); __Pyx_INCREF(__pyx_t_2); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 1830, __pyx_L1_error)
-            #else
-            __pyx_t_2 = PySequence_ITEM(__pyx_t_3, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1830, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            #endif
-          } else {
-            if (__pyx_t_15 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
-            #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_15); __Pyx_INCREF(__pyx_t_2); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 1830, __pyx_L1_error)
-            #else
-            __pyx_t_2 = PySequence_ITEM(__pyx_t_3, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1830, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            #endif
-          }
-        } else {
-          __pyx_t_2 = __pyx_t_16(__pyx_t_3);
-          if (unlikely(!__pyx_t_2)) {
-            PyObject* exc_type = PyErr_Occurred();
-            if (exc_type) {
-              if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-              else __PYX_ERR(0, 1830, __pyx_L1_error)
-            }
-            break;
-          }
-          __Pyx_GOTREF(__pyx_t_2);
-        }
-        __pyx_t_17 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_17 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1830, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_v_i = __pyx_t_17;
+      {
+          #ifdef WITH_THREAD
+          PyThreadState *_save;
+          Py_UNBLOCK_THREADS
+          __Pyx_FastGIL_Remember();
+          #endif
+          /*try:*/ {
+            __pyx_t_15 = __pyx_v_N;
+            if ((1 == 0)) abort();
+            {
+                #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                    #undef likely
+                    #undef unlikely
+                    #define likely(x)   (x)
+                    #define unlikely(x) (x)
+                #endif
+                __pyx_t_17 = (__pyx_t_15 - 0 + 1 - 1/abs(1)) / 1;
+                if (__pyx_t_17 > 0)
+                {
+                    #ifdef _OPENMP
+                    #pragma omp parallel reduction(+:__pyx_v_p) reduction(+:__pyx_v_p_d) reduction(+:__pyx_v_p_s) reduction(+:__pyx_v_p_sd) reduction(+:__pyx_v_p_su) reduction(+:__pyx_v_p_u) num_threads(__pyx_v_num_threads) private(__pyx_t_1, __pyx_t_11, __pyx_t_18, __pyx_t_19, __pyx_t_20, __pyx_t_21, __pyx_t_22, __pyx_t_23, __pyx_t_24, __pyx_t_25, __pyx_t_26, __pyx_t_27, __pyx_t_28, __pyx_t_29, __pyx_t_30, __pyx_t_31, __pyx_t_32, __pyx_t_33, __pyx_t_34)
+                    #endif /* _OPENMP */
+                    {
+                        #ifdef _OPENMP
+                        #pragma omp for lastprivate(__pyx_v_a_it) lastprivate(__pyx_v_b_it) firstprivate(__pyx_v_i) lastprivate(__pyx_v_i) lastprivate(__pyx_v_j) lastprivate(__pyx_v_lm) lastprivate(__pyx_v_lm_s) lastprivate(__pyx_v_o_all) lastprivate(__pyx_v_s)
+                        #endif /* _OPENMP */
+                        for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_17; __pyx_t_16++){
+                            {
+                                __pyx_v_i = (int)(0 + 1 * __pyx_t_16);
+                                /* Initialize private variables to invalid values */
+                                __pyx_v_a_it = ((unsigned int)0xbad0bad0);
+                                __pyx_v_b_it = ((unsigned int)0xbad0bad0);
+                                __pyx_v_j = ((int)0xbad0bad0);
+                                __pyx_v_lm = ((int)0xbad0bad0);
+                                __pyx_v_lm_s = ((int)0xbad0bad0);
+                                __pyx_v_o_all = ((unsigned int)0xbad0bad0);
+                                __pyx_v_s = ((int)0xbad0bad0);
 
-        /* "cyext_acv.pyx":1831
+                                /* "cyext_acv.pyx":1831
  *         for leaf_numb in range(leaves_nb[b]):
- *             for i in range(N, nogil=True, num_threads=num_threads):
+ *             for i in prange(N, nogil=True, num_threads=num_threads):
  *                 o_all = 0             # <<<<<<<<<<<<<<
  *                 for s in range(S_size):
  *                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  */
-        __pyx_v_o_all = 0;
+                                __pyx_v_o_all = 0;
 
-        /* "cyext_acv.pyx":1832
- *             for i in range(N, nogil=True, num_threads=num_threads):
+                                /* "cyext_acv.pyx":1832
+ *             for i in prange(N, nogil=True, num_threads=num_threads):
  *                 o_all = 0
  *                 for s in range(S_size):             # <<<<<<<<<<<<<<
  *                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                         o_all = o_all + 1
  */
-        __pyx_t_18 = __pyx_v_S_size;
-        __pyx_t_19 = __pyx_t_18;
-        for (__pyx_t_17 = 0; __pyx_t_17 < __pyx_t_19; __pyx_t_17+=1) {
-          __pyx_v_s = __pyx_t_17;
+                                __pyx_t_18 = __pyx_v_S_size;
+                                __pyx_t_19 = __pyx_t_18;
+                                for (__pyx_t_20 = 0; __pyx_t_20 < __pyx_t_19; __pyx_t_20+=1) {
+                                  __pyx_v_s = __pyx_t_20;
 
-          /* "cyext_acv.pyx":1833
+                                  /* "cyext_acv.pyx":1833
  *                 o_all = 0
  *                 for s in range(S_size):
  *                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                         o_all = o_all + 1
  *                 if o_all > 0:
  */
-          __pyx_t_11 = __pyx_v_s;
-          __pyx_t_20 = __pyx_v_i;
-          __pyx_t_21 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_11)) )));
-          __pyx_t_22 = __pyx_v_s;
-          __pyx_t_23 = __pyx_v_b;
-          __pyx_t_24 = __pyx_v_leaf_numb;
-          __pyx_t_25 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_22)) )));
-          __pyx_t_26 = 1;
-          __pyx_t_27 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_20 * __pyx_v_X.strides[0]) ) + __pyx_t_21 * __pyx_v_X.strides[1]) ))) > (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_23 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_25 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-          if (!__pyx_t_27) {
-          } else {
-            __pyx_t_1 = __pyx_t_27;
-            goto __pyx_L13_bool_binop_done;
-          }
-          __pyx_t_22 = __pyx_v_s;
-          __pyx_t_26 = __pyx_v_i;
-          __pyx_t_25 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_22)) )));
-          __pyx_t_24 = __pyx_v_s;
-          __pyx_t_23 = __pyx_v_b;
-          __pyx_t_11 = __pyx_v_leaf_numb;
-          __pyx_t_21 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_24)) )));
-          __pyx_t_20 = 0;
-          __pyx_t_27 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_26 * __pyx_v_X.strides[0]) ) + __pyx_t_25 * __pyx_v_X.strides[1]) ))) < (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_23 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_11 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_21 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_20 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-          __pyx_t_1 = __pyx_t_27;
-          __pyx_L13_bool_binop_done:;
-          if (__pyx_t_1) {
+                                  __pyx_t_11 = __pyx_v_s;
+                                  __pyx_t_21 = __pyx_v_i;
+                                  __pyx_t_22 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_11)) )));
+                                  __pyx_t_23 = __pyx_v_s;
+                                  __pyx_t_24 = __pyx_v_b;
+                                  __pyx_t_25 = __pyx_v_leaf_numb;
+                                  __pyx_t_26 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_23)) )));
+                                  __pyx_t_27 = 1;
+                                  __pyx_t_28 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_21 * __pyx_v_X.strides[0]) ) + __pyx_t_22 * __pyx_v_X.strides[1]) ))) > (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_25 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_27 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                  if (!__pyx_t_28) {
+                                  } else {
+                                    __pyx_t_1 = __pyx_t_28;
+                                    goto __pyx_L20_bool_binop_done;
+                                  }
+                                  __pyx_t_23 = __pyx_v_s;
+                                  __pyx_t_27 = __pyx_v_i;
+                                  __pyx_t_26 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_23)) )));
+                                  __pyx_t_25 = __pyx_v_s;
+                                  __pyx_t_24 = __pyx_v_b;
+                                  __pyx_t_11 = __pyx_v_leaf_numb;
+                                  __pyx_t_22 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_25)) )));
+                                  __pyx_t_21 = 0;
+                                  __pyx_t_28 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_27 * __pyx_v_X.strides[0]) ) + __pyx_t_26 * __pyx_v_X.strides[1]) ))) < (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_11 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_22 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_21 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                  __pyx_t_1 = __pyx_t_28;
+                                  __pyx_L20_bool_binop_done:;
+                                  if (__pyx_t_1) {
 
-            /* "cyext_acv.pyx":1834
+                                    /* "cyext_acv.pyx":1834
  *                 for s in range(S_size):
  *                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                         o_all = o_all + 1             # <<<<<<<<<<<<<<
  *                 if o_all > 0:
  *                     continue
  */
-            __pyx_v_o_all = (__pyx_v_o_all + 1);
+                                    __pyx_v_o_all = (__pyx_v_o_all + 1);
 
-            /* "cyext_acv.pyx":1833
+                                    /* "cyext_acv.pyx":1833
  *                 o_all = 0
  *                 for s in range(S_size):
  *                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                         o_all = o_all + 1
  *                 if o_all > 0:
  */
-          }
-        }
+                                  }
+                                }
 
-        /* "cyext_acv.pyx":1835
+                                /* "cyext_acv.pyx":1835
  *                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                         o_all = o_all + 1
  *                 if o_all > 0:             # <<<<<<<<<<<<<<
  *                     continue
  * 
  */
-        __pyx_t_1 = ((__pyx_v_o_all > 0) != 0);
-        if (__pyx_t_1) {
+                                __pyx_t_1 = ((__pyx_v_o_all > 0) != 0);
+                                if (__pyx_t_1) {
 
-          /* "cyext_acv.pyx":1836
+                                  /* "cyext_acv.pyx":1836
  *                         o_all = o_all + 1
  *                 if o_all > 0:
  *                     continue             # <<<<<<<<<<<<<<
  * 
  *                 p = 0
  */
-          goto __pyx_L8_continue;
+                                  goto __pyx_L13_continue;
 
-          /* "cyext_acv.pyx":1835
+                                  /* "cyext_acv.pyx":1835
  *                     if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                         o_all = o_all + 1
  *                 if o_all > 0:             # <<<<<<<<<<<<<<
  *                     continue
  * 
  */
-        }
+                                }
 
-        /* "cyext_acv.pyx":1838
+                                /* "cyext_acv.pyx":1838
  *                     continue
  * 
  *                 p = 0             # <<<<<<<<<<<<<<
  *                 p_u = 0
  *                 p_d = 0
  */
-        __pyx_v_p = 0;
+                                __pyx_v_p = 0;
 
-        /* "cyext_acv.pyx":1839
+                                /* "cyext_acv.pyx":1839
  * 
  *                 p = 0
  *                 p_u = 0             # <<<<<<<<<<<<<<
  *                 p_d = 0
  *                 p_s = 0
  */
-        __pyx_v_p_u = 0;
+                                __pyx_v_p_u = 0;
 
-        /* "cyext_acv.pyx":1840
+                                /* "cyext_acv.pyx":1840
  *                 p = 0
  *                 p_u = 0
  *                 p_d = 0             # <<<<<<<<<<<<<<
  *                 p_s = 0
  *                 p_su = 0
  */
-        __pyx_v_p_d = 0;
+                                __pyx_v_p_d = 0;
 
-        /* "cyext_acv.pyx":1841
+                                /* "cyext_acv.pyx":1841
  *                 p_u = 0
  *                 p_d = 0
  *                 p_s = 0             # <<<<<<<<<<<<<<
  *                 p_su = 0
  *                 p_sd = 0
  */
-        __pyx_v_p_s = 0;
+                                __pyx_v_p_s = 0;
 
-        /* "cyext_acv.pyx":1842
+                                /* "cyext_acv.pyx":1842
  *                 p_d = 0
  *                 p_s = 0
  *                 p_su = 0             # <<<<<<<<<<<<<<
  *                 p_sd = 0
  * 
  */
-        __pyx_v_p_su = 0;
+                                __pyx_v_p_su = 0;
 
-        /* "cyext_acv.pyx":1843
+                                /* "cyext_acv.pyx":1843
  *                 p_s = 0
  *                 p_su = 0
  *                 p_sd = 0             # <<<<<<<<<<<<<<
  * 
- *                 for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+ *                 for j in range(data.shape[0]):
  */
-        __pyx_v_p_sd = 0;
+                                __pyx_v_p_sd = 0;
 
-        /* "cyext_acv.pyx":1845
+                                /* "cyext_acv.pyx":1845
  *                 p_sd = 0
  * 
- *                 for j in range(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                 for j in range(data.shape[0]):             # <<<<<<<<<<<<<<
  *                     a_it = 0
  *                     b_it = 0
  */
-        __pyx_t_2 = PyInt_FromSsize_t((__pyx_v_data.shape[0])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1845, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1845, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __Pyx_GIVEREF(__pyx_t_2);
-        PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
-        __pyx_t_2 = 0;
-        __pyx_t_2 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1845, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 1845, __pyx_L1_error)
-        __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1845, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_num_threads, __pyx_t_4) < 0) __PYX_ERR(0, 1845, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1845, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        if (likely(PyList_CheckExact(__pyx_t_4)) || PyTuple_CheckExact(__pyx_t_4)) {
-          __pyx_t_2 = __pyx_t_4; __Pyx_INCREF(__pyx_t_2); __pyx_t_28 = 0;
-          __pyx_t_29 = NULL;
-        } else {
-          __pyx_t_28 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1845, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_29 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 1845, __pyx_L1_error)
-        }
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        for (;;) {
-          if (likely(!__pyx_t_29)) {
-            if (likely(PyList_CheckExact(__pyx_t_2))) {
-              if (__pyx_t_28 >= PyList_GET_SIZE(__pyx_t_2)) break;
-              #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_4 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_28); __Pyx_INCREF(__pyx_t_4); __pyx_t_28++; if (unlikely(0 < 0)) __PYX_ERR(0, 1845, __pyx_L1_error)
-              #else
-              __pyx_t_4 = PySequence_ITEM(__pyx_t_2, __pyx_t_28); __pyx_t_28++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1845, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_4);
-              #endif
-            } else {
-              if (__pyx_t_28 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
-              #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_28); __Pyx_INCREF(__pyx_t_4); __pyx_t_28++; if (unlikely(0 < 0)) __PYX_ERR(0, 1845, __pyx_L1_error)
-              #else
-              __pyx_t_4 = PySequence_ITEM(__pyx_t_2, __pyx_t_28); __pyx_t_28++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1845, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_4);
-              #endif
-            }
-          } else {
-            __pyx_t_4 = __pyx_t_29(__pyx_t_2);
-            if (unlikely(!__pyx_t_4)) {
-              PyObject* exc_type = PyErr_Occurred();
-              if (exc_type) {
-                if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 1845, __pyx_L1_error)
-              }
-              break;
-            }
-            __Pyx_GOTREF(__pyx_t_4);
-          }
-          __pyx_t_17 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_17 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1845, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_v_j = __pyx_t_17;
+                                __pyx_t_29 = (__pyx_v_data.shape[0]);
+                                __pyx_t_30 = __pyx_t_29;
+                                for (__pyx_t_20 = 0; __pyx_t_20 < __pyx_t_30; __pyx_t_20+=1) {
+                                  __pyx_v_j = __pyx_t_20;
 
-          /* "cyext_acv.pyx":1846
+                                  /* "cyext_acv.pyx":1846
  * 
- *                 for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+ *                 for j in range(data.shape[0]):
  *                     a_it = 0             # <<<<<<<<<<<<<<
  *                     b_it = 0
  *                     lm = 0
  */
-          __pyx_v_a_it = 0;
+                                  __pyx_v_a_it = 0;
 
-          /* "cyext_acv.pyx":1847
- *                 for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+                                  /* "cyext_acv.pyx":1847
+ *                 for j in range(data.shape[0]):
  *                     a_it = 0
  *                     b_it = 0             # <<<<<<<<<<<<<<
  *                     lm = 0
  *                     lm_s = 0
  */
-          __pyx_v_b_it = 0;
+                                  __pyx_v_b_it = 0;
 
-          /* "cyext_acv.pyx":1848
+                                  /* "cyext_acv.pyx":1848
  *                     a_it = 0
  *                     b_it = 0
  *                     lm = 0             # <<<<<<<<<<<<<<
  *                     lm_s = 0
  *                     for s in range(m):
  */
-          __pyx_v_lm = 0;
+                                  __pyx_v_lm = 0;
 
-          /* "cyext_acv.pyx":1849
+                                  /* "cyext_acv.pyx":1849
  *                     b_it = 0
  *                     lm = 0
  *                     lm_s = 0             # <<<<<<<<<<<<<<
  *                     for s in range(m):
  *                         if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  */
-          __pyx_v_lm_s = 0;
+                                  __pyx_v_lm_s = 0;
 
-          /* "cyext_acv.pyx":1850
+                                  /* "cyext_acv.pyx":1850
  *                     lm = 0
  *                     lm_s = 0
  *                     for s in range(m):             # <<<<<<<<<<<<<<
  *                         if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                             a_it = a_it + 1
  */
-          __pyx_t_30 = __pyx_v_m;
-          __pyx_t_31 = __pyx_t_30;
-          for (__pyx_t_17 = 0; __pyx_t_17 < __pyx_t_31; __pyx_t_17+=1) {
-            __pyx_v_s = __pyx_t_17;
+                                  __pyx_t_31 = __pyx_v_m;
+                                  __pyx_t_32 = __pyx_t_31;
+                                  for (__pyx_t_33 = 0; __pyx_t_33 < __pyx_t_32; __pyx_t_33+=1) {
+                                    __pyx_v_s = __pyx_t_33;
 
-            /* "cyext_acv.pyx":1851
+                                    /* "cyext_acv.pyx":1851
  *                     lm_s = 0
  *                     for s in range(m):
  *                         if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):             # <<<<<<<<<<<<<<
  *                             a_it = a_it + 1
  *                     for s in range(S_size):
  */
-            __pyx_t_24 = __pyx_v_j;
-            __pyx_t_20 = __pyx_v_s;
-            __pyx_t_21 = __pyx_v_b;
-            __pyx_t_11 = __pyx_v_leaf_numb;
-            __pyx_t_23 = __pyx_v_s;
-            __pyx_t_22 = 1;
-            __pyx_t_27 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_24 * __pyx_v_data.strides[0]) ) + __pyx_t_20 * __pyx_v_data.strides[1]) ))) <= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_21 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_11 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_23 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_22 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            if (__pyx_t_27) {
-            } else {
-              __pyx_t_1 = __pyx_t_27;
-              goto __pyx_L21_bool_binop_done;
-            }
-            __pyx_t_22 = __pyx_v_j;
-            __pyx_t_23 = __pyx_v_s;
-            __pyx_t_11 = __pyx_v_b;
-            __pyx_t_21 = __pyx_v_leaf_numb;
-            __pyx_t_20 = __pyx_v_s;
-            __pyx_t_24 = 0;
-            __pyx_t_27 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_22 * __pyx_v_data.strides[0]) ) + __pyx_t_23 * __pyx_v_data.strides[1]) ))) >= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_11 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_21 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_20 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            __pyx_t_1 = __pyx_t_27;
-            __pyx_L21_bool_binop_done:;
-            if (__pyx_t_1) {
+                                    __pyx_t_25 = __pyx_v_j;
+                                    __pyx_t_21 = __pyx_v_s;
+                                    __pyx_t_22 = __pyx_v_b;
+                                    __pyx_t_11 = __pyx_v_leaf_numb;
+                                    __pyx_t_24 = __pyx_v_s;
+                                    __pyx_t_23 = 1;
+                                    __pyx_t_28 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_25 * __pyx_v_data.strides[0]) ) + __pyx_t_21 * __pyx_v_data.strides[1]) ))) <= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_22 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_11 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_23 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    if (__pyx_t_28) {
+                                    } else {
+                                      __pyx_t_1 = __pyx_t_28;
+                                      goto __pyx_L28_bool_binop_done;
+                                    }
+                                    __pyx_t_23 = __pyx_v_j;
+                                    __pyx_t_24 = __pyx_v_s;
+                                    __pyx_t_11 = __pyx_v_b;
+                                    __pyx_t_22 = __pyx_v_leaf_numb;
+                                    __pyx_t_21 = __pyx_v_s;
+                                    __pyx_t_25 = 0;
+                                    __pyx_t_28 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_23 * __pyx_v_data.strides[0]) ) + __pyx_t_24 * __pyx_v_data.strides[1]) ))) >= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_11 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_22 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_21 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_25 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    __pyx_t_1 = __pyx_t_28;
+                                    __pyx_L28_bool_binop_done:;
+                                    if (__pyx_t_1) {
 
-              /* "cyext_acv.pyx":1852
+                                      /* "cyext_acv.pyx":1852
  *                     for s in range(m):
  *                         if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                             a_it = a_it + 1             # <<<<<<<<<<<<<<
  *                     for s in range(S_size):
  *                         if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  */
-              __pyx_v_a_it = (__pyx_v_a_it + 1);
+                                      __pyx_v_a_it = (__pyx_v_a_it + 1);
 
-              /* "cyext_acv.pyx":1851
+                                      /* "cyext_acv.pyx":1851
  *                     lm_s = 0
  *                     for s in range(m):
  *                         if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):             # <<<<<<<<<<<<<<
  *                             a_it = a_it + 1
  *                     for s in range(S_size):
  */
-            }
-          }
+                                    }
+                                  }
 
-          /* "cyext_acv.pyx":1853
+                                  /* "cyext_acv.pyx":1853
  *                         if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                             a_it = a_it + 1
  *                     for s in range(S_size):             # <<<<<<<<<<<<<<
  *                         if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             b_it = b_it + 1
  */
-          __pyx_t_18 = __pyx_v_S_size;
-          __pyx_t_19 = __pyx_t_18;
-          for (__pyx_t_17 = 0; __pyx_t_17 < __pyx_t_19; __pyx_t_17+=1) {
-            __pyx_v_s = __pyx_t_17;
+                                  __pyx_t_18 = __pyx_v_S_size;
+                                  __pyx_t_19 = __pyx_t_18;
+                                  for (__pyx_t_33 = 0; __pyx_t_33 < __pyx_t_19; __pyx_t_33+=1) {
+                                    __pyx_v_s = __pyx_t_33;
 
-            /* "cyext_acv.pyx":1854
+                                    /* "cyext_acv.pyx":1854
  *                             a_it = a_it + 1
  *                     for s in range(S_size):
  *                         if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                             b_it = b_it + 1
  * 
  */
-            __pyx_t_24 = __pyx_v_s;
-            __pyx_t_20 = __pyx_v_j;
-            __pyx_t_21 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_24)) )));
-            __pyx_t_11 = __pyx_v_s;
-            __pyx_t_23 = __pyx_v_b;
-            __pyx_t_22 = __pyx_v_leaf_numb;
-            __pyx_t_25 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_11)) )));
-            __pyx_t_26 = 1;
-            __pyx_t_27 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_20 * __pyx_v_data.strides[0]) ) + __pyx_t_21 * __pyx_v_data.strides[1]) ))) <= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_23 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_22 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_25 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            if (__pyx_t_27) {
-            } else {
-              __pyx_t_1 = __pyx_t_27;
-              goto __pyx_L26_bool_binop_done;
-            }
-            __pyx_t_11 = __pyx_v_s;
-            __pyx_t_26 = __pyx_v_j;
-            __pyx_t_25 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_11)) )));
-            __pyx_t_22 = __pyx_v_s;
-            __pyx_t_23 = __pyx_v_b;
-            __pyx_t_24 = __pyx_v_leaf_numb;
-            __pyx_t_21 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_22)) )));
-            __pyx_t_20 = 0;
-            __pyx_t_27 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_26 * __pyx_v_data.strides[0]) ) + __pyx_t_25 * __pyx_v_data.strides[1]) ))) >= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_23 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_21 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_20 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            __pyx_t_1 = __pyx_t_27;
-            __pyx_L26_bool_binop_done:;
-            if (__pyx_t_1) {
+                                    __pyx_t_25 = __pyx_v_s;
+                                    __pyx_t_21 = __pyx_v_j;
+                                    __pyx_t_22 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_25)) )));
+                                    __pyx_t_11 = __pyx_v_s;
+                                    __pyx_t_24 = __pyx_v_b;
+                                    __pyx_t_23 = __pyx_v_leaf_numb;
+                                    __pyx_t_26 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_11)) )));
+                                    __pyx_t_27 = 1;
+                                    __pyx_t_28 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_21 * __pyx_v_data.strides[0]) ) + __pyx_t_22 * __pyx_v_data.strides[1]) ))) <= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_23 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_27 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    if (__pyx_t_28) {
+                                    } else {
+                                      __pyx_t_1 = __pyx_t_28;
+                                      goto __pyx_L33_bool_binop_done;
+                                    }
+                                    __pyx_t_11 = __pyx_v_s;
+                                    __pyx_t_27 = __pyx_v_j;
+                                    __pyx_t_26 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_11)) )));
+                                    __pyx_t_23 = __pyx_v_s;
+                                    __pyx_t_24 = __pyx_v_b;
+                                    __pyx_t_25 = __pyx_v_leaf_numb;
+                                    __pyx_t_22 = (*((long *) ( /* dim=0 */ ((char *) (((long *) __pyx_v_S.data) + __pyx_t_23)) )));
+                                    __pyx_t_21 = 0;
+                                    __pyx_t_28 = (((*((double const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_27 * __pyx_v_data.strides[0]) ) + __pyx_t_26 * __pyx_v_data.strides[1]) ))) >= (*((double const  *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_24 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_25 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_22 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_21 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    __pyx_t_1 = __pyx_t_28;
+                                    __pyx_L33_bool_binop_done:;
+                                    if (__pyx_t_1) {
 
-              /* "cyext_acv.pyx":1855
+                                      /* "cyext_acv.pyx":1855
  *                     for s in range(S_size):
  *                         if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             b_it = b_it + 1             # <<<<<<<<<<<<<<
  * 
  *                     if a_it == m:
  */
-              __pyx_v_b_it = (__pyx_v_b_it + 1);
+                                      __pyx_v_b_it = (__pyx_v_b_it + 1);
 
-              /* "cyext_acv.pyx":1854
+                                      /* "cyext_acv.pyx":1854
  *                             a_it = a_it + 1
  *                     for s in range(S_size):
  *                         if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                             b_it = b_it + 1
  * 
  */
-            }
-          }
+                                    }
+                                  }
 
-          /* "cyext_acv.pyx":1857
+                                  /* "cyext_acv.pyx":1857
  *                             b_it = b_it + 1
  * 
  *                     if a_it == m:             # <<<<<<<<<<<<<<
  *                         lm = 1
  * 
  */
-          __pyx_t_1 = ((__pyx_v_a_it == __pyx_v_m) != 0);
-          if (__pyx_t_1) {
+                                  __pyx_t_1 = ((__pyx_v_a_it == __pyx_v_m) != 0);
+                                  if (__pyx_t_1) {
 
-            /* "cyext_acv.pyx":1858
+                                    /* "cyext_acv.pyx":1858
  * 
  *                     if a_it == m:
  *                         lm = 1             # <<<<<<<<<<<<<<
  * 
  *                     if b_it == S_size:
  */
-            __pyx_v_lm = 1;
+                                    __pyx_v_lm = 1;
 
-            /* "cyext_acv.pyx":1857
+                                    /* "cyext_acv.pyx":1857
  *                             b_it = b_it + 1
  * 
  *                     if a_it == m:             # <<<<<<<<<<<<<<
  *                         lm = 1
  * 
  */
-          }
+                                  }
 
-          /* "cyext_acv.pyx":1860
+                                  /* "cyext_acv.pyx":1860
  *                         lm = 1
  * 
  *                     if b_it == S_size:             # <<<<<<<<<<<<<<
  *                         lm_s = 1
  * 
  */
-          __pyx_t_1 = ((__pyx_v_b_it == __pyx_v_S_size) != 0);
-          if (__pyx_t_1) {
+                                  __pyx_t_1 = ((__pyx_v_b_it == __pyx_v_S_size) != 0);
+                                  if (__pyx_t_1) {
 
-            /* "cyext_acv.pyx":1861
+                                    /* "cyext_acv.pyx":1861
  * 
  *                     if b_it == S_size:
  *                         lm_s = 1             # <<<<<<<<<<<<<<
  * 
  *                     p += lm
  */
-            __pyx_v_lm_s = 1;
+                                    __pyx_v_lm_s = 1;
 
-            /* "cyext_acv.pyx":1860
+                                    /* "cyext_acv.pyx":1860
  *                         lm = 1
  * 
  *                     if b_it == S_size:             # <<<<<<<<<<<<<<
  *                         lm_s = 1
  * 
  */
-          }
+                                  }
 
-          /* "cyext_acv.pyx":1863
+                                  /* "cyext_acv.pyx":1863
  *                         lm_s = 1
  * 
  *                     p += lm             # <<<<<<<<<<<<<<
  *                     p_s += lm_s
  *                     if fX[i] == y_pred[j]:
  */
-          __pyx_v_p = (__pyx_v_p + __pyx_v_lm);
+                                  __pyx_v_p = (__pyx_v_p + __pyx_v_lm);
 
-          /* "cyext_acv.pyx":1864
+                                  /* "cyext_acv.pyx":1864
  * 
  *                     p += lm
  *                     p_s += lm_s             # <<<<<<<<<<<<<<
  *                     if fX[i] == y_pred[j]:
  *                         p_u += lm
  */
-          __pyx_v_p_s = (__pyx_v_p_s + __pyx_v_lm_s);
+                                  __pyx_v_p_s = (__pyx_v_p_s + __pyx_v_lm_s);
 
-          /* "cyext_acv.pyx":1865
+                                  /* "cyext_acv.pyx":1865
  *                     p += lm
  *                     p_s += lm_s
  *                     if fX[i] == y_pred[j]:             # <<<<<<<<<<<<<<
  *                         p_u += lm
  *                         p_su += lm_s
  */
-          __pyx_t_22 = __pyx_v_i;
-          __pyx_t_20 = __pyx_v_j;
-          __pyx_t_1 = (((*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_22 * __pyx_v_fX.strides[0]) ))) == (*((long const  *) ( /* dim=0 */ (__pyx_v_y_pred.data + __pyx_t_20 * __pyx_v_y_pred.strides[0]) )))) != 0);
-          if (__pyx_t_1) {
+                                  __pyx_t_23 = __pyx_v_i;
+                                  __pyx_t_21 = __pyx_v_j;
+                                  __pyx_t_1 = (((*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_23 * __pyx_v_fX.strides[0]) ))) == (*((long const  *) ( /* dim=0 */ (__pyx_v_y_pred.data + __pyx_t_21 * __pyx_v_y_pred.strides[0]) )))) != 0);
+                                  if (__pyx_t_1) {
 
-            /* "cyext_acv.pyx":1866
+                                    /* "cyext_acv.pyx":1866
  *                     p_s += lm_s
  *                     if fX[i] == y_pred[j]:
  *                         p_u += lm             # <<<<<<<<<<<<<<
  *                         p_su += lm_s
  *                     else:
  */
-            __pyx_v_p_u = (__pyx_v_p_u + __pyx_v_lm);
+                                    __pyx_v_p_u = (__pyx_v_p_u + __pyx_v_lm);
 
-            /* "cyext_acv.pyx":1867
+                                    /* "cyext_acv.pyx":1867
  *                     if fX[i] == y_pred[j]:
  *                         p_u += lm
  *                         p_su += lm_s             # <<<<<<<<<<<<<<
  *                     else:
  *                         p_d += lm
  */
-            __pyx_v_p_su = (__pyx_v_p_su + __pyx_v_lm_s);
+                                    __pyx_v_p_su = (__pyx_v_p_su + __pyx_v_lm_s);
 
-            /* "cyext_acv.pyx":1865
+                                    /* "cyext_acv.pyx":1865
  *                     p += lm
  *                     p_s += lm_s
  *                     if fX[i] == y_pred[j]:             # <<<<<<<<<<<<<<
  *                         p_u += lm
  *                         p_su += lm_s
  */
-            goto __pyx_L30;
-          }
+                                    goto __pyx_L37;
+                                  }
 
-          /* "cyext_acv.pyx":1869
+                                  /* "cyext_acv.pyx":1869
  *                         p_su += lm_s
  *                     else:
  *                         p_d += lm             # <<<<<<<<<<<<<<
  *                         p_sd += lm_s
  * 
  */
-          /*else*/ {
-            __pyx_v_p_d = (__pyx_v_p_d + __pyx_v_lm);
+                                  /*else*/ {
+                                    __pyx_v_p_d = (__pyx_v_p_d + __pyx_v_lm);
 
-            /* "cyext_acv.pyx":1870
+                                    /* "cyext_acv.pyx":1870
  *                     else:
  *                         p_d += lm
  *                         p_sd += lm_s             # <<<<<<<<<<<<<<
  * 
  *                 mean_forest[i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] * p_s) if p_s != 0 else 0
  */
-            __pyx_v_p_sd = (__pyx_v_p_sd + __pyx_v_lm_s);
-          }
-          __pyx_L30:;
+                                    __pyx_v_p_sd = (__pyx_v_p_sd + __pyx_v_lm_s);
+                                  }
+                                  __pyx_L37:;
+                                }
 
-          /* "cyext_acv.pyx":1845
- *                 p_sd = 0
- * 
- *                 for j in range(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
- *                     a_it = 0
- *                     b_it = 0
- */
-        }
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-        /* "cyext_acv.pyx":1872
+                                /* "cyext_acv.pyx":1872
  *                         p_sd += lm_s
  * 
  *                 mean_forest[i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] * p_s) if p_s != 0 else 0             # <<<<<<<<<<<<<<
  *                 mean_forest[i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_su) if p_su != 0 else 0
  *                 mean_forest[i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  */
-        if (((__pyx_v_p_s != 0) != 0)) {
-          __pyx_t_20 = __pyx_v_b;
-          __pyx_t_22 = __pyx_v_leaf_numb;
-          __pyx_t_21 = __pyx_v_i;
-          __pyx_t_24 = __pyx_v_b;
-          __pyx_t_23 = (*((long const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_20 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_22 * __pyx_v_leaf_idx_trees.strides[1]) )));
-          __pyx_t_11 = (*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_21 * __pyx_v_fX.strides[0]) )));
-          __pyx_t_25 = __pyx_v_b;
-          __pyx_t_32 = ((__pyx_v_p * (*((double const  *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_24 * __pyx_v_values.strides[0]) ) + __pyx_t_23 * __pyx_v_values.strides[1]) ) + __pyx_t_11 * __pyx_v_values.strides[2]) )))) / ((*((double const  *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_25 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_s));
-        } else {
-          __pyx_t_32 = 0.0;
-        }
-        __pyx_t_25 = __pyx_v_i;
-        __pyx_t_21 = 0;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_25 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_21 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_32;
+                                if (((__pyx_v_p_s != 0) != 0)) {
+                                  __pyx_t_21 = __pyx_v_b;
+                                  __pyx_t_23 = __pyx_v_leaf_numb;
+                                  __pyx_t_22 = __pyx_v_i;
+                                  __pyx_t_25 = __pyx_v_b;
+                                  __pyx_t_24 = (*((long const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_21 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_23 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                  __pyx_t_11 = (*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_22 * __pyx_v_fX.strides[0]) )));
+                                  __pyx_t_26 = __pyx_v_b;
+                                  __pyx_t_34 = ((__pyx_v_p * (*((double const  *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_25 * __pyx_v_values.strides[0]) ) + __pyx_t_24 * __pyx_v_values.strides[1]) ) + __pyx_t_11 * __pyx_v_values.strides[2]) )))) / ((*((double const  *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_26 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_s));
+                                } else {
+                                  __pyx_t_34 = 0.0;
+                                }
+                                __pyx_t_26 = __pyx_v_i;
+                                __pyx_t_22 = 0;
+                                *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_26 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_22 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_34;
 
-        /* "cyext_acv.pyx":1873
+                                /* "cyext_acv.pyx":1873
  * 
  *                 mean_forest[i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] * p_s) if p_s != 0 else 0
  *                 mean_forest[i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_su) if p_su != 0 else 0             # <<<<<<<<<<<<<<
  *                 mean_forest[i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
  */
-        if (((__pyx_v_p_su != 0) != 0)) {
-          __pyx_t_21 = __pyx_v_b;
-          __pyx_t_25 = __pyx_v_leaf_numb;
-          __pyx_t_22 = __pyx_v_i;
-          __pyx_t_20 = __pyx_v_b;
-          __pyx_t_11 = (*((long const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_21 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_25 * __pyx_v_leaf_idx_trees.strides[1]) )));
-          __pyx_t_23 = (*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_22 * __pyx_v_fX.strides[0]) )));
-          __pyx_t_24 = __pyx_v_b;
-          __pyx_t_32 = ((__pyx_v_p_u * (*((double const  *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_20 * __pyx_v_values.strides[0]) ) + __pyx_t_11 * __pyx_v_values.strides[1]) ) + __pyx_t_23 * __pyx_v_values.strides[2]) )))) / ((*((double const  *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_24 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_su));
-        } else {
-          __pyx_t_32 = 0.0;
-        }
-        __pyx_t_24 = __pyx_v_i;
-        __pyx_t_22 = 1;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_24 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_22 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_32;
+                                if (((__pyx_v_p_su != 0) != 0)) {
+                                  __pyx_t_22 = __pyx_v_b;
+                                  __pyx_t_26 = __pyx_v_leaf_numb;
+                                  __pyx_t_23 = __pyx_v_i;
+                                  __pyx_t_21 = __pyx_v_b;
+                                  __pyx_t_11 = (*((long const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_22 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_26 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                  __pyx_t_24 = (*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_23 * __pyx_v_fX.strides[0]) )));
+                                  __pyx_t_25 = __pyx_v_b;
+                                  __pyx_t_34 = ((__pyx_v_p_u * (*((double const  *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_21 * __pyx_v_values.strides[0]) ) + __pyx_t_11 * __pyx_v_values.strides[1]) ) + __pyx_t_24 * __pyx_v_values.strides[2]) )))) / ((*((double const  *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_25 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_su));
+                                } else {
+                                  __pyx_t_34 = 0.0;
+                                }
+                                __pyx_t_25 = __pyx_v_i;
+                                __pyx_t_23 = 1;
+                                *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_25 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_23 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_34;
 
-        /* "cyext_acv.pyx":1874
+                                /* "cyext_acv.pyx":1874
  *                 mean_forest[i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] * p_s) if p_s != 0 else 0
  *                 mean_forest[i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_su) if p_su != 0 else 0
  *                 mean_forest[i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_sd) if p_sd != 0 else 0             # <<<<<<<<<<<<<<
  * 
- *     for i in range(N, nogil=True, num_threads=num_threads):
+ *     for i in prange(N, nogil=True, num_threads=num_threads):
  */
-        if (((__pyx_v_p_sd != 0) != 0)) {
-          __pyx_t_22 = __pyx_v_b;
-          __pyx_t_24 = __pyx_v_leaf_numb;
-          __pyx_t_25 = __pyx_v_i;
-          __pyx_t_21 = __pyx_v_b;
-          __pyx_t_23 = (*((long const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_22 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_24 * __pyx_v_leaf_idx_trees.strides[1]) )));
-          __pyx_t_11 = (*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_25 * __pyx_v_fX.strides[0]) )));
-          __pyx_t_20 = __pyx_v_b;
-          __pyx_t_32 = ((__pyx_v_p_d * (*((double const  *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_21 * __pyx_v_values.strides[0]) ) + __pyx_t_23 * __pyx_v_values.strides[1]) ) + __pyx_t_11 * __pyx_v_values.strides[2]) )))) / ((*((double const  *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_20 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_sd));
-        } else {
-          __pyx_t_32 = 0.0;
-        }
-        __pyx_t_20 = __pyx_v_i;
-        __pyx_t_25 = 2;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_20 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_25 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_32;
+                                if (((__pyx_v_p_sd != 0) != 0)) {
+                                  __pyx_t_23 = __pyx_v_b;
+                                  __pyx_t_25 = __pyx_v_leaf_numb;
+                                  __pyx_t_26 = __pyx_v_i;
+                                  __pyx_t_22 = __pyx_v_b;
+                                  __pyx_t_24 = (*((long const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_23 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_25 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                  __pyx_t_11 = (*((long const  *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_26 * __pyx_v_fX.strides[0]) )));
+                                  __pyx_t_21 = __pyx_v_b;
+                                  __pyx_t_34 = ((__pyx_v_p_d * (*((double const  *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_22 * __pyx_v_values.strides[0]) ) + __pyx_t_24 * __pyx_v_values.strides[1]) ) + __pyx_t_11 * __pyx_v_values.strides[2]) )))) / ((*((double const  *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_21 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_sd));
+                                } else {
+                                  __pyx_t_34 = 0.0;
+                                }
+                                __pyx_t_21 = __pyx_v_i;
+                                __pyx_t_26 = 2;
+                                *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_21 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_26 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_34;
+                                goto __pyx_L39;
+                                __pyx_L13_continue:;
+                                goto __pyx_L39;
+                                __pyx_L39:;
+                            }
+                        }
+                    }
+                }
+            }
+            #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                #undef likely
+                #undef unlikely
+                #define likely(x)   __builtin_expect(!!(x), 1)
+                #define unlikely(x) __builtin_expect(!!(x), 0)
+            #endif
+          }
 
-        /* "cyext_acv.pyx":1830
+          /* "cyext_acv.pyx":1830
  *     for b in range(n_trees):
  *         for leaf_numb in range(leaves_nb[b]):
- *             for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *             for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                 o_all = 0
  *                 for s in range(S_size):
  */
-        __pyx_L8_continue:;
+          /*finally:*/ {
+            /*normal exit:*/{
+              #ifdef WITH_THREAD
+              __Pyx_FastGIL_Forget();
+              Py_BLOCK_THREADS
+              #endif
+              goto __pyx_L12;
+            }
+            __pyx_L12:;
+          }
       }
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
   }
 
   /* "cyext_acv.pyx":1876
  *                 mean_forest[i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
- *     for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *     for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *         ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
  *         if ss >= thresholds:
  */
-  __pyx_t_3 = __Pyx_PyInt_From_unsigned_int(__pyx_v_N); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1876, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1876, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
-  __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1876, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 1876, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1876, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_num_threads, __pyx_t_4) < 0) __PYX_ERR(0, 1876, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1876, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (likely(PyList_CheckExact(__pyx_t_4)) || PyTuple_CheckExact(__pyx_t_4)) {
-    __pyx_t_3 = __pyx_t_4; __Pyx_INCREF(__pyx_t_3); __pyx_t_15 = 0;
-    __pyx_t_16 = NULL;
-  } else {
-    __pyx_t_15 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1876, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_16 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 1876, __pyx_L1_error)
-  }
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  for (;;) {
-    if (likely(!__pyx_t_16)) {
-      if (likely(PyList_CheckExact(__pyx_t_3))) {
-        if (__pyx_t_15 >= PyList_GET_SIZE(__pyx_t_3)) break;
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_15); __Pyx_INCREF(__pyx_t_4); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 1876, __pyx_L1_error)
-        #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_3, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1876, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        #endif
-      } else {
-        if (__pyx_t_15 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_15); __Pyx_INCREF(__pyx_t_4); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 1876, __pyx_L1_error)
-        #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_3, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1876, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        #endif
-      }
-    } else {
-      __pyx_t_4 = __pyx_t_16(__pyx_t_3);
-      if (unlikely(!__pyx_t_4)) {
-        PyObject* exc_type = PyErr_Occurred();
-        if (exc_type) {
-          if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 1876, __pyx_L1_error)
-        }
-        break;
-      }
-      __Pyx_GOTREF(__pyx_t_4);
-    }
-    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1876, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_v_i = __pyx_t_8;
+  {
+      #ifdef WITH_THREAD
+      PyThreadState *_save;
+      Py_UNBLOCK_THREADS
+      __Pyx_FastGIL_Remember();
+      #endif
+      /*try:*/ {
+        __pyx_t_17 = __pyx_v_N;
+        if ((1 == 0)) abort();
+        {
+            #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                #undef likely
+                #undef unlikely
+                #define likely(x)   (x)
+                #define unlikely(x) (x)
+            #endif
+            __pyx_t_15 = (__pyx_t_17 - 0 + 1 - 1/abs(1)) / 1;
+            if (__pyx_t_15 > 0)
+            {
+                #ifdef _OPENMP
+                #pragma omp parallel num_threads(__pyx_v_num_threads) private(__pyx_t_1, __pyx_t_11, __pyx_t_21, __pyx_t_22, __pyx_t_23, __pyx_t_24, __pyx_t_25, __pyx_t_26, __pyx_t_27, __pyx_t_34, __pyx_t_35, __pyx_t_36, __pyx_t_37, __pyx_t_38)
+                #endif /* _OPENMP */
+                {
+                    #ifdef _OPENMP
+                    #pragma omp for firstprivate(__pyx_v_i) lastprivate(__pyx_v_i) lastprivate(__pyx_v_ss)
+                    #endif /* _OPENMP */
+                    for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16++){
+                        {
+                            __pyx_v_i = (int)(0 + 1 * __pyx_t_16);
+                            /* Initialize private variables to invalid values */
+                            __pyx_v_ss = ((double)__PYX_NAN());
 
-    /* "cyext_acv.pyx":1877
+                            /* "cyext_acv.pyx":1877
  * 
- *     for i in range(N, nogil=True, num_threads=num_threads):
+ *     for i in prange(N, nogil=True, num_threads=num_threads):
  *         ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0             # <<<<<<<<<<<<<<
  *         if ss >= thresholds:
  *             sdp[i] = 1
  */
-    __pyx_t_25 = __pyx_v_i;
-    __pyx_t_20 = 1;
-    __pyx_t_24 = __pyx_v_i;
-    __pyx_t_22 = 2;
-    if (((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_25 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_20 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_24 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_22 * __pyx_v_mean_forest.strides[1]) )))) != 0.0) != 0)) {
-      __pyx_t_11 = __pyx_v_i;
-      __pyx_t_23 = 0;
-      __pyx_t_21 = __pyx_v_i;
-      __pyx_t_26 = 2;
-      __pyx_t_33 = __pyx_v_i;
-      __pyx_t_34 = 1;
-      __pyx_t_35 = __pyx_v_i;
-      __pyx_t_36 = 2;
-      __pyx_t_32 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_11 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_23 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_21 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_26 * __pyx_v_mean_forest.strides[1]) )))) / ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_33 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_34 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_35 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_36 * __pyx_v_mean_forest.strides[1]) )))));
-    } else {
-      __pyx_t_32 = 0.0;
-    }
-    __pyx_v_ss = __pyx_t_32;
+                            __pyx_t_26 = __pyx_v_i;
+                            __pyx_t_21 = 1;
+                            __pyx_t_25 = __pyx_v_i;
+                            __pyx_t_23 = 2;
+                            if (((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_26 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_21 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_25 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_23 * __pyx_v_mean_forest.strides[1]) )))) != 0.0) != 0)) {
+                              __pyx_t_11 = __pyx_v_i;
+                              __pyx_t_24 = 0;
+                              __pyx_t_22 = __pyx_v_i;
+                              __pyx_t_27 = 2;
+                              __pyx_t_35 = __pyx_v_i;
+                              __pyx_t_36 = 1;
+                              __pyx_t_37 = __pyx_v_i;
+                              __pyx_t_38 = 2;
+                              __pyx_t_34 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_11 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_24 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_22 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_27 * __pyx_v_mean_forest.strides[1]) )))) / ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_35 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_36 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_37 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_38 * __pyx_v_mean_forest.strides[1]) )))));
+                            } else {
+                              __pyx_t_34 = 0.0;
+                            }
+                            __pyx_v_ss = __pyx_t_34;
 
-    /* "cyext_acv.pyx":1878
- *     for i in range(N, nogil=True, num_threads=num_threads):
+                            /* "cyext_acv.pyx":1878
+ *     for i in prange(N, nogil=True, num_threads=num_threads):
  *         ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
  *         if ss >= thresholds:             # <<<<<<<<<<<<<<
  *             sdp[i] = 1
  *         else:
  */
-    __pyx_t_1 = ((__pyx_v_ss >= __pyx_v_thresholds) != 0);
-    if (__pyx_t_1) {
+                            __pyx_t_1 = ((__pyx_v_ss >= __pyx_v_thresholds) != 0);
+                            if (__pyx_t_1) {
 
-      /* "cyext_acv.pyx":1879
+                              /* "cyext_acv.pyx":1879
  *         ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
  *         if ss >= thresholds:
  *             sdp[i] = 1             # <<<<<<<<<<<<<<
  *         else:
  *             sdp[i] = 0
  */
-      __pyx_t_22 = __pyx_v_i;
-      *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_22 * __pyx_v_sdp.strides[0]) )) = 1.0;
+                              __pyx_t_23 = __pyx_v_i;
+                              *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_23 * __pyx_v_sdp.strides[0]) )) = 1.0;
 
-      /* "cyext_acv.pyx":1878
- *     for i in range(N, nogil=True, num_threads=num_threads):
+                              /* "cyext_acv.pyx":1878
+ *     for i in prange(N, nogil=True, num_threads=num_threads):
  *         ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
  *         if ss >= thresholds:             # <<<<<<<<<<<<<<
  *             sdp[i] = 1
  *         else:
  */
-      goto __pyx_L33;
-    }
+                              goto __pyx_L47;
+                            }
 
-    /* "cyext_acv.pyx":1881
+                            /* "cyext_acv.pyx":1881
  *             sdp[i] = 1
  *         else:
  *             sdp[i] = 0             # <<<<<<<<<<<<<<
  * 
  *     return sdp
  */
-    /*else*/ {
-      __pyx_t_22 = __pyx_v_i;
-      *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_22 * __pyx_v_sdp.strides[0]) )) = 0.0;
-    }
-    __pyx_L33:;
+                            /*else*/ {
+                              __pyx_t_23 = __pyx_v_i;
+                              *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_23 * __pyx_v_sdp.strides[0]) )) = 0.0;
+                            }
+                            __pyx_L47:;
+                        }
+                    }
+                }
+            }
+        }
+        #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+            #undef likely
+            #undef unlikely
+            #define likely(x)   __builtin_expect(!!(x), 1)
+            #define unlikely(x) __builtin_expect(!!(x), 0)
+        #endif
+      }
 
-    /* "cyext_acv.pyx":1876
+      /* "cyext_acv.pyx":1876
  *                 mean_forest[i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
- *     for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *     for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *         ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
  *         if ss >= thresholds:
  */
+      /*finally:*/ {
+        /*normal exit:*/{
+          #ifdef WITH_THREAD
+          __Pyx_FastGIL_Forget();
+          Py_BLOCK_THREADS
+          #endif
+          goto __pyx_L42;
+        }
+        __pyx_L42:;
+      }
   }
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
   /* "cyext_acv.pyx":1883
  *             sdp[i] = 0
@@ -31202,7 +31127,7 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
   /* "cyext_acv.pyx":1927
  * 
  *     cdef long[:, :] sm_buf
- *     sm_buf = np.zeros((2**data.shape[1], data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
+ *     sm_buf = np.zeros((data.shape[1], data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
  * 
  *     cdef long[:] sm_size
  */
@@ -31211,7 +31136,7 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
   __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1927, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyInt_FromSsize_t(__Pyx_pow_Py_ssize_t(2, (__pyx_v_data.shape[1]))); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1927, __pyx_L1_error)
+  __pyx_t_4 = PyInt_FromSsize_t((__pyx_v_data.shape[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1927, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_2 = PyInt_FromSsize_t((__pyx_v_data.shape[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1927, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -31251,7 +31176,7 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
   /* "cyext_acv.pyx":1930
  * 
  *     cdef long[:] sm_size
- *     sm_size = np.zeros((2**data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
+ *     sm_size = np.zeros((data.shape[1]), dtype=np.int)             # <<<<<<<<<<<<<<
  *     if C[0] != []:
  *         C_buff = C.copy()
  */
@@ -31260,7 +31185,7 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1930, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyInt_FromSsize_t(__Pyx_pow_Py_ssize_t(2, (__pyx_v_data.shape[1]))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1930, __pyx_L1_error)
+  __pyx_t_3 = PyInt_FromSsize_t((__pyx_v_data.shape[1])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1930, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1930, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -31289,7 +31214,7 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
 
   /* "cyext_acv.pyx":1931
  *     cdef long[:] sm_size
- *     sm_size = np.zeros((2**data.shape[1]), dtype=np.int)
+ *     sm_size = np.zeros((data.shape[1]), dtype=np.int)
  *     if C[0] != []:             # <<<<<<<<<<<<<<
  *         C_buff = C.copy()
  *         coal_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
@@ -31307,7 +31232,7 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
   if (__pyx_t_13) {
 
     /* "cyext_acv.pyx":1932
- *     sm_size = np.zeros((2**data.shape[1]), dtype=np.int)
+ *     sm_size = np.zeros((data.shape[1]), dtype=np.int)
  *     if C[0] != []:
  *         C_buff = C.copy()             # <<<<<<<<<<<<<<
  *         coal_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
@@ -31586,7 +31511,7 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
 
     /* "cyext_acv.pyx":1931
  *     cdef long[:] sm_size
- *     sm_size = np.zeros((2**data.shape[1]), dtype=np.int)
+ *     sm_size = np.zeros((data.shape[1]), dtype=np.int)
  *     if C[0] != []:             # <<<<<<<<<<<<<<
  *         C_buff = C.copy()
  *         coal_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
@@ -32073,232 +31998,226 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
       /* "cyext_acv.pyx":1998
  *                       thresholds, num_threads)
  * 
- *             for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *             for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                 dif_pos = 1 if (v_plus[i] - v_minus[i]) > 0 else 0
  *                 dif_neg = 1 if (v_plus[i] - v_minus[i]) < 0 else 0
  */
-      __pyx_t_3 = __Pyx_PyInt_From_unsigned_int(__pyx_v_N); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1998, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1998, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_GIVEREF(__pyx_t_3);
-      PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3);
-      __pyx_t_3 = 0;
-      __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1998, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 1998, __pyx_L1_error)
-      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1998, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_num_threads, __pyx_t_4) < 0) __PYX_ERR(0, 1998, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_5, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1998, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (likely(PyList_CheckExact(__pyx_t_4)) || PyTuple_CheckExact(__pyx_t_4)) {
-        __pyx_t_3 = __pyx_t_4; __Pyx_INCREF(__pyx_t_3); __pyx_t_14 = 0;
-        __pyx_t_23 = NULL;
-      } else {
-        __pyx_t_14 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1998, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_23 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_23)) __PYX_ERR(0, 1998, __pyx_L1_error)
-      }
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      for (;;) {
-        if (likely(!__pyx_t_23)) {
-          if (likely(PyList_CheckExact(__pyx_t_3))) {
-            if (__pyx_t_14 >= PyList_GET_SIZE(__pyx_t_3)) break;
-            #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_4 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_14); __Pyx_INCREF(__pyx_t_4); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 1998, __pyx_L1_error)
-            #else
-            __pyx_t_4 = PySequence_ITEM(__pyx_t_3, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1998, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_4);
-            #endif
-          } else {
-            if (__pyx_t_14 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
-            #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_14); __Pyx_INCREF(__pyx_t_4); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 1998, __pyx_L1_error)
-            #else
-            __pyx_t_4 = PySequence_ITEM(__pyx_t_3, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1998, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_4);
-            #endif
-          }
-        } else {
-          __pyx_t_4 = __pyx_t_23(__pyx_t_3);
-          if (unlikely(!__pyx_t_4)) {
-            PyObject* exc_type = PyErr_Occurred();
-            if (exc_type) {
-              if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-              else __PYX_ERR(0, 1998, __pyx_L1_error)
-            }
-            break;
-          }
-          __Pyx_GOTREF(__pyx_t_4);
-        }
-        __pyx_t_32 = __Pyx_PyInt_As_unsigned_int(__pyx_t_4); if (unlikely((__pyx_t_32 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1998, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_v_i = __pyx_t_32;
+      {
+          #ifdef WITH_THREAD
+          PyThreadState *_save;
+          Py_UNBLOCK_THREADS
+          __Pyx_FastGIL_Remember();
+          #endif
+          /*try:*/ {
+            __pyx_t_32 = __pyx_v_N;
+            if ((1 == 0)) abort();
+            {
+                #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                    #undef likely
+                    #undef unlikely
+                    #define likely(x)   (x)
+                    #define unlikely(x) (x)
+                #endif
+                __pyx_t_34 = (__pyx_t_32 - 0 + 1 - 1/abs(1)) / 1;
+                if (__pyx_t_34 > 0)
+                {
+                    #ifdef _OPENMP
+                    #pragma omp parallel num_threads(__pyx_v_num_threads) private(__pyx_t_25, __pyx_t_26, __pyx_t_27, __pyx_t_29, __pyx_t_35, __pyx_t_36, __pyx_t_37, __pyx_t_38, __pyx_t_39, __pyx_t_40)
+                    #endif /* _OPENMP */
+                    {
+                        #ifdef _OPENMP
+                        #pragma omp for lastprivate(__pyx_v_dif_neg) lastprivate(__pyx_v_dif_null) lastprivate(__pyx_v_dif_pos) firstprivate(__pyx_v_i) lastprivate(__pyx_v_i) lastprivate(__pyx_v_j)
+                        #endif /* _OPENMP */
+                        for (__pyx_t_33 = 0; __pyx_t_33 < __pyx_t_34; __pyx_t_33++){
+                            {
+                                __pyx_v_i = (unsigned int)(0 + 1 * __pyx_t_33);
+                                /* Initialize private variables to invalid values */
+                                __pyx_v_dif_neg = ((unsigned int)0xbad0bad0);
+                                __pyx_v_dif_null = ((unsigned int)0xbad0bad0);
+                                __pyx_v_dif_pos = ((unsigned int)0xbad0bad0);
+                                __pyx_v_j = ((unsigned int)0xbad0bad0);
 
-        /* "cyext_acv.pyx":1999
+                                /* "cyext_acv.pyx":1999
  * 
- *             for i in range(N, nogil=True, num_threads=num_threads):
+ *             for i in prange(N, nogil=True, num_threads=num_threads):
  *                 dif_pos = 1 if (v_plus[i] - v_minus[i]) > 0 else 0             # <<<<<<<<<<<<<<
  *                 dif_neg = 1 if (v_plus[i] - v_minus[i]) < 0 else 0
  *                 dif_null = 1 if (v_plus[i] - v_minus[i]) == 0 else 0
  */
-        __pyx_t_25 = __pyx_v_i;
-        __pyx_t_29 = __pyx_v_i;
-        if (((((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_25 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_29 * __pyx_v_v_minus.strides[0]) )))) > 0.0) != 0)) {
-          __pyx_t_32 = 1;
-        } else {
-          __pyx_t_32 = 0;
-        }
-        __pyx_v_dif_pos = __pyx_t_32;
+                                __pyx_t_25 = __pyx_v_i;
+                                __pyx_t_29 = __pyx_v_i;
+                                if (((((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_25 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_29 * __pyx_v_v_minus.strides[0]) )))) > 0.0) != 0)) {
+                                  __pyx_t_35 = 1;
+                                } else {
+                                  __pyx_t_35 = 0;
+                                }
+                                __pyx_v_dif_pos = __pyx_t_35;
 
-        /* "cyext_acv.pyx":2000
- *             for i in range(N, nogil=True, num_threads=num_threads):
+                                /* "cyext_acv.pyx":2000
+ *             for i in prange(N, nogil=True, num_threads=num_threads):
  *                 dif_pos = 1 if (v_plus[i] - v_minus[i]) > 0 else 0
  *                 dif_neg = 1 if (v_plus[i] - v_minus[i]) < 0 else 0             # <<<<<<<<<<<<<<
  *                 dif_null = 1 if (v_plus[i] - v_minus[i]) == 0 else 0
  * 
  */
-        __pyx_t_29 = __pyx_v_i;
-        __pyx_t_25 = __pyx_v_i;
-        if (((((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_29 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_25 * __pyx_v_v_minus.strides[0]) )))) < 0.0) != 0)) {
-          __pyx_t_32 = 1;
-        } else {
-          __pyx_t_32 = 0;
-        }
-        __pyx_v_dif_neg = __pyx_t_32;
+                                __pyx_t_29 = __pyx_v_i;
+                                __pyx_t_25 = __pyx_v_i;
+                                if (((((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_29 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_25 * __pyx_v_v_minus.strides[0]) )))) < 0.0) != 0)) {
+                                  __pyx_t_35 = 1;
+                                } else {
+                                  __pyx_t_35 = 0;
+                                }
+                                __pyx_v_dif_neg = __pyx_t_35;
 
-        /* "cyext_acv.pyx":2001
+                                /* "cyext_acv.pyx":2001
  *                 dif_pos = 1 if (v_plus[i] - v_minus[i]) > 0 else 0
  *                 dif_neg = 1 if (v_plus[i] - v_minus[i]) < 0 else 0
  *                 dif_null = 1 if (v_plus[i] - v_minus[i]) == 0 else 0             # <<<<<<<<<<<<<<
  * 
  *                 for j in range(len_va_id[va]):
  */
-        __pyx_t_25 = __pyx_v_i;
-        __pyx_t_29 = __pyx_v_i;
-        if (((((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_25 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_29 * __pyx_v_v_minus.strides[0]) )))) == 0.0) != 0)) {
-          __pyx_t_32 = 1;
-        } else {
-          __pyx_t_32 = 0;
-        }
-        __pyx_v_dif_null = __pyx_t_32;
+                                __pyx_t_25 = __pyx_v_i;
+                                __pyx_t_29 = __pyx_v_i;
+                                if (((((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_25 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_29 * __pyx_v_v_minus.strides[0]) )))) == 0.0) != 0)) {
+                                  __pyx_t_35 = 1;
+                                } else {
+                                  __pyx_t_35 = 0;
+                                }
+                                __pyx_v_dif_null = __pyx_t_35;
 
-        /* "cyext_acv.pyx":2003
+                                /* "cyext_acv.pyx":2003
  *                 dif_null = 1 if (v_plus[i] - v_minus[i]) == 0 else 0
  * 
  *                 for j in range(len_va_id[va]):             # <<<<<<<<<<<<<<
  *                     phi[i, va_id_a[va, j]] += weight * (v_plus[i] - v_minus[i])
  * 
  */
-        __pyx_t_29 = __pyx_v_va;
-        __pyx_t_26 = (*((long *) ( /* dim=0 */ (__pyx_v_len_va_id.data + __pyx_t_29 * __pyx_v_len_va_id.strides[0]) )));
-        __pyx_t_27 = __pyx_t_26;
-        for (__pyx_t_32 = 0; __pyx_t_32 < __pyx_t_27; __pyx_t_32+=1) {
-          __pyx_v_j = __pyx_t_32;
+                                __pyx_t_29 = __pyx_v_va;
+                                __pyx_t_26 = (*((long *) ( /* dim=0 */ (__pyx_v_len_va_id.data + __pyx_t_29 * __pyx_v_len_va_id.strides[0]) )));
+                                __pyx_t_27 = __pyx_t_26;
+                                for (__pyx_t_35 = 0; __pyx_t_35 < __pyx_t_27; __pyx_t_35+=1) {
+                                  __pyx_v_j = __pyx_t_35;
 
-          /* "cyext_acv.pyx":2004
+                                  /* "cyext_acv.pyx":2004
  * 
  *                 for j in range(len_va_id[va]):
  *                     phi[i, va_id_a[va, j]] += weight * (v_plus[i] - v_minus[i])             # <<<<<<<<<<<<<<
  * 
  * 
  */
-          __pyx_t_29 = __pyx_v_i;
-          __pyx_t_25 = __pyx_v_i;
-          __pyx_t_36 = __pyx_v_va;
-          __pyx_t_37 = __pyx_v_j;
-          __pyx_t_38 = __pyx_v_i;
-          __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_36 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_37 * __pyx_v_va_id_a.strides[1]) )));
-          *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_phi.data + __pyx_t_38 * __pyx_v_phi.strides[0]) ) + __pyx_t_39 * __pyx_v_phi.strides[1]) )) += (__pyx_v_weight * ((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_29 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_25 * __pyx_v_v_minus.strides[0]) )))));
+                                  __pyx_t_29 = __pyx_v_i;
+                                  __pyx_t_25 = __pyx_v_i;
+                                  __pyx_t_36 = __pyx_v_va;
+                                  __pyx_t_37 = __pyx_v_j;
+                                  __pyx_t_38 = __pyx_v_i;
+                                  __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_36 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_37 * __pyx_v_va_id_a.strides[1]) )));
+                                  *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_phi.data + __pyx_t_38 * __pyx_v_phi.strides[0]) ) + __pyx_t_39 * __pyx_v_phi.strides[1]) )) += (__pyx_v_weight * ((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_29 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_25 * __pyx_v_v_minus.strides[0]) )))));
 
-          /* "cyext_acv.pyx":2007
+                                  /* "cyext_acv.pyx":2007
  * 
  * 
  *                     swings[i, va_id_a[va, j], 0] += (dif_pos * (v_plus[i] - v_minus[i]) * weight) / m             # <<<<<<<<<<<<<<
  *                     swings[i, va_id_a[va, j], 1] += (dif_neg * (v_plus[i] - v_minus[i]) * weight) / m
  * 
  */
-          __pyx_t_25 = __pyx_v_i;
-          __pyx_t_29 = __pyx_v_i;
-          __pyx_t_37 = __pyx_v_va;
-          __pyx_t_36 = __pyx_v_j;
-          __pyx_t_38 = __pyx_v_i;
-          __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_37 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_36 * __pyx_v_va_id_a.strides[1]) )));
-          __pyx_t_40 = 0;
-          *((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings.data + __pyx_t_38 * __pyx_v_swings.strides[0]) ) + __pyx_t_39 * __pyx_v_swings.strides[1]) ) + __pyx_t_40 * __pyx_v_swings.strides[2]) )) += (((__pyx_v_dif_pos * ((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_25 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_29 * __pyx_v_v_minus.strides[0]) ))))) * __pyx_v_weight) / __pyx_v_m);
+                                  __pyx_t_25 = __pyx_v_i;
+                                  __pyx_t_29 = __pyx_v_i;
+                                  __pyx_t_37 = __pyx_v_va;
+                                  __pyx_t_36 = __pyx_v_j;
+                                  __pyx_t_38 = __pyx_v_i;
+                                  __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_37 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_36 * __pyx_v_va_id_a.strides[1]) )));
+                                  __pyx_t_40 = 0;
+                                  *((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings.data + __pyx_t_38 * __pyx_v_swings.strides[0]) ) + __pyx_t_39 * __pyx_v_swings.strides[1]) ) + __pyx_t_40 * __pyx_v_swings.strides[2]) )) += (((__pyx_v_dif_pos * ((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_25 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_29 * __pyx_v_v_minus.strides[0]) ))))) * __pyx_v_weight) / __pyx_v_m);
 
-          /* "cyext_acv.pyx":2008
+                                  /* "cyext_acv.pyx":2008
  * 
  *                     swings[i, va_id_a[va, j], 0] += (dif_pos * (v_plus[i] - v_minus[i]) * weight) / m
  *                     swings[i, va_id_a[va, j], 1] += (dif_neg * (v_plus[i] - v_minus[i]) * weight) / m             # <<<<<<<<<<<<<<
  * 
  *                     swings_prop[i, va_id_a[va, j], 0] += dif_pos
  */
-          __pyx_t_29 = __pyx_v_i;
-          __pyx_t_25 = __pyx_v_i;
-          __pyx_t_36 = __pyx_v_va;
-          __pyx_t_37 = __pyx_v_j;
-          __pyx_t_38 = __pyx_v_i;
-          __pyx_t_40 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_36 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_37 * __pyx_v_va_id_a.strides[1]) )));
-          __pyx_t_39 = 1;
-          *((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings.data + __pyx_t_38 * __pyx_v_swings.strides[0]) ) + __pyx_t_40 * __pyx_v_swings.strides[1]) ) + __pyx_t_39 * __pyx_v_swings.strides[2]) )) += (((__pyx_v_dif_neg * ((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_29 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_25 * __pyx_v_v_minus.strides[0]) ))))) * __pyx_v_weight) / __pyx_v_m);
+                                  __pyx_t_29 = __pyx_v_i;
+                                  __pyx_t_25 = __pyx_v_i;
+                                  __pyx_t_36 = __pyx_v_va;
+                                  __pyx_t_37 = __pyx_v_j;
+                                  __pyx_t_38 = __pyx_v_i;
+                                  __pyx_t_40 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_36 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_37 * __pyx_v_va_id_a.strides[1]) )));
+                                  __pyx_t_39 = 1;
+                                  *((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings.data + __pyx_t_38 * __pyx_v_swings.strides[0]) ) + __pyx_t_40 * __pyx_v_swings.strides[1]) ) + __pyx_t_39 * __pyx_v_swings.strides[2]) )) += (((__pyx_v_dif_neg * ((*((double *) ( /* dim=0 */ (__pyx_v_v_plus.data + __pyx_t_29 * __pyx_v_v_plus.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_v_minus.data + __pyx_t_25 * __pyx_v_v_minus.strides[0]) ))))) * __pyx_v_weight) / __pyx_v_m);
 
-          /* "cyext_acv.pyx":2010
+                                  /* "cyext_acv.pyx":2010
  *                     swings[i, va_id_a[va, j], 1] += (dif_neg * (v_plus[i] - v_minus[i]) * weight) / m
  * 
  *                     swings_prop[i, va_id_a[va, j], 0] += dif_pos             # <<<<<<<<<<<<<<
  *                     swings_prop[i, va_id_a[va, j], 1] += dif_neg
  *                     swings_prop[i, va_id_a[va, j], 2] += dif_null
  */
-          __pyx_t_25 = __pyx_v_va;
-          __pyx_t_29 = __pyx_v_j;
-          __pyx_t_37 = __pyx_v_i;
-          __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_25 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_29 * __pyx_v_va_id_a.strides[1]) )));
-          __pyx_t_40 = 0;
-          *((long *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings_prop.data + __pyx_t_37 * __pyx_v_swings_prop.strides[0]) ) + __pyx_t_39 * __pyx_v_swings_prop.strides[1]) ) + __pyx_t_40 * __pyx_v_swings_prop.strides[2]) )) += __pyx_v_dif_pos;
+                                  __pyx_t_25 = __pyx_v_va;
+                                  __pyx_t_29 = __pyx_v_j;
+                                  __pyx_t_37 = __pyx_v_i;
+                                  __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_25 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_29 * __pyx_v_va_id_a.strides[1]) )));
+                                  __pyx_t_40 = 0;
+                                  *((long *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings_prop.data + __pyx_t_37 * __pyx_v_swings_prop.strides[0]) ) + __pyx_t_39 * __pyx_v_swings_prop.strides[1]) ) + __pyx_t_40 * __pyx_v_swings_prop.strides[2]) )) += __pyx_v_dif_pos;
 
-          /* "cyext_acv.pyx":2011
+                                  /* "cyext_acv.pyx":2011
  * 
  *                     swings_prop[i, va_id_a[va, j], 0] += dif_pos
  *                     swings_prop[i, va_id_a[va, j], 1] += dif_neg             # <<<<<<<<<<<<<<
  *                     swings_prop[i, va_id_a[va, j], 2] += dif_null
  * 
  */
-          __pyx_t_29 = __pyx_v_va;
-          __pyx_t_25 = __pyx_v_j;
-          __pyx_t_37 = __pyx_v_i;
-          __pyx_t_40 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_29 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_25 * __pyx_v_va_id_a.strides[1]) )));
-          __pyx_t_39 = 1;
-          *((long *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings_prop.data + __pyx_t_37 * __pyx_v_swings_prop.strides[0]) ) + __pyx_t_40 * __pyx_v_swings_prop.strides[1]) ) + __pyx_t_39 * __pyx_v_swings_prop.strides[2]) )) += __pyx_v_dif_neg;
+                                  __pyx_t_29 = __pyx_v_va;
+                                  __pyx_t_25 = __pyx_v_j;
+                                  __pyx_t_37 = __pyx_v_i;
+                                  __pyx_t_40 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_29 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_25 * __pyx_v_va_id_a.strides[1]) )));
+                                  __pyx_t_39 = 1;
+                                  *((long *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings_prop.data + __pyx_t_37 * __pyx_v_swings_prop.strides[0]) ) + __pyx_t_40 * __pyx_v_swings_prop.strides[1]) ) + __pyx_t_39 * __pyx_v_swings_prop.strides[2]) )) += __pyx_v_dif_neg;
 
-          /* "cyext_acv.pyx":2012
+                                  /* "cyext_acv.pyx":2012
  *                     swings_prop[i, va_id_a[va, j], 0] += dif_pos
  *                     swings_prop[i, va_id_a[va, j], 1] += dif_neg
  *                     swings_prop[i, va_id_a[va, j], 2] += dif_null             # <<<<<<<<<<<<<<
  * 
  *     return np.array(phi)/m, np.array(swings), np.array(swings_prop)
  */
-          __pyx_t_25 = __pyx_v_va;
-          __pyx_t_29 = __pyx_v_j;
-          __pyx_t_37 = __pyx_v_i;
-          __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_25 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_29 * __pyx_v_va_id_a.strides[1]) )));
-          __pyx_t_40 = 2;
-          *((long *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings_prop.data + __pyx_t_37 * __pyx_v_swings_prop.strides[0]) ) + __pyx_t_39 * __pyx_v_swings_prop.strides[1]) ) + __pyx_t_40 * __pyx_v_swings_prop.strides[2]) )) += __pyx_v_dif_null;
-        }
+                                  __pyx_t_25 = __pyx_v_va;
+                                  __pyx_t_29 = __pyx_v_j;
+                                  __pyx_t_37 = __pyx_v_i;
+                                  __pyx_t_39 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_va_id_a.data + __pyx_t_25 * __pyx_v_va_id_a.strides[0]) ) + __pyx_t_29 * __pyx_v_va_id_a.strides[1]) )));
+                                  __pyx_t_40 = 2;
+                                  *((long *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_swings_prop.data + __pyx_t_37 * __pyx_v_swings_prop.strides[0]) ) + __pyx_t_39 * __pyx_v_swings_prop.strides[1]) ) + __pyx_t_40 * __pyx_v_swings_prop.strides[2]) )) += __pyx_v_dif_null;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                #undef likely
+                #undef unlikely
+                #define likely(x)   __builtin_expect(!!(x), 1)
+                #define unlikely(x) __builtin_expect(!!(x), 0)
+            #endif
+          }
 
-        /* "cyext_acv.pyx":1998
+          /* "cyext_acv.pyx":1998
  *                       thresholds, num_threads)
  * 
- *             for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *             for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                 dif_pos = 1 if (v_plus[i] - v_minus[i]) > 0 else 0
  *                 dif_neg = 1 if (v_plus[i] - v_minus[i]) < 0 else 0
  */
+          /*finally:*/ {
+            /*normal exit:*/{
+              #ifdef WITH_THREAD
+              __Pyx_FastGIL_Forget();
+              Py_BLOCK_THREADS
+              #endif
+              goto __pyx_L39;
+            }
+            __pyx_L39:;
+          }
       }
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
   }
 
@@ -32310,35 +32229,35 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
  * @cython.boundscheck(False)
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2014, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 2014, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 2014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_phi, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2014, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_phi, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 2014, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_1 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
-    __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_5);
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
+    __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_4);
     if (likely(__pyx_t_1)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
       __Pyx_INCREF(__pyx_t_1);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_5, function);
+      __Pyx_DECREF_SET(__pyx_t_4, function);
     }
   }
-  __pyx_t_3 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_1, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
+  __pyx_t_3 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_1, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
   __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyInt_From_unsigned_int(__pyx_v_m); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 2014, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2014, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = __Pyx_PyInt_From_unsigned_int(__pyx_v_m); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 2014, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2014, __pyx_L1_error)
@@ -32356,11 +32275,11 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
       __Pyx_DECREF_SET(__pyx_t_1, function);
     }
   }
-  __pyx_t_5 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_3);
+  __pyx_t_4 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 2014, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
+  if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2014, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
@@ -32387,14 +32306,14 @@ static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice __pyx_v_X, _
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_4);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_5);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_5);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_t_1);
-  __pyx_t_4 = 0;
   __pyx_t_5 = 0;
+  __pyx_t_4 = 0;
   __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
@@ -32678,7 +32597,7 @@ static PyObject *__pyx_pf_9cyext_acv_28swing_sv_clf(CYTHON_UNUSED PyObject *__py
  */
 
 static PyObject *__pyx_pw_9cyext_acv_31global_sdp_clf_cpp_pa_coal(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_cpp_pa_coal(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_num_threads, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_cpp_pa_coal(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, CYTHON_UNUSED int __pyx_v_num_threads, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   int __pyx_v_n_trees;
@@ -32757,26 +32676,29 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_cpp_pa_coal(__Pyx_memviewslic
   long __pyx_t_35;
   long __pyx_t_36;
   int __pyx_t_37;
-  int __pyx_t_38;
+  unsigned int __pyx_t_38;
   int __pyx_t_39;
   int __pyx_t_40;
-  Py_ssize_t __pyx_t_41;
+  int __pyx_t_41;
   Py_ssize_t __pyx_t_42;
   Py_ssize_t __pyx_t_43;
   Py_ssize_t __pyx_t_44;
   Py_ssize_t __pyx_t_45;
   Py_ssize_t __pyx_t_46;
-  PyObject *(*__pyx_t_47)(PyObject *);
-  double __pyx_t_48;
-  Py_ssize_t __pyx_t_49;
-  Py_ssize_t __pyx_t_50;
-  Py_ssize_t __pyx_t_51;
+  Py_ssize_t __pyx_t_47;
+  unsigned int __pyx_t_48;
+  unsigned int __pyx_t_49;
+  int __pyx_t_50;
+  double __pyx_t_51;
   Py_ssize_t __pyx_t_52;
   Py_ssize_t __pyx_t_53;
   Py_ssize_t __pyx_t_54;
   Py_ssize_t __pyx_t_55;
   Py_ssize_t __pyx_t_56;
   Py_ssize_t __pyx_t_57;
+  Py_ssize_t __pyx_t_58;
+  Py_ssize_t __pyx_t_59;
+  Py_ssize_t __pyx_t_60;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -33578,7 +33500,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_cpp_pa_coal(__Pyx_memviewslic
  *         for b in range(n_trees):
  * 
  *             for leaf_numb in range(leaves_nb[b]):             # <<<<<<<<<<<<<<
- *                 for i in range(N, nogil=True, num_threads=num_threads):
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):
  *                     o_all = 0
  */
       __pyx_t_30 = __pyx_v_b;
@@ -33590,1032 +33512,1063 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_cpp_pa_coal(__Pyx_memviewslic
         /* "cyext_acv.pyx":2096
  * 
  *             for leaf_numb in range(leaves_nb[b]):
- *                 for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                     o_all = 0
  *                     for s in range(S_size):
  */
-        __pyx_t_4 = __Pyx_PyInt_From_unsigned_int(__pyx_v_N); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2096, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2096, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_GIVEREF(__pyx_t_4);
-        PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4);
-        __pyx_t_4 = 0;
-        __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2096, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 2096, __pyx_L1_error)
-        __pyx_t_21 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2096, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_21);
-        if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_num_threads, __pyx_t_21) < 0) __PYX_ERR(0, 2096, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
-        __pyx_t_21 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2096, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_21);
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (likely(PyList_CheckExact(__pyx_t_21)) || PyTuple_CheckExact(__pyx_t_21)) {
-          __pyx_t_4 = __pyx_t_21; __Pyx_INCREF(__pyx_t_4); __pyx_t_13 = 0;
-          __pyx_t_20 = NULL;
-        } else {
-          __pyx_t_13 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_21); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2096, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_20 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 2096, __pyx_L1_error)
-        }
-        __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
-        for (;;) {
-          if (likely(!__pyx_t_20)) {
-            if (likely(PyList_CheckExact(__pyx_t_4))) {
-              if (__pyx_t_13 >= PyList_GET_SIZE(__pyx_t_4)) break;
-              #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_21 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_13); __Pyx_INCREF(__pyx_t_21); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 2096, __pyx_L1_error)
-              #else
-              __pyx_t_21 = PySequence_ITEM(__pyx_t_4, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2096, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_21);
-              #endif
-            } else {
-              if (__pyx_t_13 >= PyTuple_GET_SIZE(__pyx_t_4)) break;
-              #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_21 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_13); __Pyx_INCREF(__pyx_t_21); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 2096, __pyx_L1_error)
-              #else
-              __pyx_t_21 = PySequence_ITEM(__pyx_t_4, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2096, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_21);
-              #endif
-            }
-          } else {
-            __pyx_t_21 = __pyx_t_20(__pyx_t_4);
-            if (unlikely(!__pyx_t_21)) {
-              PyObject* exc_type = PyErr_Occurred();
-              if (exc_type) {
-                if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 2096, __pyx_L1_error)
-              }
-              break;
-            }
-            __Pyx_GOTREF(__pyx_t_21);
-          }
-          __pyx_t_38 = __Pyx_PyInt_As_int(__pyx_t_21); if (unlikely((__pyx_t_38 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2096, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
-          __pyx_v_i = __pyx_t_38;
+        {
+            #ifdef WITH_THREAD
+            PyThreadState *_save;
+            Py_UNBLOCK_THREADS
+            __Pyx_FastGIL_Remember();
+            #endif
+            /*try:*/ {
+              __pyx_t_9 = __pyx_v_N;
+              if ((1 == 0)) abort();
+              {
+                  #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                      #undef likely
+                      #undef unlikely
+                      #define likely(x)   (x)
+                      #define unlikely(x) (x)
+                  #endif
+                  __pyx_t_38 = (__pyx_t_9 - 0 + 1 - 1/abs(1)) / 1;
+                  if (__pyx_t_38 > 0)
+                  {
+                      #ifdef _OPENMP
+                      #pragma omp parallel reduction(+:__pyx_v_p) reduction(+:__pyx_v_p_d) reduction(+:__pyx_v_p_s) reduction(+:__pyx_v_p_sd) reduction(+:__pyx_v_p_su) reduction(+:__pyx_v_p_u) num_threads(__pyx_v_num_threads) private(__pyx_t_12, __pyx_t_13, __pyx_t_14, __pyx_t_19, __pyx_t_30, __pyx_t_32, __pyx_t_33, __pyx_t_39, __pyx_t_40, __pyx_t_41, __pyx_t_42, __pyx_t_43, __pyx_t_44, __pyx_t_45, __pyx_t_46, __pyx_t_47, __pyx_t_48, __pyx_t_49, __pyx_t_50, __pyx_t_51)
+                      #endif /* _OPENMP */
+                      {
+                          #ifdef _OPENMP
+                          #pragma omp for lastprivate(__pyx_v_a_it) lastprivate(__pyx_v_b_it) firstprivate(__pyx_v_i) lastprivate(__pyx_v_i) lastprivate(__pyx_v_j) lastprivate(__pyx_v_lm) lastprivate(__pyx_v_lm_s) lastprivate(__pyx_v_o_all) lastprivate(__pyx_v_s)
+                          #endif /* _OPENMP */
+                          for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_38; __pyx_t_10++){
+                              {
+                                  __pyx_v_i = (int)(0 + 1 * __pyx_t_10);
+                                  /* Initialize private variables to invalid values */
+                                  __pyx_v_a_it = ((unsigned int)0xbad0bad0);
+                                  __pyx_v_b_it = ((unsigned int)0xbad0bad0);
+                                  __pyx_v_j = ((int)0xbad0bad0);
+                                  __pyx_v_lm = ((int)0xbad0bad0);
+                                  __pyx_v_lm_s = ((int)0xbad0bad0);
+                                  __pyx_v_o_all = ((unsigned int)0xbad0bad0);
+                                  __pyx_v_s = ((int)0xbad0bad0);
 
-          /* "cyext_acv.pyx":2097
+                                  /* "cyext_acv.pyx":2097
  *             for leaf_numb in range(leaves_nb[b]):
- *                 for i in range(N, nogil=True, num_threads=num_threads):
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):
  *                     o_all = 0             # <<<<<<<<<<<<<<
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  */
-          __pyx_v_o_all = 0;
+                                  __pyx_v_o_all = 0;
 
-          /* "cyext_acv.pyx":2098
- *                 for i in range(N, nogil=True, num_threads=num_threads):
+                                  /* "cyext_acv.pyx":2098
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):
  *                     o_all = 0
  *                     for s in range(S_size):             # <<<<<<<<<<<<<<
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1
  */
-          __pyx_t_38 = __pyx_v_S_size;
-          __pyx_t_39 = __pyx_t_38;
-          for (__pyx_t_40 = 0; __pyx_t_40 < __pyx_t_39; __pyx_t_40+=1) {
-            __pyx_v_s = __pyx_t_40;
+                                  __pyx_t_39 = __pyx_v_S_size;
+                                  __pyx_t_40 = __pyx_t_39;
+                                  for (__pyx_t_41 = 0; __pyx_t_41 < __pyx_t_40; __pyx_t_41+=1) {
+                                    __pyx_v_s = __pyx_t_41;
 
-            /* "cyext_acv.pyx":2099
+                                    /* "cyext_acv.pyx":2099
  *                     o_all = 0
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                             o_all = o_all + 1
  *                     if o_all > 0:
  */
-            __pyx_t_30 = __pyx_v_i;
-            __pyx_t_33 = __pyx_v_s;
-            __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_30 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_33 * __pyx_v_S.strides[0]) )));
-            __pyx_t_42 = __pyx_v_s;
-            __pyx_t_43 = __pyx_v_b;
-            __pyx_t_44 = __pyx_v_leaf_numb;
-            __pyx_t_45 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_42 * __pyx_v_S.strides[0]) )));
-            __pyx_t_46 = 1;
-            __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_32 * __pyx_v_X.strides[0]) ) + __pyx_t_41 * __pyx_v_X.strides[1]) ))) > (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_43 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_44 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_45 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_46 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            if (!__pyx_t_12) {
-            } else {
-              __pyx_t_19 = __pyx_t_12;
-              goto __pyx_L34_bool_binop_done;
-            }
-            __pyx_t_42 = __pyx_v_i;
-            __pyx_t_46 = __pyx_v_s;
-            __pyx_t_45 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_44 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_46 * __pyx_v_S.strides[0]) )));
-            __pyx_t_43 = __pyx_v_s;
-            __pyx_t_33 = __pyx_v_b;
-            __pyx_t_30 = __pyx_v_leaf_numb;
-            __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_43 * __pyx_v_S.strides[0]) )));
-            __pyx_t_32 = 0;
-            __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_45 * __pyx_v_X.strides[0]) ) + __pyx_t_44 * __pyx_v_X.strides[1]) ))) < (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_30 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_32 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            __pyx_t_19 = __pyx_t_12;
-            __pyx_L34_bool_binop_done:;
-            if (__pyx_t_19) {
+                                    __pyx_t_30 = __pyx_v_i;
+                                    __pyx_t_33 = __pyx_v_s;
+                                    __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_30 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_33 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_43 = __pyx_v_s;
+                                    __pyx_t_44 = __pyx_v_b;
+                                    __pyx_t_45 = __pyx_v_leaf_numb;
+                                    __pyx_t_46 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_43 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_47 = 1;
+                                    __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_32 * __pyx_v_X.strides[0]) ) + __pyx_t_42 * __pyx_v_X.strides[1]) ))) > (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_44 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_45 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_46 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_47 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    if (!__pyx_t_12) {
+                                    } else {
+                                      __pyx_t_19 = __pyx_t_12;
+                                      goto __pyx_L41_bool_binop_done;
+                                    }
+                                    __pyx_t_43 = __pyx_v_i;
+                                    __pyx_t_47 = __pyx_v_s;
+                                    __pyx_t_46 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_43 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_45 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_47 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_44 = __pyx_v_s;
+                                    __pyx_t_33 = __pyx_v_b;
+                                    __pyx_t_30 = __pyx_v_leaf_numb;
+                                    __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_44 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_32 = 0;
+                                    __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_46 * __pyx_v_X.strides[0]) ) + __pyx_t_45 * __pyx_v_X.strides[1]) ))) < (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_30 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_32 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    __pyx_t_19 = __pyx_t_12;
+                                    __pyx_L41_bool_binop_done:;
+                                    if (__pyx_t_19) {
 
-              /* "cyext_acv.pyx":2100
+                                      /* "cyext_acv.pyx":2100
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1             # <<<<<<<<<<<<<<
  *                     if o_all > 0:
  *                         continue
  */
-              __pyx_v_o_all = (__pyx_v_o_all + 1);
+                                      __pyx_v_o_all = (__pyx_v_o_all + 1);
 
-              /* "cyext_acv.pyx":2099
+                                      /* "cyext_acv.pyx":2099
  *                     o_all = 0
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                             o_all = o_all + 1
  *                     if o_all > 0:
  */
-            }
-          }
+                                    }
+                                  }
 
-          /* "cyext_acv.pyx":2101
+                                  /* "cyext_acv.pyx":2101
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1
  *                     if o_all > 0:             # <<<<<<<<<<<<<<
  *                         continue
  * 
  */
-          __pyx_t_19 = ((__pyx_v_o_all > 0) != 0);
-          if (__pyx_t_19) {
+                                  __pyx_t_19 = ((__pyx_v_o_all > 0) != 0);
+                                  if (__pyx_t_19) {
 
-            /* "cyext_acv.pyx":2102
+                                    /* "cyext_acv.pyx":2102
  *                             o_all = o_all + 1
  *                     if o_all > 0:
  *                         continue             # <<<<<<<<<<<<<<
  * 
  *                     p = 0
  */
-            goto __pyx_L29_continue;
+                                    goto __pyx_L34_continue;
 
-            /* "cyext_acv.pyx":2101
+                                    /* "cyext_acv.pyx":2101
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1
  *                     if o_all > 0:             # <<<<<<<<<<<<<<
  *                         continue
  * 
  */
-          }
+                                  }
 
-          /* "cyext_acv.pyx":2104
+                                  /* "cyext_acv.pyx":2104
  *                         continue
  * 
  *                     p = 0             # <<<<<<<<<<<<<<
  *                     p_u = 0
  *                     p_d = 0
  */
-          __pyx_v_p = 0;
+                                  __pyx_v_p = 0;
 
-          /* "cyext_acv.pyx":2105
+                                  /* "cyext_acv.pyx":2105
  * 
  *                     p = 0
  *                     p_u = 0             # <<<<<<<<<<<<<<
  *                     p_d = 0
  *                     p_s = 0
  */
-          __pyx_v_p_u = 0;
+                                  __pyx_v_p_u = 0;
 
-          /* "cyext_acv.pyx":2106
+                                  /* "cyext_acv.pyx":2106
  *                     p = 0
  *                     p_u = 0
  *                     p_d = 0             # <<<<<<<<<<<<<<
  *                     p_s = 0
  *                     p_su = 0
  */
-          __pyx_v_p_d = 0;
+                                  __pyx_v_p_d = 0;
 
-          /* "cyext_acv.pyx":2107
+                                  /* "cyext_acv.pyx":2107
  *                     p_u = 0
  *                     p_d = 0
  *                     p_s = 0             # <<<<<<<<<<<<<<
  *                     p_su = 0
  *                     p_sd = 0
  */
-          __pyx_v_p_s = 0;
+                                  __pyx_v_p_s = 0;
 
-          /* "cyext_acv.pyx":2108
+                                  /* "cyext_acv.pyx":2108
  *                     p_d = 0
  *                     p_s = 0
  *                     p_su = 0             # <<<<<<<<<<<<<<
  *                     p_sd = 0
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+ *                     for j in range(data.shape[0]):
  */
-          __pyx_v_p_su = 0;
+                                  __pyx_v_p_su = 0;
 
-          /* "cyext_acv.pyx":2109
+                                  /* "cyext_acv.pyx":2109
  *                     p_s = 0
  *                     p_su = 0
  *                     p_sd = 0             # <<<<<<<<<<<<<<
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+ *                     for j in range(data.shape[0]):
  * #                         print('debug', j)
  */
-          __pyx_v_p_sd = 0;
+                                  __pyx_v_p_sd = 0;
 
-          /* "cyext_acv.pyx":2110
+                                  /* "cyext_acv.pyx":2110
  *                     p_su = 0
  *                     p_sd = 0
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                     for j in range(data.shape[0]):             # <<<<<<<<<<<<<<
  * #                         print('debug', j)
  *                         a_it = 0
  */
-          __pyx_t_21 = PyInt_FromSsize_t((__pyx_v_data.shape[0])); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2110, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_21);
-          __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2110, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __Pyx_GIVEREF(__pyx_t_21);
-          PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_21);
-          __pyx_t_21 = 0;
-          __pyx_t_21 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2110, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_21);
-          if (PyDict_SetItem(__pyx_t_21, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 2110, __pyx_L1_error)
-          __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2110, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_3);
-          if (PyDict_SetItem(__pyx_t_21, __pyx_n_s_num_threads, __pyx_t_3) < 0) __PYX_ERR(0, 2110, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_2, __pyx_t_21); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2110, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_3);
-          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
-          if (likely(PyList_CheckExact(__pyx_t_3)) || PyTuple_CheckExact(__pyx_t_3)) {
-            __pyx_t_21 = __pyx_t_3; __Pyx_INCREF(__pyx_t_21); __pyx_t_14 = 0;
-            __pyx_t_47 = NULL;
-          } else {
-            __pyx_t_14 = -1; __pyx_t_21 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2110, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_21);
-            __pyx_t_47 = Py_TYPE(__pyx_t_21)->tp_iternext; if (unlikely(!__pyx_t_47)) __PYX_ERR(0, 2110, __pyx_L1_error)
-          }
-          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          for (;;) {
-            if (likely(!__pyx_t_47)) {
-              if (likely(PyList_CheckExact(__pyx_t_21))) {
-                if (__pyx_t_14 >= PyList_GET_SIZE(__pyx_t_21)) break;
-                #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-                __pyx_t_3 = PyList_GET_ITEM(__pyx_t_21, __pyx_t_14); __Pyx_INCREF(__pyx_t_3); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 2110, __pyx_L1_error)
-                #else
-                __pyx_t_3 = PySequence_ITEM(__pyx_t_21, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2110, __pyx_L1_error)
-                __Pyx_GOTREF(__pyx_t_3);
-                #endif
-              } else {
-                if (__pyx_t_14 >= PyTuple_GET_SIZE(__pyx_t_21)) break;
-                #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-                __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_21, __pyx_t_14); __Pyx_INCREF(__pyx_t_3); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 2110, __pyx_L1_error)
-                #else
-                __pyx_t_3 = PySequence_ITEM(__pyx_t_21, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2110, __pyx_L1_error)
-                __Pyx_GOTREF(__pyx_t_3);
-                #endif
-              }
-            } else {
-              __pyx_t_3 = __pyx_t_47(__pyx_t_21);
-              if (unlikely(!__pyx_t_3)) {
-                PyObject* exc_type = PyErr_Occurred();
-                if (exc_type) {
-                  if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                  else __PYX_ERR(0, 2110, __pyx_L1_error)
-                }
-                break;
-              }
-              __Pyx_GOTREF(__pyx_t_3);
-            }
-            __pyx_t_38 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_38 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2110, __pyx_L1_error)
-            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __pyx_v_j = __pyx_t_38;
+                                  __pyx_t_13 = (__pyx_v_data.shape[0]);
+                                  __pyx_t_14 = __pyx_t_13;
+                                  for (__pyx_t_39 = 0; __pyx_t_39 < __pyx_t_14; __pyx_t_39+=1) {
+                                    __pyx_v_j = __pyx_t_39;
 
-            /* "cyext_acv.pyx":2112
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+                                    /* "cyext_acv.pyx":2112
+ *                     for j in range(data.shape[0]):
  * #                         print('debug', j)
  *                         a_it = 0             # <<<<<<<<<<<<<<
  *                         b_it = 0
  *                         lm = 0
  */
-            __pyx_v_a_it = 0;
+                                    __pyx_v_a_it = 0;
 
-            /* "cyext_acv.pyx":2113
+                                    /* "cyext_acv.pyx":2113
  * #                         print('debug', j)
  *                         a_it = 0
  *                         b_it = 0             # <<<<<<<<<<<<<<
  *                         lm = 0
  *                         lm_s = 0
  */
-            __pyx_v_b_it = 0;
+                                    __pyx_v_b_it = 0;
 
-            /* "cyext_acv.pyx":2114
+                                    /* "cyext_acv.pyx":2114
  *                         a_it = 0
  *                         b_it = 0
  *                         lm = 0             # <<<<<<<<<<<<<<
  *                         lm_s = 0
  *                         for s in range(m):
  */
-            __pyx_v_lm = 0;
+                                    __pyx_v_lm = 0;
 
-            /* "cyext_acv.pyx":2115
+                                    /* "cyext_acv.pyx":2115
  *                         b_it = 0
  *                         lm = 0
  *                         lm_s = 0             # <<<<<<<<<<<<<<
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  */
-            __pyx_v_lm_s = 0;
+                                    __pyx_v_lm_s = 0;
 
-            /* "cyext_acv.pyx":2116
+                                    /* "cyext_acv.pyx":2116
  *                         lm = 0
  *                         lm_s = 0
  *                         for s in range(m):             # <<<<<<<<<<<<<<
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                                 a_it = a_it + 1
  */
-            __pyx_t_9 = __pyx_v_m;
-            __pyx_t_10 = __pyx_t_9;
-            for (__pyx_t_38 = 0; __pyx_t_38 < __pyx_t_10; __pyx_t_38+=1) {
-              __pyx_v_s = __pyx_t_38;
+                                    __pyx_t_48 = __pyx_v_m;
+                                    __pyx_t_49 = __pyx_t_48;
+                                    for (__pyx_t_40 = 0; __pyx_t_40 < __pyx_t_49; __pyx_t_40+=1) {
+                                      __pyx_v_s = __pyx_t_40;
 
-              /* "cyext_acv.pyx":2117
+                                      /* "cyext_acv.pyx":2117
  *                         lm_s = 0
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):             # <<<<<<<<<<<<<<
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  */
-              __pyx_t_43 = __pyx_v_j;
-              __pyx_t_32 = __pyx_v_s;
-              __pyx_t_41 = __pyx_v_b;
-              __pyx_t_30 = __pyx_v_leaf_numb;
-              __pyx_t_33 = __pyx_v_s;
-              __pyx_t_46 = 1;
-              __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_43 * __pyx_v_data.strides[0]) ) + __pyx_t_32 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_30 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_46 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              if (__pyx_t_12) {
-              } else {
-                __pyx_t_19 = __pyx_t_12;
-                goto __pyx_L42_bool_binop_done;
-              }
-              __pyx_t_46 = __pyx_v_j;
-              __pyx_t_33 = __pyx_v_s;
-              __pyx_t_30 = __pyx_v_b;
-              __pyx_t_41 = __pyx_v_leaf_numb;
-              __pyx_t_32 = __pyx_v_s;
-              __pyx_t_43 = 0;
-              __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_46 * __pyx_v_data.strides[0]) ) + __pyx_t_33 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_30 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_32 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_43 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              __pyx_t_19 = __pyx_t_12;
-              __pyx_L42_bool_binop_done:;
-              if (__pyx_t_19) {
+                                      __pyx_t_44 = __pyx_v_j;
+                                      __pyx_t_32 = __pyx_v_s;
+                                      __pyx_t_42 = __pyx_v_b;
+                                      __pyx_t_30 = __pyx_v_leaf_numb;
+                                      __pyx_t_33 = __pyx_v_s;
+                                      __pyx_t_47 = 1;
+                                      __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_44 * __pyx_v_data.strides[0]) ) + __pyx_t_32 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_30 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_47 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      if (__pyx_t_12) {
+                                      } else {
+                                        __pyx_t_19 = __pyx_t_12;
+                                        goto __pyx_L49_bool_binop_done;
+                                      }
+                                      __pyx_t_47 = __pyx_v_j;
+                                      __pyx_t_33 = __pyx_v_s;
+                                      __pyx_t_30 = __pyx_v_b;
+                                      __pyx_t_42 = __pyx_v_leaf_numb;
+                                      __pyx_t_32 = __pyx_v_s;
+                                      __pyx_t_44 = 0;
+                                      __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_47 * __pyx_v_data.strides[0]) ) + __pyx_t_33 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_30 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_32 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_44 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      __pyx_t_19 = __pyx_t_12;
+                                      __pyx_L49_bool_binop_done:;
+                                      if (__pyx_t_19) {
 
-                /* "cyext_acv.pyx":2118
+                                        /* "cyext_acv.pyx":2118
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                                 a_it = a_it + 1             # <<<<<<<<<<<<<<
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  */
-                __pyx_v_a_it = (__pyx_v_a_it + 1);
+                                        __pyx_v_a_it = (__pyx_v_a_it + 1);
 
-                /* "cyext_acv.pyx":2117
+                                        /* "cyext_acv.pyx":2117
  *                         lm_s = 0
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):             # <<<<<<<<<<<<<<
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  */
-              }
-            }
+                                      }
+                                    }
 
-            /* "cyext_acv.pyx":2119
+                                    /* "cyext_acv.pyx":2119
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):             # <<<<<<<<<<<<<<
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                                 b_it = b_it + 1
  */
-            __pyx_t_38 = __pyx_v_S_size;
-            __pyx_t_39 = __pyx_t_38;
-            for (__pyx_t_40 = 0; __pyx_t_40 < __pyx_t_39; __pyx_t_40+=1) {
-              __pyx_v_s = __pyx_t_40;
+                                    __pyx_t_40 = __pyx_v_S_size;
+                                    __pyx_t_41 = __pyx_t_40;
+                                    for (__pyx_t_50 = 0; __pyx_t_50 < __pyx_t_41; __pyx_t_50+=1) {
+                                      __pyx_v_s = __pyx_t_50;
 
-              /* "cyext_acv.pyx":2120
+                                      /* "cyext_acv.pyx":2120
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                                 b_it = b_it + 1
  * 
  */
-              __pyx_t_43 = __pyx_v_s;
-              __pyx_t_32 = __pyx_v_j;
-              __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_43 * __pyx_v_S.strides[0]) )));
-              __pyx_t_30 = __pyx_v_s;
-              __pyx_t_33 = __pyx_v_b;
-              __pyx_t_46 = __pyx_v_leaf_numb;
-              __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_30 * __pyx_v_S.strides[0]) )));
-              __pyx_t_44 = 1;
-              __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_32 * __pyx_v_data.strides[0]) ) + __pyx_t_41 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_46 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_44 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              if (__pyx_t_12) {
-              } else {
-                __pyx_t_19 = __pyx_t_12;
-                goto __pyx_L47_bool_binop_done;
-              }
-              __pyx_t_30 = __pyx_v_s;
-              __pyx_t_44 = __pyx_v_j;
-              __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_30 * __pyx_v_S.strides[0]) )));
-              __pyx_t_46 = __pyx_v_s;
-              __pyx_t_33 = __pyx_v_b;
-              __pyx_t_43 = __pyx_v_leaf_numb;
-              __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_46 * __pyx_v_S.strides[0]) )));
-              __pyx_t_32 = 0;
-              __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_44 * __pyx_v_data.strides[0]) ) + __pyx_t_42 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_43 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_32 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              __pyx_t_19 = __pyx_t_12;
-              __pyx_L47_bool_binop_done:;
-              if (__pyx_t_19) {
+                                      __pyx_t_44 = __pyx_v_s;
+                                      __pyx_t_32 = __pyx_v_j;
+                                      __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_44 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_30 = __pyx_v_s;
+                                      __pyx_t_33 = __pyx_v_b;
+                                      __pyx_t_47 = __pyx_v_leaf_numb;
+                                      __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_30 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_45 = 1;
+                                      __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_32 * __pyx_v_data.strides[0]) ) + __pyx_t_42 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_47 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_43 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_45 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      if (__pyx_t_12) {
+                                      } else {
+                                        __pyx_t_19 = __pyx_t_12;
+                                        goto __pyx_L54_bool_binop_done;
+                                      }
+                                      __pyx_t_30 = __pyx_v_s;
+                                      __pyx_t_45 = __pyx_v_j;
+                                      __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_30 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_47 = __pyx_v_s;
+                                      __pyx_t_33 = __pyx_v_b;
+                                      __pyx_t_44 = __pyx_v_leaf_numb;
+                                      __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_47 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_32 = 0;
+                                      __pyx_t_12 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_45 * __pyx_v_data.strides[0]) ) + __pyx_t_43 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_33 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_44 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_32 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      __pyx_t_19 = __pyx_t_12;
+                                      __pyx_L54_bool_binop_done:;
+                                      if (__pyx_t_19) {
 
-                /* "cyext_acv.pyx":2121
+                                        /* "cyext_acv.pyx":2121
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                                 b_it = b_it + 1             # <<<<<<<<<<<<<<
  * 
  *                         if a_it == m:
  */
-                __pyx_v_b_it = (__pyx_v_b_it + 1);
+                                        __pyx_v_b_it = (__pyx_v_b_it + 1);
 
-                /* "cyext_acv.pyx":2120
+                                        /* "cyext_acv.pyx":2120
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                                 b_it = b_it + 1
  * 
  */
-              }
-            }
+                                      }
+                                    }
 
-            /* "cyext_acv.pyx":2123
+                                    /* "cyext_acv.pyx":2123
  *                                 b_it = b_it + 1
  * 
  *                         if a_it == m:             # <<<<<<<<<<<<<<
  *                             lm = 1
  * 
  */
-            __pyx_t_19 = ((__pyx_v_a_it == __pyx_v_m) != 0);
-            if (__pyx_t_19) {
+                                    __pyx_t_19 = ((__pyx_v_a_it == __pyx_v_m) != 0);
+                                    if (__pyx_t_19) {
 
-              /* "cyext_acv.pyx":2124
+                                      /* "cyext_acv.pyx":2124
  * 
  *                         if a_it == m:
  *                             lm = 1             # <<<<<<<<<<<<<<
  * 
  *                         if b_it == S_size:
  */
-              __pyx_v_lm = 1;
+                                      __pyx_v_lm = 1;
 
-              /* "cyext_acv.pyx":2123
+                                      /* "cyext_acv.pyx":2123
  *                                 b_it = b_it + 1
  * 
  *                         if a_it == m:             # <<<<<<<<<<<<<<
  *                             lm = 1
  * 
  */
-            }
+                                    }
 
-            /* "cyext_acv.pyx":2126
+                                    /* "cyext_acv.pyx":2126
  *                             lm = 1
  * 
  *                         if b_it == S_size:             # <<<<<<<<<<<<<<
  *                             lm_s = 1
  * 
  */
-            __pyx_t_19 = ((__pyx_v_b_it == __pyx_v_S_size) != 0);
-            if (__pyx_t_19) {
+                                    __pyx_t_19 = ((__pyx_v_b_it == __pyx_v_S_size) != 0);
+                                    if (__pyx_t_19) {
 
-              /* "cyext_acv.pyx":2127
+                                      /* "cyext_acv.pyx":2127
  * 
  *                         if b_it == S_size:
  *                             lm_s = 1             # <<<<<<<<<<<<<<
  * 
  *                         p += lm
  */
-              __pyx_v_lm_s = 1;
+                                      __pyx_v_lm_s = 1;
 
-              /* "cyext_acv.pyx":2126
+                                      /* "cyext_acv.pyx":2126
  *                             lm = 1
  * 
  *                         if b_it == S_size:             # <<<<<<<<<<<<<<
  *                             lm_s = 1
  * 
  */
-            }
+                                    }
 
-            /* "cyext_acv.pyx":2129
+                                    /* "cyext_acv.pyx":2129
  *                             lm_s = 1
  * 
  *                         p += lm             # <<<<<<<<<<<<<<
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:
  */
-            __pyx_v_p = (__pyx_v_p + __pyx_v_lm);
+                                    __pyx_v_p = (__pyx_v_p + __pyx_v_lm);
 
-            /* "cyext_acv.pyx":2130
+                                    /* "cyext_acv.pyx":2130
  * 
  *                         p += lm
  *                         p_s += lm_s             # <<<<<<<<<<<<<<
  *                         if fX[R_buf[i]] == y_pred[j]:
  *                             p_u += lm
  */
-            __pyx_v_p_s = (__pyx_v_p_s + __pyx_v_lm_s);
+                                    __pyx_v_p_s = (__pyx_v_p_s + __pyx_v_lm_s);
 
-            /* "cyext_acv.pyx":2131
+                                    /* "cyext_acv.pyx":2131
  *                         p += lm
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:             # <<<<<<<<<<<<<<
  *                             p_u += lm
  *                             p_su += lm_s
  */
-            __pyx_t_46 = __pyx_v_i;
-            __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_46 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_41 = __pyx_v_j;
-            __pyx_t_19 = (((*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_32 * __pyx_v_fX.strides[0]) ))) == (*((long *) ( /* dim=0 */ (__pyx_v_y_pred.data + __pyx_t_41 * __pyx_v_y_pred.strides[0]) )))) != 0);
-            if (__pyx_t_19) {
+                                    __pyx_t_47 = __pyx_v_i;
+                                    __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_42 = __pyx_v_j;
+                                    __pyx_t_19 = (((*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_32 * __pyx_v_fX.strides[0]) ))) == (*((long *) ( /* dim=0 */ (__pyx_v_y_pred.data + __pyx_t_42 * __pyx_v_y_pred.strides[0]) )))) != 0);
+                                    if (__pyx_t_19) {
 
-              /* "cyext_acv.pyx":2132
+                                      /* "cyext_acv.pyx":2132
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:
  *                             p_u += lm             # <<<<<<<<<<<<<<
  *                             p_su += lm_s
  *                         else:
  */
-              __pyx_v_p_u = (__pyx_v_p_u + __pyx_v_lm);
+                                      __pyx_v_p_u = (__pyx_v_p_u + __pyx_v_lm);
 
-              /* "cyext_acv.pyx":2133
+                                      /* "cyext_acv.pyx":2133
  *                         if fX[R_buf[i]] == y_pred[j]:
  *                             p_u += lm
  *                             p_su += lm_s             # <<<<<<<<<<<<<<
  *                         else:
  *                             p_d += lm
  */
-              __pyx_v_p_su = (__pyx_v_p_su + __pyx_v_lm_s);
+                                      __pyx_v_p_su = (__pyx_v_p_su + __pyx_v_lm_s);
 
-              /* "cyext_acv.pyx":2131
+                                      /* "cyext_acv.pyx":2131
  *                         p += lm
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:             # <<<<<<<<<<<<<<
  *                             p_u += lm
  *                             p_su += lm_s
  */
-              goto __pyx_L51;
-            }
+                                      goto __pyx_L58;
+                                    }
 
-            /* "cyext_acv.pyx":2135
+                                    /* "cyext_acv.pyx":2135
  *                             p_su += lm_s
  *                         else:
  *                             p_d += lm             # <<<<<<<<<<<<<<
  *                             p_sd += lm_s
  * 
  */
-            /*else*/ {
-              __pyx_v_p_d = (__pyx_v_p_d + __pyx_v_lm);
+                                    /*else*/ {
+                                      __pyx_v_p_d = (__pyx_v_p_d + __pyx_v_lm);
 
-              /* "cyext_acv.pyx":2136
+                                      /* "cyext_acv.pyx":2136
  *                         else:
  *                             p_d += lm
  *                             p_sd += lm_s             # <<<<<<<<<<<<<<
  * 
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0
  */
-              __pyx_v_p_sd = (__pyx_v_p_sd + __pyx_v_lm_s);
-            }
-            __pyx_L51:;
+                                      __pyx_v_p_sd = (__pyx_v_p_sd + __pyx_v_lm_s);
+                                    }
+                                    __pyx_L58:;
+                                  }
 
-            /* "cyext_acv.pyx":2110
- *                     p_su = 0
- *                     p_sd = 0
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
- * #                         print('debug', j)
- *                         a_it = 0
- */
-          }
-          __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
-
-          /* "cyext_acv.pyx":2138
+                                  /* "cyext_acv.pyx":2138
  *                             p_sd += lm_s
  * 
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0             # <<<<<<<<<<<<<<
  *                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  */
-          if (((__pyx_v_p_s != 0) != 0)) {
-            __pyx_t_41 = __pyx_v_b;
-            __pyx_t_46 = __pyx_v_leaf_numb;
-            __pyx_t_32 = __pyx_v_i;
-            __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_32 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_33 = __pyx_v_b;
-            __pyx_t_30 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_41 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_46 * __pyx_v_leaf_idx_trees.strides[1]) )));
-            __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_43 * __pyx_v_fX.strides[0]) )));
-            __pyx_t_44 = __pyx_v_b;
-            __pyx_t_48 = ((__pyx_v_p * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_33 * __pyx_v_values.strides[0]) ) + __pyx_t_30 * __pyx_v_values.strides[1]) ) + __pyx_t_42 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_44 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_s));
-          } else {
-            __pyx_t_48 = 0.0;
-          }
-          __pyx_t_44 = __pyx_v_i;
-          __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_44 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_43 = 0;
-          *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_32 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_43 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_48;
+                                  if (((__pyx_v_p_s != 0) != 0)) {
+                                    __pyx_t_42 = __pyx_v_b;
+                                    __pyx_t_47 = __pyx_v_leaf_numb;
+                                    __pyx_t_32 = __pyx_v_i;
+                                    __pyx_t_44 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_32 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_33 = __pyx_v_b;
+                                    __pyx_t_30 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_42 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_47 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                    __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_44 * __pyx_v_fX.strides[0]) )));
+                                    __pyx_t_45 = __pyx_v_b;
+                                    __pyx_t_51 = ((__pyx_v_p * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_33 * __pyx_v_values.strides[0]) ) + __pyx_t_30 * __pyx_v_values.strides[1]) ) + __pyx_t_43 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_45 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_s));
+                                  } else {
+                                    __pyx_t_51 = 0.0;
+                                  }
+                                  __pyx_t_45 = __pyx_v_i;
+                                  __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_45 * __pyx_v_R_buf.strides[0]) )));
+                                  __pyx_t_44 = 0;
+                                  *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_32 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_44 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_51;
 
-          /* "cyext_acv.pyx":2139
+                                  /* "cyext_acv.pyx":2139
  * 
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0
  *                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0             # <<<<<<<<<<<<<<
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
  */
-          if (((__pyx_v_p_su != 0) != 0)) {
-            __pyx_t_44 = __pyx_v_b;
-            __pyx_t_43 = __pyx_v_leaf_numb;
-            __pyx_t_32 = __pyx_v_i;
-            __pyx_t_46 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_32 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_41 = __pyx_v_b;
-            __pyx_t_42 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_44 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_43 * __pyx_v_leaf_idx_trees.strides[1]) )));
-            __pyx_t_30 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_46 * __pyx_v_fX.strides[0]) )));
-            __pyx_t_33 = __pyx_v_b;
-            __pyx_t_48 = ((__pyx_v_p_u * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_41 * __pyx_v_values.strides[0]) ) + __pyx_t_42 * __pyx_v_values.strides[1]) ) + __pyx_t_30 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_33 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_su));
-          } else {
-            __pyx_t_48 = 0.0;
-          }
-          __pyx_t_33 = __pyx_v_i;
-          __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_33 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_46 = 1;
-          *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_32 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_46 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_48;
+                                  if (((__pyx_v_p_su != 0) != 0)) {
+                                    __pyx_t_45 = __pyx_v_b;
+                                    __pyx_t_44 = __pyx_v_leaf_numb;
+                                    __pyx_t_32 = __pyx_v_i;
+                                    __pyx_t_47 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_32 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_42 = __pyx_v_b;
+                                    __pyx_t_43 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_45 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_44 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                    __pyx_t_30 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_47 * __pyx_v_fX.strides[0]) )));
+                                    __pyx_t_33 = __pyx_v_b;
+                                    __pyx_t_51 = ((__pyx_v_p_u * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_42 * __pyx_v_values.strides[0]) ) + __pyx_t_43 * __pyx_v_values.strides[1]) ) + __pyx_t_30 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_33 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_su));
+                                  } else {
+                                    __pyx_t_51 = 0.0;
+                                  }
+                                  __pyx_t_33 = __pyx_v_i;
+                                  __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_33 * __pyx_v_R_buf.strides[0]) )));
+                                  __pyx_t_47 = 1;
+                                  *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_32 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_47 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_51;
 
-          /* "cyext_acv.pyx":2140
+                                  /* "cyext_acv.pyx":2140
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0
  *                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0             # <<<<<<<<<<<<<<
  * 
- *         for i in range(N, nogil=True, num_threads=num_threads):
+ *         for i in prange(N, nogil=True, num_threads=num_threads):
  */
-          if (((__pyx_v_p_sd != 0) != 0)) {
-            __pyx_t_33 = __pyx_v_b;
-            __pyx_t_46 = __pyx_v_leaf_numb;
-            __pyx_t_32 = __pyx_v_i;
-            __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_32 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_44 = __pyx_v_b;
-            __pyx_t_30 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_33 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_46 * __pyx_v_leaf_idx_trees.strides[1]) )));
-            __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_43 * __pyx_v_fX.strides[0]) )));
-            __pyx_t_41 = __pyx_v_b;
-            __pyx_t_48 = ((__pyx_v_p_d * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_44 * __pyx_v_values.strides[0]) ) + __pyx_t_30 * __pyx_v_values.strides[1]) ) + __pyx_t_42 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_41 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_sd));
-          } else {
-            __pyx_t_48 = 0.0;
-          }
-          __pyx_t_41 = __pyx_v_i;
-          __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_43 = 2;
-          *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_32 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_43 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_48;
+                                  if (((__pyx_v_p_sd != 0) != 0)) {
+                                    __pyx_t_33 = __pyx_v_b;
+                                    __pyx_t_47 = __pyx_v_leaf_numb;
+                                    __pyx_t_32 = __pyx_v_i;
+                                    __pyx_t_44 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_32 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_45 = __pyx_v_b;
+                                    __pyx_t_30 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_33 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_47 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                    __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_44 * __pyx_v_fX.strides[0]) )));
+                                    __pyx_t_42 = __pyx_v_b;
+                                    __pyx_t_51 = ((__pyx_v_p_d * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_45 * __pyx_v_values.strides[0]) ) + __pyx_t_30 * __pyx_v_values.strides[1]) ) + __pyx_t_43 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_42 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_sd));
+                                  } else {
+                                    __pyx_t_51 = 0.0;
+                                  }
+                                  __pyx_t_42 = __pyx_v_i;
+                                  __pyx_t_32 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+                                  __pyx_t_44 = 2;
+                                  *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_32 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_44 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_51;
+                                  goto __pyx_L60;
+                                  __pyx_L34_continue:;
+                                  goto __pyx_L60;
+                                  __pyx_L60:;
+                              }
+                          }
+                      }
+                  }
+              }
+              #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                  #undef likely
+                  #undef unlikely
+                  #define likely(x)   __builtin_expect(!!(x), 1)
+                  #define unlikely(x) __builtin_expect(!!(x), 0)
+              #endif
+            }
 
-          /* "cyext_acv.pyx":2096
+            /* "cyext_acv.pyx":2096
  * 
  *             for leaf_numb in range(leaves_nb[b]):
- *                 for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                     o_all = 0
  *                     for s in range(S_size):
  */
-          __pyx_L29_continue:;
+            /*finally:*/ {
+              /*normal exit:*/{
+                #ifdef WITH_THREAD
+                __Pyx_FastGIL_Forget();
+                Py_BLOCK_THREADS
+                #endif
+                goto __pyx_L33;
+              }
+              __pyx_L33:;
+            }
         }
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       }
     }
 
     /* "cyext_acv.pyx":2142
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
- *         for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *         for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):
  */
-    __pyx_t_4 = __Pyx_PyInt_From_unsigned_int(__pyx_v_N); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2142, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_21 = PyTuple_New(1); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2142, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_21);
-    __Pyx_GIVEREF(__pyx_t_4);
-    PyTuple_SET_ITEM(__pyx_t_21, 0, __pyx_t_4);
-    __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2142, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 2142, __pyx_L1_error)
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2142, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_num_threads, __pyx_t_3) < 0) __PYX_ERR(0, 2142, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_21, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2142, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (likely(PyList_CheckExact(__pyx_t_3)) || PyTuple_CheckExact(__pyx_t_3)) {
-      __pyx_t_4 = __pyx_t_3; __Pyx_INCREF(__pyx_t_4); __pyx_t_13 = 0;
-      __pyx_t_20 = NULL;
-    } else {
-      __pyx_t_13 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2142, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_20 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 2142, __pyx_L1_error)
-    }
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    for (;;) {
-      if (likely(!__pyx_t_20)) {
-        if (likely(PyList_CheckExact(__pyx_t_4))) {
-          if (__pyx_t_13 >= PyList_GET_SIZE(__pyx_t_4)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_13); __Pyx_INCREF(__pyx_t_3); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 2142, __pyx_L1_error)
-          #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2142, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_3);
-          #endif
-        } else {
-          if (__pyx_t_13 >= PyTuple_GET_SIZE(__pyx_t_4)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_13); __Pyx_INCREF(__pyx_t_3); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 2142, __pyx_L1_error)
-          #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2142, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_3);
-          #endif
-        }
-      } else {
-        __pyx_t_3 = __pyx_t_20(__pyx_t_4);
-        if (unlikely(!__pyx_t_3)) {
-          PyObject* exc_type = PyErr_Occurred();
-          if (exc_type) {
-            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 2142, __pyx_L1_error)
-          }
-          break;
-        }
-        __Pyx_GOTREF(__pyx_t_3);
-      }
-      __pyx_t_29 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_29 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2142, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_v_i = __pyx_t_29;
+    {
+        #ifdef WITH_THREAD
+        PyThreadState *_save;
+        Py_UNBLOCK_THREADS
+        __Pyx_FastGIL_Remember();
+        #endif
+        /*try:*/ {
+          __pyx_t_38 = __pyx_v_N;
+          if ((1 == 0)) abort();
+          {
+              int __pyx_parallel_temp0 = ((int)0xbad0bad0);
+              int __pyx_parallel_temp1 = ((int)0xbad0bad0);
+              double __pyx_parallel_temp2 = ((double)__PYX_NAN());
+              const char *__pyx_parallel_filename = NULL; int __pyx_parallel_lineno = 0, __pyx_parallel_clineno = 0;
+              PyObject *__pyx_parallel_exc_type = NULL, *__pyx_parallel_exc_value = NULL, *__pyx_parallel_exc_tb = NULL;
+              int __pyx_parallel_why;
+              __pyx_parallel_why = 0;
+              #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                  #undef likely
+                  #undef unlikely
+                  #define likely(x)   (x)
+                  #define unlikely(x) (x)
+              #endif
+              __pyx_t_9 = (__pyx_t_38 - 0 + 1 - 1/abs(1)) / 1;
+              if (__pyx_t_9 > 0)
+              {
+                  #ifdef _OPENMP
+                  #pragma omp parallel num_threads(__pyx_v_num_threads) private(__pyx_t_12, __pyx_t_19, __pyx_t_29, __pyx_t_30, __pyx_t_31, __pyx_t_32, __pyx_t_33, __pyx_t_34, __pyx_t_42, __pyx_t_43, __pyx_t_44, __pyx_t_45, __pyx_t_46, __pyx_t_47, __pyx_t_51, __pyx_t_52, __pyx_t_53, __pyx_t_54, __pyx_t_55, __pyx_t_56, __pyx_t_57, __pyx_t_58, __pyx_t_59, __pyx_t_60) private(__pyx_filename, __pyx_lineno, __pyx_clineno) shared(__pyx_parallel_why, __pyx_parallel_exc_type, __pyx_parallel_exc_value, __pyx_parallel_exc_tb)
+                  #endif /* _OPENMP */
+                  {
+                      #ifdef _OPENMP
+                      #ifdef WITH_THREAD
+                      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+                      #endif
+                      Py_BEGIN_ALLOW_THREADS
+                      #endif /* _OPENMP */
+                      #ifdef _OPENMP
+                      #pragma omp for firstprivate(__pyx_v_i) lastprivate(__pyx_v_i) lastprivate(__pyx_v_s) lastprivate(__pyx_v_ss)
+                      #endif /* _OPENMP */
+                      for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10++){
+                          if (__pyx_parallel_why < 2)
+                          {
+                              __pyx_v_i = (int)(0 + 1 * __pyx_t_10);
+                              /* Initialize private variables to invalid values */
+                              __pyx_v_s = ((int)0xbad0bad0);
+                              __pyx_v_ss = ((double)__PYX_NAN());
 
-      /* "cyext_acv.pyx":2143
+                              /* "cyext_acv.pyx":2143
  * 
- *         for i in range(N, nogil=True, num_threads=num_threads):
+ *         for i in prange(N, nogil=True, num_threads=num_threads):
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0             # <<<<<<<<<<<<<<
  *             if((ss <= 1) and (ss>=0)):
  *                 sdp[R_buf[i]] = ss
  */
-      __pyx_t_41 = __pyx_v_i;
-      __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-      __pyx_t_32 = 1;
-      __pyx_t_46 = __pyx_v_i;
-      __pyx_t_33 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_46 * __pyx_v_R_buf.strides[0]) )));
-      __pyx_t_42 = 2;
-      if (((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_43 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_32 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_33 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_42 * __pyx_v_mean_forest.strides[1]) )))) != 0.0) != 0)) {
-        __pyx_t_30 = __pyx_v_i;
-        __pyx_t_44 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_30 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_45 = 0;
-        __pyx_t_49 = __pyx_v_i;
-        __pyx_t_50 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_49 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_51 = 2;
-        __pyx_t_52 = __pyx_v_i;
-        __pyx_t_53 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_52 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_54 = 1;
-        __pyx_t_55 = __pyx_v_i;
-        __pyx_t_56 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_55 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_57 = 2;
-        __pyx_t_48 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_44 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_45 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_50 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_51 * __pyx_v_mean_forest.strides[1]) )))) / ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_53 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_54 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_56 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_57 * __pyx_v_mean_forest.strides[1]) )))));
-      } else {
-        __pyx_t_48 = 0.0;
-      }
-      __pyx_v_ss = __pyx_t_48;
+                              __pyx_t_42 = __pyx_v_i;
+                              __pyx_t_44 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+                              __pyx_t_32 = 1;
+                              __pyx_t_47 = __pyx_v_i;
+                              __pyx_t_33 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
+                              __pyx_t_43 = 2;
+                              if (((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_44 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_32 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_33 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_43 * __pyx_v_mean_forest.strides[1]) )))) != 0.0) != 0)) {
+                                __pyx_t_30 = __pyx_v_i;
+                                __pyx_t_45 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_30 * __pyx_v_R_buf.strides[0]) )));
+                                __pyx_t_46 = 0;
+                                __pyx_t_52 = __pyx_v_i;
+                                __pyx_t_53 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_52 * __pyx_v_R_buf.strides[0]) )));
+                                __pyx_t_54 = 2;
+                                __pyx_t_55 = __pyx_v_i;
+                                __pyx_t_56 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_55 * __pyx_v_R_buf.strides[0]) )));
+                                __pyx_t_57 = 1;
+                                __pyx_t_58 = __pyx_v_i;
+                                __pyx_t_59 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_58 * __pyx_v_R_buf.strides[0]) )));
+                                __pyx_t_60 = 2;
+                                __pyx_t_51 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_45 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_46 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_53 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_54 * __pyx_v_mean_forest.strides[1]) )))) / ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_56 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_57 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_59 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_60 * __pyx_v_mean_forest.strides[1]) )))));
+                              } else {
+                                __pyx_t_51 = 0.0;
+                              }
+                              __pyx_v_ss = __pyx_t_51;
 
-      /* "cyext_acv.pyx":2144
- *         for i in range(N, nogil=True, num_threads=num_threads):
+                              /* "cyext_acv.pyx":2144
+ *         for i in prange(N, nogil=True, num_threads=num_threads):
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):             # <<<<<<<<<<<<<<
  *                 sdp[R_buf[i]] = ss
  *                 if ss >= global_proba:
  */
-      __pyx_t_12 = ((__pyx_v_ss <= 1.0) != 0);
-      if (__pyx_t_12) {
-      } else {
-        __pyx_t_19 = __pyx_t_12;
-        goto __pyx_L55_bool_binop_done;
-      }
-      __pyx_t_12 = ((__pyx_v_ss >= 0.0) != 0);
-      __pyx_t_19 = __pyx_t_12;
-      __pyx_L55_bool_binop_done:;
-      if (__pyx_t_19) {
+                              __pyx_t_12 = ((__pyx_v_ss <= 1.0) != 0);
+                              if (__pyx_t_12) {
+                              } else {
+                                __pyx_t_19 = __pyx_t_12;
+                                goto __pyx_L71_bool_binop_done;
+                              }
+                              __pyx_t_12 = ((__pyx_v_ss >= 0.0) != 0);
+                              __pyx_t_19 = __pyx_t_12;
+                              __pyx_L71_bool_binop_done:;
+                              if (__pyx_t_19) {
 
-        /* "cyext_acv.pyx":2145
+                                /* "cyext_acv.pyx":2145
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):
  *                 sdp[R_buf[i]] = ss             # <<<<<<<<<<<<<<
  *                 if ss >= global_proba:
  *                     r.push_back(R[i])
  */
-        __pyx_t_46 = __pyx_v_i;
-        __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_46 * __pyx_v_R_buf.strides[0]) )));
-        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_42 * __pyx_v_sdp.strides[0]) )) = __pyx_v_ss;
+                                __pyx_t_47 = __pyx_v_i;
+                                __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
+                                *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_43 * __pyx_v_sdp.strides[0]) )) = __pyx_v_ss;
 
-        /* "cyext_acv.pyx":2146
+                                /* "cyext_acv.pyx":2146
  *             if((ss <= 1) and (ss>=0)):
  *                 sdp[R_buf[i]] = ss
  *                 if ss >= global_proba:             # <<<<<<<<<<<<<<
  *                     r.push_back(R[i])
  *                     len_s_star[R_buf[i]] = S_size
  */
-        __pyx_t_19 = ((__pyx_v_ss >= __pyx_v_global_proba) != 0);
-        if (__pyx_t_19) {
+                                __pyx_t_19 = ((__pyx_v_ss >= __pyx_v_global_proba) != 0);
+                                if (__pyx_t_19) {
 
-          /* "cyext_acv.pyx":2147
+                                  /* "cyext_acv.pyx":2147
  *                 sdp[R_buf[i]] = ss
  *                 if ss >= global_proba:
  *                     r.push_back(R[i])             # <<<<<<<<<<<<<<
  *                     len_s_star[R_buf[i]] = S_size
  *                     for s in range(S_size):
  */
-          try {
-            __pyx_v_r.push_back((__pyx_v_R[__pyx_v_i]));
-          } catch(...) {
-            __Pyx_CppExn2PyErr();
-            __PYX_ERR(0, 2147, __pyx_L1_error)
-          }
+                                  try {
+                                    __pyx_v_r.push_back((__pyx_v_R[__pyx_v_i]));
+                                  } catch(...) {
+                                    #ifdef WITH_THREAD
+                                    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+                                    #endif
+                                    __Pyx_CppExn2PyErr();
+                                    #ifdef WITH_THREAD
+                                    __Pyx_PyGILState_Release(__pyx_gilstate_save);
+                                    #endif
+                                    __PYX_ERR(0, 2147, __pyx_L68_error)
+                                  }
 
-          /* "cyext_acv.pyx":2148
+                                  /* "cyext_acv.pyx":2148
  *                 if ss >= global_proba:
  *                     r.push_back(R[i])
  *                     len_s_star[R_buf[i]] = S_size             # <<<<<<<<<<<<<<
  *                     for s in range(S_size):
  *                         s_star[R_buf[i], s] = S[s]
  */
-          __pyx_t_46 = __pyx_v_i;
-          __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_46 * __pyx_v_R_buf.strides[0]) )));
-          *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_42 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
+                                  __pyx_t_47 = __pyx_v_i;
+                                  __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
+                                  *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_43 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
 
-          /* "cyext_acv.pyx":2149
+                                  /* "cyext_acv.pyx":2149
  *                     r.push_back(R[i])
  *                     len_s_star[R_buf[i]] = S_size
  *                     for s in range(S_size):             # <<<<<<<<<<<<<<
  *                         s_star[R_buf[i], s] = S[s]
  *                         sdp_global[S[s]] += 1
  */
-          __pyx_t_29 = __pyx_v_S_size;
-          __pyx_t_31 = __pyx_t_29;
-          for (__pyx_t_34 = 0; __pyx_t_34 < __pyx_t_31; __pyx_t_34+=1) {
-            __pyx_v_s = __pyx_t_34;
+                                  __pyx_t_29 = __pyx_v_S_size;
+                                  __pyx_t_31 = __pyx_t_29;
+                                  for (__pyx_t_34 = 0; __pyx_t_34 < __pyx_t_31; __pyx_t_34+=1) {
+                                    __pyx_v_s = __pyx_t_34;
 
-            /* "cyext_acv.pyx":2150
+                                    /* "cyext_acv.pyx":2150
  *                     len_s_star[R_buf[i]] = S_size
  *                     for s in range(S_size):
  *                         s_star[R_buf[i], s] = S[s]             # <<<<<<<<<<<<<<
  *                         sdp_global[S[s]] += 1
  * 
  */
-            __pyx_t_46 = __pyx_v_s;
-            __pyx_t_42 = __pyx_v_i;
-            __pyx_t_33 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_41 = __pyx_v_s;
-            *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_33 * __pyx_v_s_star.strides[0]) ) + __pyx_t_41 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_46 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_47 = __pyx_v_s;
+                                    __pyx_t_43 = __pyx_v_i;
+                                    __pyx_t_33 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_43 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_42 = __pyx_v_s;
+                                    *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_33 * __pyx_v_s_star.strides[0]) ) + __pyx_t_42 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_47 * __pyx_v_S.strides[0]) )));
 
-            /* "cyext_acv.pyx":2151
+                                    /* "cyext_acv.pyx":2151
  *                     for s in range(S_size):
  *                         s_star[R_buf[i], s] = S[s]
  *                         sdp_global[S[s]] += 1             # <<<<<<<<<<<<<<
  * 
  *             elif(ss > 1):
  */
-            __pyx_t_46 = __pyx_v_s;
-            __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_46 * __pyx_v_S.strides[0]) )));
-            *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_42 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
-          }
+                                    __pyx_t_47 = __pyx_v_s;
+                                    __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_47 * __pyx_v_S.strides[0]) )));
+                                    *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_43 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
+                                  }
 
-          /* "cyext_acv.pyx":2146
+                                  /* "cyext_acv.pyx":2146
  *             if((ss <= 1) and (ss>=0)):
  *                 sdp[R_buf[i]] = ss
  *                 if ss >= global_proba:             # <<<<<<<<<<<<<<
  *                     r.push_back(R[i])
  *                     len_s_star[R_buf[i]] = S_size
  */
-        }
+                                }
 
-        /* "cyext_acv.pyx":2144
- *         for i in range(N, nogil=True, num_threads=num_threads):
+                                /* "cyext_acv.pyx":2144
+ *         for i in prange(N, nogil=True, num_threads=num_threads):
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):             # <<<<<<<<<<<<<<
  *                 sdp[R_buf[i]] = ss
  *                 if ss >= global_proba:
  */
-        goto __pyx_L54;
-      }
+                                goto __pyx_L70;
+                              }
 
-      /* "cyext_acv.pyx":2153
+                              /* "cyext_acv.pyx":2153
  *                         sdp_global[S[s]] += 1
  * 
  *             elif(ss > 1):             # <<<<<<<<<<<<<<
  *                 sdp[R_buf[i]] = 1
  *                 r.push_back(R[i])
  */
-      __pyx_t_19 = ((__pyx_v_ss > 1.0) != 0);
-      if (__pyx_t_19) {
+                              __pyx_t_19 = ((__pyx_v_ss > 1.0) != 0);
+                              if (__pyx_t_19) {
 
-        /* "cyext_acv.pyx":2154
+                                /* "cyext_acv.pyx":2154
  * 
  *             elif(ss > 1):
  *                 sdp[R_buf[i]] = 1             # <<<<<<<<<<<<<<
  *                 r.push_back(R[i])
  * 
  */
-        __pyx_t_46 = __pyx_v_i;
-        __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_46 * __pyx_v_R_buf.strides[0]) )));
-        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_42 * __pyx_v_sdp.strides[0]) )) = 1.0;
+                                __pyx_t_47 = __pyx_v_i;
+                                __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
+                                *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_43 * __pyx_v_sdp.strides[0]) )) = 1.0;
 
-        /* "cyext_acv.pyx":2155
+                                /* "cyext_acv.pyx":2155
  *             elif(ss > 1):
  *                 sdp[R_buf[i]] = 1
  *                 r.push_back(R[i])             # <<<<<<<<<<<<<<
  * 
  *                 len_s_star[R_buf[i]] = S_size
  */
-        try {
-          __pyx_v_r.push_back((__pyx_v_R[__pyx_v_i]));
-        } catch(...) {
-          __Pyx_CppExn2PyErr();
-          __PYX_ERR(0, 2155, __pyx_L1_error)
-        }
+                                try {
+                                  __pyx_v_r.push_back((__pyx_v_R[__pyx_v_i]));
+                                } catch(...) {
+                                  #ifdef WITH_THREAD
+                                  PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+                                  #endif
+                                  __Pyx_CppExn2PyErr();
+                                  #ifdef WITH_THREAD
+                                  __Pyx_PyGILState_Release(__pyx_gilstate_save);
+                                  #endif
+                                  __PYX_ERR(0, 2155, __pyx_L68_error)
+                                }
 
-        /* "cyext_acv.pyx":2157
+                                /* "cyext_acv.pyx":2157
  *                 r.push_back(R[i])
  * 
  *                 len_s_star[R_buf[i]] = S_size             # <<<<<<<<<<<<<<
  *                 for s in range(S_size):
  *                     s_star[R_buf[i], s] = S[s]
  */
-        __pyx_t_46 = __pyx_v_i;
-        __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_46 * __pyx_v_R_buf.strides[0]) )));
-        *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_42 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
+                                __pyx_t_47 = __pyx_v_i;
+                                __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
+                                *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_43 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
 
-        /* "cyext_acv.pyx":2158
+                                /* "cyext_acv.pyx":2158
  * 
  *                 len_s_star[R_buf[i]] = S_size
  *                 for s in range(S_size):             # <<<<<<<<<<<<<<
  *                     s_star[R_buf[i], s] = S[s]
  *                     sdp_global[S[s]] += 1
  */
-        __pyx_t_29 = __pyx_v_S_size;
-        __pyx_t_31 = __pyx_t_29;
-        for (__pyx_t_34 = 0; __pyx_t_34 < __pyx_t_31; __pyx_t_34+=1) {
-          __pyx_v_s = __pyx_t_34;
+                                __pyx_t_29 = __pyx_v_S_size;
+                                __pyx_t_31 = __pyx_t_29;
+                                for (__pyx_t_34 = 0; __pyx_t_34 < __pyx_t_31; __pyx_t_34+=1) {
+                                  __pyx_v_s = __pyx_t_34;
 
-          /* "cyext_acv.pyx":2159
+                                  /* "cyext_acv.pyx":2159
  *                 len_s_star[R_buf[i]] = S_size
  *                 for s in range(S_size):
  *                     s_star[R_buf[i], s] = S[s]             # <<<<<<<<<<<<<<
  *                     sdp_global[S[s]] += 1
  *             else:
  */
-          __pyx_t_46 = __pyx_v_s;
-          __pyx_t_42 = __pyx_v_i;
-          __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_33 = __pyx_v_s;
-          *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_41 * __pyx_v_s_star.strides[0]) ) + __pyx_t_33 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_46 * __pyx_v_S.strides[0]) )));
+                                  __pyx_t_47 = __pyx_v_s;
+                                  __pyx_t_43 = __pyx_v_i;
+                                  __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_43 * __pyx_v_R_buf.strides[0]) )));
+                                  __pyx_t_33 = __pyx_v_s;
+                                  *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_42 * __pyx_v_s_star.strides[0]) ) + __pyx_t_33 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_47 * __pyx_v_S.strides[0]) )));
 
-          /* "cyext_acv.pyx":2160
+                                  /* "cyext_acv.pyx":2160
  *                 for s in range(S_size):
  *                     s_star[R_buf[i], s] = S[s]
  *                     sdp_global[S[s]] += 1             # <<<<<<<<<<<<<<
  *             else:
  *                 sdp[R_buf[i]] = 0
  */
-          __pyx_t_46 = __pyx_v_s;
-          __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_46 * __pyx_v_S.strides[0]) )));
-          *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_42 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
-        }
+                                  __pyx_t_47 = __pyx_v_s;
+                                  __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_47 * __pyx_v_S.strides[0]) )));
+                                  *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_43 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
+                                }
 
-        /* "cyext_acv.pyx":2153
+                                /* "cyext_acv.pyx":2153
  *                         sdp_global[S[s]] += 1
  * 
  *             elif(ss > 1):             # <<<<<<<<<<<<<<
  *                 sdp[R_buf[i]] = 1
  *                 r.push_back(R[i])
  */
-        goto __pyx_L54;
-      }
+                                goto __pyx_L70;
+                              }
 
-      /* "cyext_acv.pyx":2162
+                              /* "cyext_acv.pyx":2162
  *                     sdp_global[S[s]] += 1
  *             else:
  *                 sdp[R_buf[i]] = 0             # <<<<<<<<<<<<<<
  * 
  *         for i in range(r.size()):
  */
-      /*else*/ {
-        __pyx_t_46 = __pyx_v_i;
-        __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_46 * __pyx_v_R_buf.strides[0]) )));
-        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_42 * __pyx_v_sdp.strides[0]) )) = 0.0;
-      }
-      __pyx_L54:;
+                              /*else*/ {
+                                __pyx_t_47 = __pyx_v_i;
+                                __pyx_t_43 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
+                                *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_43 * __pyx_v_sdp.strides[0]) )) = 0.0;
+                              }
+                              __pyx_L70:;
+                              goto __pyx_L79;
+                              __pyx_L68_error:;
+                              {
+                                  #ifdef WITH_THREAD
+                                  PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+                                  #endif
+                                  #ifdef _OPENMP
+                                  #pragma omp flush(__pyx_parallel_exc_type)
+                                  #endif /* _OPENMP */
+                                  if (!__pyx_parallel_exc_type) {
+                                    __Pyx_ErrFetchWithState(&__pyx_parallel_exc_type, &__pyx_parallel_exc_value, &__pyx_parallel_exc_tb);
+                                    __pyx_parallel_filename = __pyx_filename; __pyx_parallel_lineno = __pyx_lineno; __pyx_parallel_clineno = __pyx_clineno;
+                                    __Pyx_GOTREF(__pyx_parallel_exc_type);
+                                  }
+                                  #ifdef WITH_THREAD
+                                  __Pyx_PyGILState_Release(__pyx_gilstate_save);
+                                  #endif
+                              }
+                              __pyx_parallel_why = 4;
+                              goto __pyx_L78;
+                              __pyx_L78:;
+                              #ifdef _OPENMP
+                              #pragma omp critical(__pyx_parallel_lastprivates9)
+                              #endif /* _OPENMP */
+                              {
+                                  __pyx_parallel_temp0 = __pyx_v_i;
+                                  __pyx_parallel_temp1 = __pyx_v_s;
+                                  __pyx_parallel_temp2 = __pyx_v_ss;
+                              }
+                              __pyx_L79:;
+                              #ifdef _OPENMP
+                              #pragma omp flush(__pyx_parallel_why)
+                              #endif /* _OPENMP */
+                          }
+                      }
+                      #ifdef _OPENMP
+                      Py_END_ALLOW_THREADS
+                      #else
+{
+#ifdef WITH_THREAD
+                      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+                      #endif
+                      #endif /* _OPENMP */
+                      /* Clean up any temporaries */
+                      #ifdef WITH_THREAD
+                      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+                      #endif
+                      #ifndef _OPENMP
+}
+#endif /* _OPENMP */
+                  }
+              }
+              if (__pyx_parallel_exc_type) {
+                /* This may have been overridden by a continue, break or return in another thread. Prefer the error. */
+                __pyx_parallel_why = 4;
+              }
+              if (__pyx_parallel_why) {
+                __pyx_v_i = __pyx_parallel_temp0;
+                __pyx_v_s = __pyx_parallel_temp1;
+                __pyx_v_ss = __pyx_parallel_temp2;
+                switch (__pyx_parallel_why) {
+                      case 4:
+                  {
+                      #ifdef WITH_THREAD
+                      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+                      #endif
+                      __Pyx_GIVEREF(__pyx_parallel_exc_type);
+                      __Pyx_ErrRestoreWithState(__pyx_parallel_exc_type, __pyx_parallel_exc_value, __pyx_parallel_exc_tb);
+                      __pyx_filename = __pyx_parallel_filename; __pyx_lineno = __pyx_parallel_lineno; __pyx_clineno = __pyx_parallel_clineno;
+                      #ifdef WITH_THREAD
+                      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+                      #endif
+                  }
+                  goto __pyx_L64_error;
+                }
+              }
+          }
+          #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+              #undef likely
+              #undef unlikely
+              #define likely(x)   __builtin_expect(!!(x), 1)
+              #define unlikely(x) __builtin_expect(!!(x), 0)
+          #endif
+        }
 
-      /* "cyext_acv.pyx":2142
+        /* "cyext_acv.pyx":2142
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
- *         for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *         for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):
  */
+        /*finally:*/ {
+          /*normal exit:*/{
+            #ifdef WITH_THREAD
+            __Pyx_FastGIL_Forget();
+            Py_BLOCK_THREADS
+            #endif
+            goto __pyx_L65;
+          }
+          __pyx_L64_error: {
+            #ifdef WITH_THREAD
+            __Pyx_FastGIL_Forget();
+            Py_BLOCK_THREADS
+            #endif
+            goto __pyx_L1_error;
+          }
+          __pyx_L65:;
+        }
     }
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
     /* "cyext_acv.pyx":2164
  *                 sdp[R_buf[i]] = 0
@@ -34686,58 +34639,58 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_cpp_pa_coal(__Pyx_memviewslic
  * @cython.boundscheck(False)
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2171, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_21 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_asarray); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2171, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2171, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_21 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_asarray); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_21);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_sdp_global, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2171, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = NULL;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_v_sdp_global, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2171, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_21))) {
-    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_21);
-    if (likely(__pyx_t_2)) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_21);
+    if (likely(__pyx_t_3)) {
       PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_21);
-      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
       __Pyx_INCREF(function);
       __Pyx_DECREF_SET(__pyx_t_21, function);
     }
   }
-  __pyx_t_4 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_21, __pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_21, __pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_4 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_21, __pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_21, __pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
   __pyx_t_21 = PyInt_FromSsize_t((__pyx_v_X.shape[0])); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_21);
-  __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_4, __pyx_t_21); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2171, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_4, __pyx_t_21); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2171, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
   __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2171, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2171, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_s_star, 2, (PyObject *(*)(char *)) __pyx_memview_get_long, (int (*)(char *, PyObject *)) __pyx_memview_set_long, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_7 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_2);
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_3);
     if (likely(__pyx_t_7)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
       __Pyx_INCREF(__pyx_t_7);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
     }
   }
-  __pyx_t_21 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_7, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
+  __pyx_t_21 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_7, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_21);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 2171, __pyx_L1_error)
@@ -34755,23 +34708,23 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_cpp_pa_coal(__Pyx_memviewslic
       __Pyx_DECREF_SET(__pyx_t_7, function);
     }
   }
-  __pyx_t_2 = (__pyx_t_22) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_22, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_4);
+  __pyx_t_3 = (__pyx_t_22) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_22, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_22); __pyx_t_22 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2171, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2171, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_t_7 = PyTuple_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 2171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_GIVEREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_21);
   PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_21);
-  __Pyx_GIVEREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_7, 2, __pyx_t_2);
-  __pyx_t_3 = 0;
-  __pyx_t_21 = 0;
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_7, 2, __pyx_t_3);
   __pyx_t_2 = 0;
+  __pyx_t_21 = 0;
+  __pyx_t_3 = 0;
   __pyx_r = __pyx_t_7;
   __pyx_t_7 = 0;
   goto __pyx_L0;
@@ -35048,7 +35001,7 @@ static PyObject *__pyx_pf_9cyext_acv_30global_sdp_clf_cpp_pa_coal(CYTHON_UNUSED 
  */
 
 static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf_pa_coal(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_num_threads, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, CYTHON_UNUSED int __pyx_v_num_threads, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   int __pyx_v_n_trees;
@@ -35118,10 +35071,10 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
   int __pyx_t_28;
   long __pyx_t_29;
   int __pyx_t_30;
-  int __pyx_t_31;
+  unsigned int __pyx_t_31;
   int __pyx_t_32;
   int __pyx_t_33;
-  Py_ssize_t __pyx_t_34;
+  int __pyx_t_34;
   Py_ssize_t __pyx_t_35;
   Py_ssize_t __pyx_t_36;
   Py_ssize_t __pyx_t_37;
@@ -35129,18 +35082,21 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
   Py_ssize_t __pyx_t_39;
   Py_ssize_t __pyx_t_40;
   Py_ssize_t __pyx_t_41;
-  PyObject *(*__pyx_t_42)(PyObject *);
-  double __pyx_t_43;
-  Py_ssize_t __pyx_t_44;
-  Py_ssize_t __pyx_t_45;
-  Py_ssize_t __pyx_t_46;
+  Py_ssize_t __pyx_t_42;
+  unsigned int __pyx_t_43;
+  unsigned int __pyx_t_44;
+  int __pyx_t_45;
+  double __pyx_t_46;
   Py_ssize_t __pyx_t_47;
   Py_ssize_t __pyx_t_48;
   Py_ssize_t __pyx_t_49;
   Py_ssize_t __pyx_t_50;
   Py_ssize_t __pyx_t_51;
   Py_ssize_t __pyx_t_52;
-  int __pyx_t_53;
+  Py_ssize_t __pyx_t_53;
+  Py_ssize_t __pyx_t_54;
+  Py_ssize_t __pyx_t_55;
+  int __pyx_t_56;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -35854,7 +35810,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *         for b in range(n_trees):
  * 
  *             for leaf_numb in range(leaves_nb[b]):             # <<<<<<<<<<<<<<
- *                 for i in range(N, nogil=True, num_threads=num_threads):
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):
  *                     o_all = 0
  */
       __pyx_t_26 = __pyx_v_b;
@@ -35866,798 +35822,675 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
         /* "cyext_acv.pyx":2235
  * 
  *             for leaf_numb in range(leaves_nb[b]):
- *                 for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                     o_all = 0
  *                     for s in range(S_size):
  */
-        __pyx_t_3 = __Pyx_PyInt_From_unsigned_int(__pyx_v_N); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2235, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2235, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_GIVEREF(__pyx_t_3);
-        PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
-        __pyx_t_3 = 0;
-        __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2235, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_3);
-        if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 2235, __pyx_L1_error)
-        __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2235, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_9);
-        if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_num_threads, __pyx_t_9) < 0) __PYX_ERR(0, 2235, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-        __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2235, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_9);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (likely(PyList_CheckExact(__pyx_t_9)) || PyTuple_CheckExact(__pyx_t_9)) {
-          __pyx_t_3 = __pyx_t_9; __Pyx_INCREF(__pyx_t_3); __pyx_t_14 = 0;
-          __pyx_t_21 = NULL;
-        } else {
-          __pyx_t_14 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_9); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2235, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_3);
-          __pyx_t_21 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2235, __pyx_L1_error)
-        }
-        __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-        for (;;) {
-          if (likely(!__pyx_t_21)) {
-            if (likely(PyList_CheckExact(__pyx_t_3))) {
-              if (__pyx_t_14 >= PyList_GET_SIZE(__pyx_t_3)) break;
-              #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_9 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_14); __Pyx_INCREF(__pyx_t_9); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 2235, __pyx_L1_error)
-              #else
-              __pyx_t_9 = PySequence_ITEM(__pyx_t_3, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2235, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_9);
-              #endif
-            } else {
-              if (__pyx_t_14 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
-              #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_9 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_14); __Pyx_INCREF(__pyx_t_9); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 2235, __pyx_L1_error)
-              #else
-              __pyx_t_9 = PySequence_ITEM(__pyx_t_3, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2235, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_9);
-              #endif
-            }
-          } else {
-            __pyx_t_9 = __pyx_t_21(__pyx_t_3);
-            if (unlikely(!__pyx_t_9)) {
-              PyObject* exc_type = PyErr_Occurred();
-              if (exc_type) {
-                if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 2235, __pyx_L1_error)
-              }
-              break;
-            }
-            __Pyx_GOTREF(__pyx_t_9);
-          }
-          __pyx_t_31 = __Pyx_PyInt_As_int(__pyx_t_9); if (unlikely((__pyx_t_31 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2235, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-          __pyx_v_i = __pyx_t_31;
+        {
+            #ifdef WITH_THREAD
+            PyThreadState *_save;
+            Py_UNBLOCK_THREADS
+            __Pyx_FastGIL_Remember();
+            #endif
+            /*try:*/ {
+              __pyx_t_18 = __pyx_v_N;
+              if ((1 == 0)) abort();
+              {
+                  #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                      #undef likely
+                      #undef unlikely
+                      #define likely(x)   (x)
+                      #define unlikely(x) (x)
+                  #endif
+                  __pyx_t_31 = (__pyx_t_18 - 0 + 1 - 1/abs(1)) / 1;
+                  if (__pyx_t_31 > 0)
+                  {
+                      #ifdef _OPENMP
+                      #pragma omp parallel reduction(+:__pyx_v_p) reduction(+:__pyx_v_p_d) reduction(+:__pyx_v_p_s) reduction(+:__pyx_v_p_sd) reduction(+:__pyx_v_p_su) reduction(+:__pyx_v_p_u) num_threads(__pyx_v_num_threads) private(__pyx_t_11, __pyx_t_14, __pyx_t_15, __pyx_t_20, __pyx_t_26, __pyx_t_32, __pyx_t_33, __pyx_t_34, __pyx_t_35, __pyx_t_36, __pyx_t_37, __pyx_t_38, __pyx_t_39, __pyx_t_40, __pyx_t_41, __pyx_t_42, __pyx_t_43, __pyx_t_44, __pyx_t_45, __pyx_t_46)
+                      #endif /* _OPENMP */
+                      {
+                          #ifdef _OPENMP
+                          #pragma omp for lastprivate(__pyx_v_a_it) lastprivate(__pyx_v_b_it) firstprivate(__pyx_v_i) lastprivate(__pyx_v_i) lastprivate(__pyx_v_j) lastprivate(__pyx_v_lm) lastprivate(__pyx_v_lm_s) lastprivate(__pyx_v_o_all) lastprivate(__pyx_v_s)
+                          #endif /* _OPENMP */
+                          for (__pyx_t_19 = 0; __pyx_t_19 < __pyx_t_31; __pyx_t_19++){
+                              {
+                                  __pyx_v_i = (int)(0 + 1 * __pyx_t_19);
+                                  /* Initialize private variables to invalid values */
+                                  __pyx_v_a_it = ((unsigned int)0xbad0bad0);
+                                  __pyx_v_b_it = ((unsigned int)0xbad0bad0);
+                                  __pyx_v_j = ((int)0xbad0bad0);
+                                  __pyx_v_lm = ((int)0xbad0bad0);
+                                  __pyx_v_lm_s = ((int)0xbad0bad0);
+                                  __pyx_v_o_all = ((unsigned int)0xbad0bad0);
+                                  __pyx_v_s = ((int)0xbad0bad0);
 
-          /* "cyext_acv.pyx":2236
+                                  /* "cyext_acv.pyx":2236
  *             for leaf_numb in range(leaves_nb[b]):
- *                 for i in range(N, nogil=True, num_threads=num_threads):
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):
  *                     o_all = 0             # <<<<<<<<<<<<<<
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  */
-          __pyx_v_o_all = 0;
+                                  __pyx_v_o_all = 0;
 
-          /* "cyext_acv.pyx":2237
- *                 for i in range(N, nogil=True, num_threads=num_threads):
+                                  /* "cyext_acv.pyx":2237
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):
  *                     o_all = 0
  *                     for s in range(S_size):             # <<<<<<<<<<<<<<
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1
  */
-          __pyx_t_31 = __pyx_v_S_size;
-          __pyx_t_32 = __pyx_t_31;
-          for (__pyx_t_33 = 0; __pyx_t_33 < __pyx_t_32; __pyx_t_33+=1) {
-            __pyx_v_s = __pyx_t_33;
+                                  __pyx_t_32 = __pyx_v_S_size;
+                                  __pyx_t_33 = __pyx_t_32;
+                                  for (__pyx_t_34 = 0; __pyx_t_34 < __pyx_t_33; __pyx_t_34+=1) {
+                                    __pyx_v_s = __pyx_t_34;
 
-            /* "cyext_acv.pyx":2238
+                                    /* "cyext_acv.pyx":2238
  *                     o_all = 0
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                             o_all = o_all + 1
  *                     if o_all > 0:
  */
-            __pyx_t_26 = __pyx_v_i;
-            __pyx_t_34 = __pyx_v_s;
-            __pyx_t_35 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_26 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_34 * __pyx_v_S.strides[0]) )));
-            __pyx_t_37 = __pyx_v_s;
-            __pyx_t_38 = __pyx_v_b;
-            __pyx_t_39 = __pyx_v_leaf_numb;
-            __pyx_t_40 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_37 * __pyx_v_S.strides[0]) )));
-            __pyx_t_41 = 1;
-            __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_35 * __pyx_v_X.strides[0]) ) + __pyx_t_36 * __pyx_v_X.strides[1]) ))) > (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_38 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_39 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_40 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            if (!__pyx_t_11) {
-            } else {
-              __pyx_t_20 = __pyx_t_11;
-              goto __pyx_L28_bool_binop_done;
-            }
-            __pyx_t_37 = __pyx_v_i;
-            __pyx_t_41 = __pyx_v_s;
-            __pyx_t_40 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_37 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_39 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_41 * __pyx_v_S.strides[0]) )));
-            __pyx_t_38 = __pyx_v_s;
-            __pyx_t_34 = __pyx_v_b;
-            __pyx_t_26 = __pyx_v_leaf_numb;
-            __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_38 * __pyx_v_S.strides[0]) )));
-            __pyx_t_35 = 0;
-            __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_40 * __pyx_v_X.strides[0]) ) + __pyx_t_39 * __pyx_v_X.strides[1]) ))) < (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_34 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_36 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_35 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-            __pyx_t_20 = __pyx_t_11;
-            __pyx_L28_bool_binop_done:;
-            if (__pyx_t_20) {
+                                    __pyx_t_26 = __pyx_v_i;
+                                    __pyx_t_35 = __pyx_v_s;
+                                    __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_26 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_35 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_38 = __pyx_v_s;
+                                    __pyx_t_39 = __pyx_v_b;
+                                    __pyx_t_40 = __pyx_v_leaf_numb;
+                                    __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_38 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_42 = 1;
+                                    __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_36 * __pyx_v_X.strides[0]) ) + __pyx_t_37 * __pyx_v_X.strides[1]) ))) > (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_39 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_40 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    if (!__pyx_t_11) {
+                                    } else {
+                                      __pyx_t_20 = __pyx_t_11;
+                                      goto __pyx_L35_bool_binop_done;
+                                    }
+                                    __pyx_t_38 = __pyx_v_i;
+                                    __pyx_t_42 = __pyx_v_s;
+                                    __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_38 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_40 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_42 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_39 = __pyx_v_s;
+                                    __pyx_t_35 = __pyx_v_b;
+                                    __pyx_t_26 = __pyx_v_leaf_numb;
+                                    __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_39 * __pyx_v_S.strides[0]) )));
+                                    __pyx_t_36 = 0;
+                                    __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_X.data + __pyx_t_41 * __pyx_v_X.strides[0]) ) + __pyx_t_40 * __pyx_v_X.strides[1]) ))) < (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_35 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_37 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_36 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                    __pyx_t_20 = __pyx_t_11;
+                                    __pyx_L35_bool_binop_done:;
+                                    if (__pyx_t_20) {
 
-              /* "cyext_acv.pyx":2239
+                                      /* "cyext_acv.pyx":2239
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1             # <<<<<<<<<<<<<<
  *                     if o_all > 0:
  *                         continue
  */
-              __pyx_v_o_all = (__pyx_v_o_all + 1);
+                                      __pyx_v_o_all = (__pyx_v_o_all + 1);
 
-              /* "cyext_acv.pyx":2238
+                                      /* "cyext_acv.pyx":2238
  *                     o_all = 0
  *                     for s in range(S_size):
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                             o_all = o_all + 1
  *                     if o_all > 0:
  */
-            }
-          }
+                                    }
+                                  }
 
-          /* "cyext_acv.pyx":2240
+                                  /* "cyext_acv.pyx":2240
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1
  *                     if o_all > 0:             # <<<<<<<<<<<<<<
  *                         continue
  * 
  */
-          __pyx_t_20 = ((__pyx_v_o_all > 0) != 0);
-          if (__pyx_t_20) {
+                                  __pyx_t_20 = ((__pyx_v_o_all > 0) != 0);
+                                  if (__pyx_t_20) {
 
-            /* "cyext_acv.pyx":2241
+                                    /* "cyext_acv.pyx":2241
  *                             o_all = o_all + 1
  *                     if o_all > 0:
  *                         continue             # <<<<<<<<<<<<<<
  * 
  *                     p = 0
  */
-            goto __pyx_L23_continue;
+                                    goto __pyx_L28_continue;
 
-            /* "cyext_acv.pyx":2240
+                                    /* "cyext_acv.pyx":2240
  *                         if ((X[R_buf[i], S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[R_buf[i], S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                             o_all = o_all + 1
  *                     if o_all > 0:             # <<<<<<<<<<<<<<
  *                         continue
  * 
  */
-          }
+                                  }
 
-          /* "cyext_acv.pyx":2243
+                                  /* "cyext_acv.pyx":2243
  *                         continue
  * 
  *                     p = 0             # <<<<<<<<<<<<<<
  *                     p_u = 0
  *                     p_d = 0
  */
-          __pyx_v_p = 0;
+                                  __pyx_v_p = 0;
 
-          /* "cyext_acv.pyx":2244
+                                  /* "cyext_acv.pyx":2244
  * 
  *                     p = 0
  *                     p_u = 0             # <<<<<<<<<<<<<<
  *                     p_d = 0
  *                     p_s = 0
  */
-          __pyx_v_p_u = 0;
+                                  __pyx_v_p_u = 0;
 
-          /* "cyext_acv.pyx":2245
+                                  /* "cyext_acv.pyx":2245
  *                     p = 0
  *                     p_u = 0
  *                     p_d = 0             # <<<<<<<<<<<<<<
  *                     p_s = 0
  *                     p_su = 0
  */
-          __pyx_v_p_d = 0;
+                                  __pyx_v_p_d = 0;
 
-          /* "cyext_acv.pyx":2246
+                                  /* "cyext_acv.pyx":2246
  *                     p_u = 0
  *                     p_d = 0
  *                     p_s = 0             # <<<<<<<<<<<<<<
  *                     p_su = 0
  *                     p_sd = 0
  */
-          __pyx_v_p_s = 0;
+                                  __pyx_v_p_s = 0;
 
-          /* "cyext_acv.pyx":2247
+                                  /* "cyext_acv.pyx":2247
  *                     p_d = 0
  *                     p_s = 0
  *                     p_su = 0             # <<<<<<<<<<<<<<
  *                     p_sd = 0
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+ *                     for j in range(data.shape[0]):
  */
-          __pyx_v_p_su = 0;
+                                  __pyx_v_p_su = 0;
 
-          /* "cyext_acv.pyx":2248
+                                  /* "cyext_acv.pyx":2248
  *                     p_s = 0
  *                     p_su = 0
  *                     p_sd = 0             # <<<<<<<<<<<<<<
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+ *                     for j in range(data.shape[0]):
  *                         a_it = 0
  */
-          __pyx_v_p_sd = 0;
+                                  __pyx_v_p_sd = 0;
 
-          /* "cyext_acv.pyx":2249
+                                  /* "cyext_acv.pyx":2249
  *                     p_su = 0
  *                     p_sd = 0
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                     for j in range(data.shape[0]):             # <<<<<<<<<<<<<<
  *                         a_it = 0
  *                         b_it = 0
  */
-          __pyx_t_9 = PyInt_FromSsize_t((__pyx_v_data.shape[0])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2249, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_9);
-          __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2249, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __Pyx_GIVEREF(__pyx_t_9);
-          PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_9);
-          __pyx_t_9 = 0;
-          __pyx_t_9 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2249, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_9);
-          if (PyDict_SetItem(__pyx_t_9, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 2249, __pyx_L1_error)
-          __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2249, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          if (PyDict_SetItem(__pyx_t_9, __pyx_n_s_num_threads, __pyx_t_2) < 0) __PYX_ERR(0, 2249, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_1, __pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2249, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-          if (likely(PyList_CheckExact(__pyx_t_2)) || PyTuple_CheckExact(__pyx_t_2)) {
-            __pyx_t_9 = __pyx_t_2; __Pyx_INCREF(__pyx_t_9); __pyx_t_15 = 0;
-            __pyx_t_42 = NULL;
-          } else {
-            __pyx_t_15 = -1; __pyx_t_9 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2249, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_9);
-            __pyx_t_42 = Py_TYPE(__pyx_t_9)->tp_iternext; if (unlikely(!__pyx_t_42)) __PYX_ERR(0, 2249, __pyx_L1_error)
-          }
-          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          for (;;) {
-            if (likely(!__pyx_t_42)) {
-              if (likely(PyList_CheckExact(__pyx_t_9))) {
-                if (__pyx_t_15 >= PyList_GET_SIZE(__pyx_t_9)) break;
-                #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-                __pyx_t_2 = PyList_GET_ITEM(__pyx_t_9, __pyx_t_15); __Pyx_INCREF(__pyx_t_2); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 2249, __pyx_L1_error)
-                #else
-                __pyx_t_2 = PySequence_ITEM(__pyx_t_9, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2249, __pyx_L1_error)
-                __Pyx_GOTREF(__pyx_t_2);
-                #endif
-              } else {
-                if (__pyx_t_15 >= PyTuple_GET_SIZE(__pyx_t_9)) break;
-                #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-                __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_9, __pyx_t_15); __Pyx_INCREF(__pyx_t_2); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 2249, __pyx_L1_error)
-                #else
-                __pyx_t_2 = PySequence_ITEM(__pyx_t_9, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2249, __pyx_L1_error)
-                __Pyx_GOTREF(__pyx_t_2);
-                #endif
-              }
-            } else {
-              __pyx_t_2 = __pyx_t_42(__pyx_t_9);
-              if (unlikely(!__pyx_t_2)) {
-                PyObject* exc_type = PyErr_Occurred();
-                if (exc_type) {
-                  if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                  else __PYX_ERR(0, 2249, __pyx_L1_error)
-                }
-                break;
-              }
-              __Pyx_GOTREF(__pyx_t_2);
-            }
-            __pyx_t_31 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_31 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2249, __pyx_L1_error)
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __pyx_v_j = __pyx_t_31;
+                                  __pyx_t_14 = (__pyx_v_data.shape[0]);
+                                  __pyx_t_15 = __pyx_t_14;
+                                  for (__pyx_t_32 = 0; __pyx_t_32 < __pyx_t_15; __pyx_t_32+=1) {
+                                    __pyx_v_j = __pyx_t_32;
 
-            /* "cyext_acv.pyx":2250
+                                    /* "cyext_acv.pyx":2250
  *                     p_sd = 0
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+ *                     for j in range(data.shape[0]):
  *                         a_it = 0             # <<<<<<<<<<<<<<
  *                         b_it = 0
  *                         lm = 0
  */
-            __pyx_v_a_it = 0;
+                                    __pyx_v_a_it = 0;
 
-            /* "cyext_acv.pyx":2251
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):
+                                    /* "cyext_acv.pyx":2251
+ *                     for j in range(data.shape[0]):
  *                         a_it = 0
  *                         b_it = 0             # <<<<<<<<<<<<<<
  *                         lm = 0
  *                         lm_s = 0
  */
-            __pyx_v_b_it = 0;
+                                    __pyx_v_b_it = 0;
 
-            /* "cyext_acv.pyx":2252
+                                    /* "cyext_acv.pyx":2252
  *                         a_it = 0
  *                         b_it = 0
  *                         lm = 0             # <<<<<<<<<<<<<<
  *                         lm_s = 0
  *                         for s in range(m):
  */
-            __pyx_v_lm = 0;
+                                    __pyx_v_lm = 0;
 
-            /* "cyext_acv.pyx":2253
+                                    /* "cyext_acv.pyx":2253
  *                         b_it = 0
  *                         lm = 0
  *                         lm_s = 0             # <<<<<<<<<<<<<<
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  */
-            __pyx_v_lm_s = 0;
+                                    __pyx_v_lm_s = 0;
 
-            /* "cyext_acv.pyx":2254
+                                    /* "cyext_acv.pyx":2254
  *                         lm = 0
  *                         lm_s = 0
  *                         for s in range(m):             # <<<<<<<<<<<<<<
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                                 a_it = a_it + 1
  */
-            __pyx_t_18 = __pyx_v_m;
-            __pyx_t_19 = __pyx_t_18;
-            for (__pyx_t_31 = 0; __pyx_t_31 < __pyx_t_19; __pyx_t_31+=1) {
-              __pyx_v_s = __pyx_t_31;
+                                    __pyx_t_43 = __pyx_v_m;
+                                    __pyx_t_44 = __pyx_t_43;
+                                    for (__pyx_t_33 = 0; __pyx_t_33 < __pyx_t_44; __pyx_t_33+=1) {
+                                      __pyx_v_s = __pyx_t_33;
 
-              /* "cyext_acv.pyx":2255
+                                      /* "cyext_acv.pyx":2255
  *                         lm_s = 0
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):             # <<<<<<<<<<<<<<
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  */
-              __pyx_t_38 = __pyx_v_j;
-              __pyx_t_35 = __pyx_v_s;
-              __pyx_t_36 = __pyx_v_b;
-              __pyx_t_26 = __pyx_v_leaf_numb;
-              __pyx_t_34 = __pyx_v_s;
-              __pyx_t_41 = 1;
-              __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_38 * __pyx_v_data.strides[0]) ) + __pyx_t_35 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_36 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_34 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              if (__pyx_t_11) {
-              } else {
-                __pyx_t_20 = __pyx_t_11;
-                goto __pyx_L36_bool_binop_done;
-              }
-              __pyx_t_41 = __pyx_v_j;
-              __pyx_t_34 = __pyx_v_s;
-              __pyx_t_26 = __pyx_v_b;
-              __pyx_t_36 = __pyx_v_leaf_numb;
-              __pyx_t_35 = __pyx_v_s;
-              __pyx_t_38 = 0;
-              __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_41 * __pyx_v_data.strides[0]) ) + __pyx_t_34 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_36 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_35 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_38 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              __pyx_t_20 = __pyx_t_11;
-              __pyx_L36_bool_binop_done:;
-              if (__pyx_t_20) {
+                                      __pyx_t_39 = __pyx_v_j;
+                                      __pyx_t_36 = __pyx_v_s;
+                                      __pyx_t_37 = __pyx_v_b;
+                                      __pyx_t_26 = __pyx_v_leaf_numb;
+                                      __pyx_t_35 = __pyx_v_s;
+                                      __pyx_t_42 = 1;
+                                      __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_39 * __pyx_v_data.strides[0]) ) + __pyx_t_36 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_37 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_35 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      if (__pyx_t_11) {
+                                      } else {
+                                        __pyx_t_20 = __pyx_t_11;
+                                        goto __pyx_L43_bool_binop_done;
+                                      }
+                                      __pyx_t_42 = __pyx_v_j;
+                                      __pyx_t_35 = __pyx_v_s;
+                                      __pyx_t_26 = __pyx_v_b;
+                                      __pyx_t_37 = __pyx_v_leaf_numb;
+                                      __pyx_t_36 = __pyx_v_s;
+                                      __pyx_t_39 = 0;
+                                      __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_42 * __pyx_v_data.strides[0]) ) + __pyx_t_35 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_26 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_37 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_36 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_39 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      __pyx_t_20 = __pyx_t_11;
+                                      __pyx_L43_bool_binop_done:;
+                                      if (__pyx_t_20) {
 
-                /* "cyext_acv.pyx":2256
+                                        /* "cyext_acv.pyx":2256
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                                 a_it = a_it + 1             # <<<<<<<<<<<<<<
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  */
-                __pyx_v_a_it = (__pyx_v_a_it + 1);
+                                        __pyx_v_a_it = (__pyx_v_a_it + 1);
 
-                /* "cyext_acv.pyx":2255
+                                        /* "cyext_acv.pyx":2255
  *                         lm_s = 0
  *                         for s in range(m):
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):             # <<<<<<<<<<<<<<
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  */
-              }
-            }
+                                      }
+                                    }
 
-            /* "cyext_acv.pyx":2257
+                                    /* "cyext_acv.pyx":2257
  *                             if ((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):             # <<<<<<<<<<<<<<
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                                 b_it = b_it + 1
  */
-            __pyx_t_31 = __pyx_v_S_size;
-            __pyx_t_32 = __pyx_t_31;
-            for (__pyx_t_33 = 0; __pyx_t_33 < __pyx_t_32; __pyx_t_33+=1) {
-              __pyx_v_s = __pyx_t_33;
+                                    __pyx_t_33 = __pyx_v_S_size;
+                                    __pyx_t_34 = __pyx_t_33;
+                                    for (__pyx_t_45 = 0; __pyx_t_45 < __pyx_t_34; __pyx_t_45+=1) {
+                                      __pyx_v_s = __pyx_t_45;
 
-              /* "cyext_acv.pyx":2258
+                                      /* "cyext_acv.pyx":2258
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                                 b_it = b_it + 1
  * 
  */
-              __pyx_t_38 = __pyx_v_s;
-              __pyx_t_35 = __pyx_v_j;
-              __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_38 * __pyx_v_S.strides[0]) )));
-              __pyx_t_26 = __pyx_v_s;
-              __pyx_t_34 = __pyx_v_b;
-              __pyx_t_41 = __pyx_v_leaf_numb;
-              __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_26 * __pyx_v_S.strides[0]) )));
-              __pyx_t_39 = 1;
-              __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_35 * __pyx_v_data.strides[0]) ) + __pyx_t_36 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_34 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_41 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_37 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_39 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              if (__pyx_t_11) {
-              } else {
-                __pyx_t_20 = __pyx_t_11;
-                goto __pyx_L41_bool_binop_done;
-              }
-              __pyx_t_26 = __pyx_v_s;
-              __pyx_t_39 = __pyx_v_j;
-              __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_26 * __pyx_v_S.strides[0]) )));
-              __pyx_t_41 = __pyx_v_s;
-              __pyx_t_34 = __pyx_v_b;
-              __pyx_t_38 = __pyx_v_leaf_numb;
-              __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_41 * __pyx_v_S.strides[0]) )));
-              __pyx_t_35 = 0;
-              __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_39 * __pyx_v_data.strides[0]) ) + __pyx_t_37 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_34 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_38 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_36 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_35 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
-              __pyx_t_20 = __pyx_t_11;
-              __pyx_L41_bool_binop_done:;
-              if (__pyx_t_20) {
+                                      __pyx_t_39 = __pyx_v_s;
+                                      __pyx_t_36 = __pyx_v_j;
+                                      __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_39 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_26 = __pyx_v_s;
+                                      __pyx_t_35 = __pyx_v_b;
+                                      __pyx_t_42 = __pyx_v_leaf_numb;
+                                      __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_26 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_40 = 1;
+                                      __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_36 * __pyx_v_data.strides[0]) ) + __pyx_t_37 * __pyx_v_data.strides[1]) ))) <= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_35 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_42 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_38 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_40 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      if (__pyx_t_11) {
+                                      } else {
+                                        __pyx_t_20 = __pyx_t_11;
+                                        goto __pyx_L48_bool_binop_done;
+                                      }
+                                      __pyx_t_26 = __pyx_v_s;
+                                      __pyx_t_40 = __pyx_v_j;
+                                      __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_26 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_42 = __pyx_v_s;
+                                      __pyx_t_35 = __pyx_v_b;
+                                      __pyx_t_39 = __pyx_v_leaf_numb;
+                                      __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_42 * __pyx_v_S.strides[0]) )));
+                                      __pyx_t_36 = 0;
+                                      __pyx_t_11 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_data.data + __pyx_t_40 * __pyx_v_data.strides[0]) ) + __pyx_t_38 * __pyx_v_data.strides[1]) ))) >= (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_partition_leaves_trees.data + __pyx_t_35 * __pyx_v_partition_leaves_trees.strides[0]) ) + __pyx_t_39 * __pyx_v_partition_leaves_trees.strides[1]) ) + __pyx_t_37 * __pyx_v_partition_leaves_trees.strides[2]) ) + __pyx_t_36 * __pyx_v_partition_leaves_trees.strides[3]) )))) != 0);
+                                      __pyx_t_20 = __pyx_t_11;
+                                      __pyx_L48_bool_binop_done:;
+                                      if (__pyx_t_20) {
 
-                /* "cyext_acv.pyx":2259
+                                        /* "cyext_acv.pyx":2259
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):
  *                                 b_it = b_it + 1             # <<<<<<<<<<<<<<
  * 
  *                         if a_it == m:
  */
-                __pyx_v_b_it = (__pyx_v_b_it + 1);
+                                        __pyx_v_b_it = (__pyx_v_b_it + 1);
 
-                /* "cyext_acv.pyx":2258
+                                        /* "cyext_acv.pyx":2258
  *                                 a_it = a_it + 1
  *                         for s in range(S_size):
  *                             if ((data[j, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[j, S[s]] >= partition_leaves_trees[b, leaf_numb, S[s], 0])):             # <<<<<<<<<<<<<<
  *                                 b_it = b_it + 1
  * 
  */
-              }
-            }
+                                      }
+                                    }
 
-            /* "cyext_acv.pyx":2261
+                                    /* "cyext_acv.pyx":2261
  *                                 b_it = b_it + 1
  * 
  *                         if a_it == m:             # <<<<<<<<<<<<<<
  *                             lm = 1
  * 
  */
-            __pyx_t_20 = ((__pyx_v_a_it == __pyx_v_m) != 0);
-            if (__pyx_t_20) {
+                                    __pyx_t_20 = ((__pyx_v_a_it == __pyx_v_m) != 0);
+                                    if (__pyx_t_20) {
 
-              /* "cyext_acv.pyx":2262
+                                      /* "cyext_acv.pyx":2262
  * 
  *                         if a_it == m:
  *                             lm = 1             # <<<<<<<<<<<<<<
  * 
  *                         if b_it == S_size:
  */
-              __pyx_v_lm = 1;
+                                      __pyx_v_lm = 1;
 
-              /* "cyext_acv.pyx":2261
+                                      /* "cyext_acv.pyx":2261
  *                                 b_it = b_it + 1
  * 
  *                         if a_it == m:             # <<<<<<<<<<<<<<
  *                             lm = 1
  * 
  */
-            }
+                                    }
 
-            /* "cyext_acv.pyx":2264
+                                    /* "cyext_acv.pyx":2264
  *                             lm = 1
  * 
  *                         if b_it == S_size:             # <<<<<<<<<<<<<<
  *                             lm_s = 1
  * 
  */
-            __pyx_t_20 = ((__pyx_v_b_it == __pyx_v_S_size) != 0);
-            if (__pyx_t_20) {
+                                    __pyx_t_20 = ((__pyx_v_b_it == __pyx_v_S_size) != 0);
+                                    if (__pyx_t_20) {
 
-              /* "cyext_acv.pyx":2265
+                                      /* "cyext_acv.pyx":2265
  * 
  *                         if b_it == S_size:
  *                             lm_s = 1             # <<<<<<<<<<<<<<
  * 
  *                         p += lm
  */
-              __pyx_v_lm_s = 1;
+                                      __pyx_v_lm_s = 1;
 
-              /* "cyext_acv.pyx":2264
+                                      /* "cyext_acv.pyx":2264
  *                             lm = 1
  * 
  *                         if b_it == S_size:             # <<<<<<<<<<<<<<
  *                             lm_s = 1
  * 
  */
-            }
+                                    }
 
-            /* "cyext_acv.pyx":2267
+                                    /* "cyext_acv.pyx":2267
  *                             lm_s = 1
  * 
  *                         p += lm             # <<<<<<<<<<<<<<
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:
  */
-            __pyx_v_p = (__pyx_v_p + __pyx_v_lm);
+                                    __pyx_v_p = (__pyx_v_p + __pyx_v_lm);
 
-            /* "cyext_acv.pyx":2268
+                                    /* "cyext_acv.pyx":2268
  * 
  *                         p += lm
  *                         p_s += lm_s             # <<<<<<<<<<<<<<
  *                         if fX[R_buf[i]] == y_pred[j]:
  *                             p_u += lm
  */
-            __pyx_v_p_s = (__pyx_v_p_s + __pyx_v_lm_s);
+                                    __pyx_v_p_s = (__pyx_v_p_s + __pyx_v_lm_s);
 
-            /* "cyext_acv.pyx":2269
+                                    /* "cyext_acv.pyx":2269
  *                         p += lm
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:             # <<<<<<<<<<<<<<
  *                             p_u += lm
  *                             p_su += lm_s
  */
-            __pyx_t_41 = __pyx_v_i;
-            __pyx_t_35 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_36 = __pyx_v_j;
-            __pyx_t_20 = (((*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_35 * __pyx_v_fX.strides[0]) ))) == (*((long *) ( /* dim=0 */ (__pyx_v_y_pred.data + __pyx_t_36 * __pyx_v_y_pred.strides[0]) )))) != 0);
-            if (__pyx_t_20) {
+                                    __pyx_t_42 = __pyx_v_i;
+                                    __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_37 = __pyx_v_j;
+                                    __pyx_t_20 = (((*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_36 * __pyx_v_fX.strides[0]) ))) == (*((long *) ( /* dim=0 */ (__pyx_v_y_pred.data + __pyx_t_37 * __pyx_v_y_pred.strides[0]) )))) != 0);
+                                    if (__pyx_t_20) {
 
-              /* "cyext_acv.pyx":2270
+                                      /* "cyext_acv.pyx":2270
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:
  *                             p_u += lm             # <<<<<<<<<<<<<<
  *                             p_su += lm_s
  *                         else:
  */
-              __pyx_v_p_u = (__pyx_v_p_u + __pyx_v_lm);
+                                      __pyx_v_p_u = (__pyx_v_p_u + __pyx_v_lm);
 
-              /* "cyext_acv.pyx":2271
+                                      /* "cyext_acv.pyx":2271
  *                         if fX[R_buf[i]] == y_pred[j]:
  *                             p_u += lm
  *                             p_su += lm_s             # <<<<<<<<<<<<<<
  *                         else:
  *                             p_d += lm
  */
-              __pyx_v_p_su = (__pyx_v_p_su + __pyx_v_lm_s);
+                                      __pyx_v_p_su = (__pyx_v_p_su + __pyx_v_lm_s);
 
-              /* "cyext_acv.pyx":2269
+                                      /* "cyext_acv.pyx":2269
  *                         p += lm
  *                         p_s += lm_s
  *                         if fX[R_buf[i]] == y_pred[j]:             # <<<<<<<<<<<<<<
  *                             p_u += lm
  *                             p_su += lm_s
  */
-              goto __pyx_L45;
-            }
+                                      goto __pyx_L52;
+                                    }
 
-            /* "cyext_acv.pyx":2273
+                                    /* "cyext_acv.pyx":2273
  *                             p_su += lm_s
  *                         else:
  *                             p_d += lm             # <<<<<<<<<<<<<<
  *                             p_sd += lm_s
  * 
  */
-            /*else*/ {
-              __pyx_v_p_d = (__pyx_v_p_d + __pyx_v_lm);
+                                    /*else*/ {
+                                      __pyx_v_p_d = (__pyx_v_p_d + __pyx_v_lm);
 
-              /* "cyext_acv.pyx":2274
+                                      /* "cyext_acv.pyx":2274
  *                         else:
  *                             p_d += lm
  *                             p_sd += lm_s             # <<<<<<<<<<<<<<
  * 
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0
  */
-              __pyx_v_p_sd = (__pyx_v_p_sd + __pyx_v_lm_s);
-            }
-            __pyx_L45:;
+                                      __pyx_v_p_sd = (__pyx_v_p_sd + __pyx_v_lm_s);
+                                    }
+                                    __pyx_L52:;
+                                  }
 
-            /* "cyext_acv.pyx":2249
- *                     p_su = 0
- *                     p_sd = 0
- *                     for j in range(data.shape[0], nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
- *                         a_it = 0
- *                         b_it = 0
- */
-          }
-          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-
-          /* "cyext_acv.pyx":2276
+                                  /* "cyext_acv.pyx":2276
  *                             p_sd += lm_s
  * 
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0             # <<<<<<<<<<<<<<
  *                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  */
-          if (((__pyx_v_p_s != 0) != 0)) {
-            __pyx_t_36 = __pyx_v_b;
-            __pyx_t_41 = __pyx_v_leaf_numb;
-            __pyx_t_35 = __pyx_v_i;
-            __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_35 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_34 = __pyx_v_b;
-            __pyx_t_26 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_36 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_41 * __pyx_v_leaf_idx_trees.strides[1]) )));
-            __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_38 * __pyx_v_fX.strides[0]) )));
-            __pyx_t_39 = __pyx_v_b;
-            __pyx_t_43 = ((__pyx_v_p * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_34 * __pyx_v_values.strides[0]) ) + __pyx_t_26 * __pyx_v_values.strides[1]) ) + __pyx_t_37 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_39 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_s));
-          } else {
-            __pyx_t_43 = 0.0;
-          }
-          __pyx_t_39 = __pyx_v_i;
-          __pyx_t_35 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_39 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_38 = 0;
-          *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_35 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_38 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_43;
+                                  if (((__pyx_v_p_s != 0) != 0)) {
+                                    __pyx_t_37 = __pyx_v_b;
+                                    __pyx_t_42 = __pyx_v_leaf_numb;
+                                    __pyx_t_36 = __pyx_v_i;
+                                    __pyx_t_39 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_36 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_35 = __pyx_v_b;
+                                    __pyx_t_26 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_37 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_42 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                    __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_39 * __pyx_v_fX.strides[0]) )));
+                                    __pyx_t_40 = __pyx_v_b;
+                                    __pyx_t_46 = ((__pyx_v_p * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_35 * __pyx_v_values.strides[0]) ) + __pyx_t_26 * __pyx_v_values.strides[1]) ) + __pyx_t_38 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_40 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_s));
+                                  } else {
+                                    __pyx_t_46 = 0.0;
+                                  }
+                                  __pyx_t_40 = __pyx_v_i;
+                                  __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_40 * __pyx_v_R_buf.strides[0]) )));
+                                  __pyx_t_39 = 0;
+                                  *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_36 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_39 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_46;
 
-          /* "cyext_acv.pyx":2277
+                                  /* "cyext_acv.pyx":2277
  * 
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0
  *                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0             # <<<<<<<<<<<<<<
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
  */
-          if (((__pyx_v_p_su != 0) != 0)) {
-            __pyx_t_39 = __pyx_v_b;
-            __pyx_t_38 = __pyx_v_leaf_numb;
-            __pyx_t_35 = __pyx_v_i;
-            __pyx_t_41 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_35 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_36 = __pyx_v_b;
-            __pyx_t_37 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_39 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_38 * __pyx_v_leaf_idx_trees.strides[1]) )));
-            __pyx_t_26 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_41 * __pyx_v_fX.strides[0]) )));
-            __pyx_t_34 = __pyx_v_b;
-            __pyx_t_43 = ((__pyx_v_p_u * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_36 * __pyx_v_values.strides[0]) ) + __pyx_t_37 * __pyx_v_values.strides[1]) ) + __pyx_t_26 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_34 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_su));
-          } else {
-            __pyx_t_43 = 0.0;
-          }
-          __pyx_t_34 = __pyx_v_i;
-          __pyx_t_35 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_34 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_41 = 1;
-          *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_35 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_41 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_43;
+                                  if (((__pyx_v_p_su != 0) != 0)) {
+                                    __pyx_t_40 = __pyx_v_b;
+                                    __pyx_t_39 = __pyx_v_leaf_numb;
+                                    __pyx_t_36 = __pyx_v_i;
+                                    __pyx_t_42 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_36 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_37 = __pyx_v_b;
+                                    __pyx_t_38 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_40 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_39 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                    __pyx_t_26 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_42 * __pyx_v_fX.strides[0]) )));
+                                    __pyx_t_35 = __pyx_v_b;
+                                    __pyx_t_46 = ((__pyx_v_p_u * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_37 * __pyx_v_values.strides[0]) ) + __pyx_t_38 * __pyx_v_values.strides[1]) ) + __pyx_t_26 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_35 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_su));
+                                  } else {
+                                    __pyx_t_46 = 0.0;
+                                  }
+                                  __pyx_t_35 = __pyx_v_i;
+                                  __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_35 * __pyx_v_R_buf.strides[0]) )));
+                                  __pyx_t_42 = 1;
+                                  *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_36 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_42 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_46;
 
-          /* "cyext_acv.pyx":2278
+                                  /* "cyext_acv.pyx":2278
  *                     mean_forest[R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] * p_s) if p_s != 0 else 0
  *                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0             # <<<<<<<<<<<<<<
  * 
- *         for i in range(N, nogil=True, num_threads=num_threads):
+ *         for i in range(N):
  */
-          if (((__pyx_v_p_sd != 0) != 0)) {
-            __pyx_t_34 = __pyx_v_b;
-            __pyx_t_41 = __pyx_v_leaf_numb;
-            __pyx_t_35 = __pyx_v_i;
-            __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_35 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_39 = __pyx_v_b;
-            __pyx_t_26 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_34 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_41 * __pyx_v_leaf_idx_trees.strides[1]) )));
-            __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_38 * __pyx_v_fX.strides[0]) )));
-            __pyx_t_36 = __pyx_v_b;
-            __pyx_t_43 = ((__pyx_v_p_d * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_39 * __pyx_v_values.strides[0]) ) + __pyx_t_26 * __pyx_v_values.strides[1]) ) + __pyx_t_37 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_36 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_sd));
-          } else {
-            __pyx_t_43 = 0.0;
-          }
-          __pyx_t_36 = __pyx_v_i;
-          __pyx_t_35 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_36 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_38 = 2;
-          *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_35 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_38 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_43;
+                                  if (((__pyx_v_p_sd != 0) != 0)) {
+                                    __pyx_t_35 = __pyx_v_b;
+                                    __pyx_t_42 = __pyx_v_leaf_numb;
+                                    __pyx_t_36 = __pyx_v_i;
+                                    __pyx_t_39 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_36 * __pyx_v_R_buf.strides[0]) )));
+                                    __pyx_t_40 = __pyx_v_b;
+                                    __pyx_t_26 = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_leaf_idx_trees.data + __pyx_t_35 * __pyx_v_leaf_idx_trees.strides[0]) ) + __pyx_t_42 * __pyx_v_leaf_idx_trees.strides[1]) )));
+                                    __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_fX.data + __pyx_t_39 * __pyx_v_fX.strides[0]) )));
+                                    __pyx_t_37 = __pyx_v_b;
+                                    __pyx_t_46 = ((__pyx_v_p_d * (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_values.data + __pyx_t_40 * __pyx_v_values.strides[0]) ) + __pyx_t_26 * __pyx_v_values.strides[1]) ) + __pyx_t_38 * __pyx_v_values.strides[2]) )))) / ((*((double *) ( /* dim=0 */ (__pyx_v_scaling.data + __pyx_t_37 * __pyx_v_scaling.strides[0]) ))) * __pyx_v_p_sd));
+                                  } else {
+                                    __pyx_t_46 = 0.0;
+                                  }
+                                  __pyx_t_37 = __pyx_v_i;
+                                  __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_37 * __pyx_v_R_buf.strides[0]) )));
+                                  __pyx_t_39 = 2;
+                                  *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_36 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_39 * __pyx_v_mean_forest.strides[1]) )) += __pyx_t_46;
+                                  goto __pyx_L54;
+                                  __pyx_L28_continue:;
+                                  goto __pyx_L54;
+                                  __pyx_L54:;
+                              }
+                          }
+                      }
+                  }
+              }
+              #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
+                  #undef likely
+                  #undef unlikely
+                  #define likely(x)   __builtin_expect(!!(x), 1)
+                  #define unlikely(x) __builtin_expect(!!(x), 0)
+              #endif
+            }
 
-          /* "cyext_acv.pyx":2235
+            /* "cyext_acv.pyx":2235
  * 
  *             for leaf_numb in range(leaves_nb[b]):
- *                 for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *                 for i in prange(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
  *                     o_all = 0
  *                     for s in range(S_size):
  */
-          __pyx_L23_continue:;
+            /*finally:*/ {
+              /*normal exit:*/{
+                #ifdef WITH_THREAD
+                __Pyx_FastGIL_Forget();
+                Py_BLOCK_THREADS
+                #endif
+                goto __pyx_L27;
+              }
+              __pyx_L27:;
+            }
         }
-        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       }
     }
 
     /* "cyext_acv.pyx":2280
  *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
  * 
- *         for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
+ *         for i in range(N):             # <<<<<<<<<<<<<<
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):
  */
-    __pyx_t_3 = __Pyx_PyInt_From_unsigned_int(__pyx_v_N); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2280, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_9 = PyTuple_New(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2280, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_9);
-    __Pyx_GIVEREF(__pyx_t_3);
-    PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_3);
-    __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2280, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_nogil, Py_True) < 0) __PYX_ERR(0, 2280, __pyx_L1_error)
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_num_threads); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2280, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_num_threads, __pyx_t_2) < 0) __PYX_ERR(0, 2280, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_9, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2280, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (likely(PyList_CheckExact(__pyx_t_2)) || PyTuple_CheckExact(__pyx_t_2)) {
-      __pyx_t_3 = __pyx_t_2; __Pyx_INCREF(__pyx_t_3); __pyx_t_14 = 0;
-      __pyx_t_21 = NULL;
-    } else {
-      __pyx_t_14 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2280, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_21 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 2280, __pyx_L1_error)
-    }
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    for (;;) {
-      if (likely(!__pyx_t_21)) {
-        if (likely(PyList_CheckExact(__pyx_t_3))) {
-          if (__pyx_t_14 >= PyList_GET_SIZE(__pyx_t_3)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_2 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_14); __Pyx_INCREF(__pyx_t_2); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 2280, __pyx_L1_error)
-          #else
-          __pyx_t_2 = PySequence_ITEM(__pyx_t_3, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2280, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          #endif
-        } else {
-          if (__pyx_t_14 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_14); __Pyx_INCREF(__pyx_t_2); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 2280, __pyx_L1_error)
-          #else
-          __pyx_t_2 = PySequence_ITEM(__pyx_t_3, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2280, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          #endif
-        }
-      } else {
-        __pyx_t_2 = __pyx_t_21(__pyx_t_3);
-        if (unlikely(!__pyx_t_2)) {
-          PyObject* exc_type = PyErr_Occurred();
-          if (exc_type) {
-            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 2280, __pyx_L1_error)
-          }
-          break;
-        }
-        __Pyx_GOTREF(__pyx_t_2);
-      }
-      __pyx_t_24 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_24 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2280, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_31 = __pyx_v_N;
+    __pyx_t_19 = __pyx_t_31;
+    for (__pyx_t_24 = 0; __pyx_t_24 < __pyx_t_19; __pyx_t_24+=1) {
       __pyx_v_i = __pyx_t_24;
 
       /* "cyext_acv.pyx":2281
  * 
- *         for i in range(N, nogil=True, num_threads=num_threads):
+ *         for i in range(N):
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0             # <<<<<<<<<<<<<<
  *             if((ss <= 1) and (ss>=0)):
  *                 sdp[R_buf[i]] = ss
  */
-      __pyx_t_36 = __pyx_v_i;
-      __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_36 * __pyx_v_R_buf.strides[0]) )));
-      __pyx_t_35 = 1;
-      __pyx_t_41 = __pyx_v_i;
-      __pyx_t_34 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-      __pyx_t_37 = 2;
-      if (((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_38 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_35 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_34 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_37 * __pyx_v_mean_forest.strides[1]) )))) != 0.0) != 0)) {
+      __pyx_t_37 = __pyx_v_i;
+      __pyx_t_39 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_37 * __pyx_v_R_buf.strides[0]) )));
+      __pyx_t_36 = 1;
+      __pyx_t_42 = __pyx_v_i;
+      __pyx_t_35 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+      __pyx_t_38 = 2;
+      if (((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_39 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_36 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_35 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_38 * __pyx_v_mean_forest.strides[1]) )))) != 0.0) != 0)) {
         __pyx_t_26 = __pyx_v_i;
-        __pyx_t_39 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_26 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_40 = 0;
-        __pyx_t_44 = __pyx_v_i;
-        __pyx_t_45 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_44 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_46 = 2;
+        __pyx_t_40 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_26 * __pyx_v_R_buf.strides[0]) )));
+        __pyx_t_41 = 0;
         __pyx_t_47 = __pyx_v_i;
         __pyx_t_48 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_47 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_49 = 1;
+        __pyx_t_49 = 2;
         __pyx_t_50 = __pyx_v_i;
         __pyx_t_51 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_50 * __pyx_v_R_buf.strides[0]) )));
-        __pyx_t_52 = 2;
-        __pyx_t_43 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_39 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_40 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_45 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_46 * __pyx_v_mean_forest.strides[1]) )))) / ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_48 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_49 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_51 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_52 * __pyx_v_mean_forest.strides[1]) )))));
+        __pyx_t_52 = 1;
+        __pyx_t_53 = __pyx_v_i;
+        __pyx_t_54 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_53 * __pyx_v_R_buf.strides[0]) )));
+        __pyx_t_55 = 2;
+        __pyx_t_46 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_40 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_41 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_48 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_49 * __pyx_v_mean_forest.strides[1]) )))) / ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_51 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_52 * __pyx_v_mean_forest.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mean_forest.data + __pyx_t_54 * __pyx_v_mean_forest.strides[0]) ) + __pyx_t_55 * __pyx_v_mean_forest.strides[1]) )))));
       } else {
-        __pyx_t_43 = 0.0;
+        __pyx_t_46 = 0.0;
       }
-      __pyx_v_ss = __pyx_t_43;
+      __pyx_v_ss = __pyx_t_46;
 
       /* "cyext_acv.pyx":2282
- *         for i in range(N, nogil=True, num_threads=num_threads):
+ *         for i in range(N):
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):             # <<<<<<<<<<<<<<
  *                 sdp[R_buf[i]] = ss
@@ -36667,11 +36500,11 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
       if (__pyx_t_11) {
       } else {
         __pyx_t_20 = __pyx_t_11;
-        goto __pyx_L49_bool_binop_done;
+        goto __pyx_L58_bool_binop_done;
       }
       __pyx_t_11 = ((__pyx_v_ss >= 0.0) != 0);
       __pyx_t_20 = __pyx_t_11;
-      __pyx_L49_bool_binop_done:;
+      __pyx_L58_bool_binop_done:;
       if (__pyx_t_20) {
 
         /* "cyext_acv.pyx":2283
@@ -36681,9 +36514,9 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                 if ss >= global_proba:
  *                     r.append(R[i])
  */
-        __pyx_t_41 = __pyx_v_i;
-        __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_37 * __pyx_v_sdp.strides[0]) )) = __pyx_v_ss;
+        __pyx_t_42 = __pyx_v_i;
+        __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_38 * __pyx_v_sdp.strides[0]) )) = __pyx_v_ss;
 
         /* "cyext_acv.pyx":2284
  *             if((ss <= 1) and (ss>=0)):
@@ -36702,10 +36535,10 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                     len_s_star[R_buf[i]] = S_size
  *                     for s in range(S_size):
  */
-          __pyx_t_2 = PyList_GET_ITEM(__pyx_v_R, __pyx_v_i);
-          __Pyx_INCREF(__pyx_t_2);
-          __pyx_t_53 = __Pyx_PyList_Append(__pyx_v_r, __pyx_t_2); if (unlikely(__pyx_t_53 == ((int)-1))) __PYX_ERR(0, 2285, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+          __pyx_t_3 = PyList_GET_ITEM(__pyx_v_R, __pyx_v_i);
+          __Pyx_INCREF(__pyx_t_3);
+          __pyx_t_56 = __Pyx_PyList_Append(__pyx_v_r, __pyx_t_3); if (unlikely(__pyx_t_56 == ((int)-1))) __PYX_ERR(0, 2285, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
           /* "cyext_acv.pyx":2286
  *                 if ss >= global_proba:
@@ -36714,9 +36547,9 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                     for s in range(S_size):
  *                         s_star[R_buf[i], s] = S[s]
  */
-          __pyx_t_41 = __pyx_v_i;
-          __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-          *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_37 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
+          __pyx_t_42 = __pyx_v_i;
+          __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+          *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_38 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
 
           /* "cyext_acv.pyx":2287
  *                     r.append(R[i])
@@ -36725,10 +36558,10 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                         s_star[R_buf[i], s] = S[s]
  *                         sdp_global[S[s]] += 1
  */
-          __pyx_t_24 = __pyx_v_S_size;
-          __pyx_t_27 = __pyx_t_24;
-          for (__pyx_t_28 = 0; __pyx_t_28 < __pyx_t_27; __pyx_t_28+=1) {
-            __pyx_v_s = __pyx_t_28;
+          __pyx_t_27 = __pyx_v_S_size;
+          __pyx_t_28 = __pyx_t_27;
+          for (__pyx_t_30 = 0; __pyx_t_30 < __pyx_t_28; __pyx_t_30+=1) {
+            __pyx_v_s = __pyx_t_30;
 
             /* "cyext_acv.pyx":2288
  *                     len_s_star[R_buf[i]] = S_size
@@ -36737,11 +36570,11 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                         sdp_global[S[s]] += 1
  * 
  */
-            __pyx_t_41 = __pyx_v_s;
-            __pyx_t_37 = __pyx_v_i;
-            __pyx_t_34 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_37 * __pyx_v_R_buf.strides[0]) )));
-            __pyx_t_36 = __pyx_v_s;
-            *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_34 * __pyx_v_s_star.strides[0]) ) + __pyx_t_36 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_41 * __pyx_v_S.strides[0]) )));
+            __pyx_t_42 = __pyx_v_s;
+            __pyx_t_38 = __pyx_v_i;
+            __pyx_t_35 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_38 * __pyx_v_R_buf.strides[0]) )));
+            __pyx_t_37 = __pyx_v_s;
+            *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_35 * __pyx_v_s_star.strides[0]) ) + __pyx_t_37 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_42 * __pyx_v_S.strides[0]) )));
 
             /* "cyext_acv.pyx":2289
  *                     for s in range(S_size):
@@ -36750,9 +36583,9 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  * 
  *             elif(ss > 1):
  */
-            __pyx_t_41 = __pyx_v_s;
-            __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_41 * __pyx_v_S.strides[0]) )));
-            *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_37 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
+            __pyx_t_42 = __pyx_v_s;
+            __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_42 * __pyx_v_S.strides[0]) )));
+            *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_38 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
           }
 
           /* "cyext_acv.pyx":2284
@@ -36765,13 +36598,13 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
         }
 
         /* "cyext_acv.pyx":2282
- *         for i in range(N, nogil=True, num_threads=num_threads):
+ *         for i in range(N):
  *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
  *             if((ss <= 1) and (ss>=0)):             # <<<<<<<<<<<<<<
  *                 sdp[R_buf[i]] = ss
  *                 if ss >= global_proba:
  */
-        goto __pyx_L48;
+        goto __pyx_L57;
       }
 
       /* "cyext_acv.pyx":2291
@@ -36791,9 +36624,9 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                 r.append(R_buf[i])
  *                 len_s_star[R_buf[i]] = S_size
  */
-        __pyx_t_41 = __pyx_v_i;
-        __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_37 * __pyx_v_sdp.strides[0]) )) = 1.0;
+        __pyx_t_42 = __pyx_v_i;
+        __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_38 * __pyx_v_sdp.strides[0]) )) = 1.0;
 
         /* "cyext_acv.pyx":2293
  *             elif(ss > 1):
@@ -36802,11 +36635,11 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                 len_s_star[R_buf[i]] = S_size
  *                 for s in range(S_size):
  */
-        __pyx_t_41 = __pyx_v_i;
-        __pyx_t_2 = __Pyx_PyInt_From_long((*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2293, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_53 = __Pyx_PyList_Append(__pyx_v_r, __pyx_t_2); if (unlikely(__pyx_t_53 == ((int)-1))) __PYX_ERR(0, 2293, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_42 = __pyx_v_i;
+        __pyx_t_3 = __Pyx_PyInt_From_long((*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2293, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __pyx_t_56 = __Pyx_PyList_Append(__pyx_v_r, __pyx_t_3); if (unlikely(__pyx_t_56 == ((int)-1))) __PYX_ERR(0, 2293, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
         /* "cyext_acv.pyx":2294
  *                 sdp[R_buf[i]] = 1
@@ -36815,9 +36648,9 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                 for s in range(S_size):
  *                     s_star[R_buf[i], s] = S[s]
  */
-        __pyx_t_41 = __pyx_v_i;
-        __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-        *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_37 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
+        __pyx_t_42 = __pyx_v_i;
+        __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+        *((long *) ( /* dim=0 */ (__pyx_v_len_s_star.data + __pyx_t_38 * __pyx_v_len_s_star.strides[0]) )) = __pyx_v_S_size;
 
         /* "cyext_acv.pyx":2295
  *                 r.append(R_buf[i])
@@ -36826,10 +36659,10 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                     s_star[R_buf[i], s] = S[s]
  *                     sdp_global[S[s]] += 1
  */
-        __pyx_t_24 = __pyx_v_S_size;
-        __pyx_t_27 = __pyx_t_24;
-        for (__pyx_t_28 = 0; __pyx_t_28 < __pyx_t_27; __pyx_t_28+=1) {
-          __pyx_v_s = __pyx_t_28;
+        __pyx_t_27 = __pyx_v_S_size;
+        __pyx_t_28 = __pyx_t_27;
+        for (__pyx_t_30 = 0; __pyx_t_30 < __pyx_t_28; __pyx_t_30+=1) {
+          __pyx_v_s = __pyx_t_30;
 
           /* "cyext_acv.pyx":2296
  *                 len_s_star[R_buf[i]] = S_size
@@ -36838,11 +36671,11 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                     sdp_global[S[s]] += 1
  *             else:
  */
-          __pyx_t_41 = __pyx_v_s;
-          __pyx_t_37 = __pyx_v_i;
-          __pyx_t_36 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_37 * __pyx_v_R_buf.strides[0]) )));
-          __pyx_t_34 = __pyx_v_s;
-          *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_36 * __pyx_v_s_star.strides[0]) ) + __pyx_t_34 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_41 * __pyx_v_S.strides[0]) )));
+          __pyx_t_42 = __pyx_v_s;
+          __pyx_t_38 = __pyx_v_i;
+          __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_38 * __pyx_v_R_buf.strides[0]) )));
+          __pyx_t_35 = __pyx_v_s;
+          *((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_s_star.data + __pyx_t_37 * __pyx_v_s_star.strides[0]) ) + __pyx_t_35 * __pyx_v_s_star.strides[1]) )) = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_42 * __pyx_v_S.strides[0]) )));
 
           /* "cyext_acv.pyx":2297
  *                 for s in range(S_size):
@@ -36851,9 +36684,9 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *             else:
  *                 sdp[R_buf[i]] = 0
  */
-          __pyx_t_41 = __pyx_v_s;
-          __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_41 * __pyx_v_S.strides[0]) )));
-          *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_37 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
+          __pyx_t_42 = __pyx_v_s;
+          __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_42 * __pyx_v_S.strides[0]) )));
+          *((double *) ( /* dim=0 */ (__pyx_v_sdp_global.data + __pyx_t_38 * __pyx_v_sdp_global.strides[0]) )) += 1.0;
         }
 
         /* "cyext_acv.pyx":2291
@@ -36863,7 +36696,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *                 sdp[R_buf[i]] = 1
  *                 r.append(R_buf[i])
  */
-        goto __pyx_L48;
+        goto __pyx_L57;
       }
 
       /* "cyext_acv.pyx":2299
@@ -36874,21 +36707,12 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  *         for i in range(len(r)):
  */
       /*else*/ {
-        __pyx_t_41 = __pyx_v_i;
-        __pyx_t_37 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_41 * __pyx_v_R_buf.strides[0]) )));
-        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_37 * __pyx_v_sdp.strides[0]) )) = 0.0;
+        __pyx_t_42 = __pyx_v_i;
+        __pyx_t_38 = (*((long *) ( /* dim=0 */ (__pyx_v_R_buf.data + __pyx_t_42 * __pyx_v_R_buf.strides[0]) )));
+        *((double *) ( /* dim=0 */ (__pyx_v_sdp.data + __pyx_t_38 * __pyx_v_sdp.strides[0]) )) = 0.0;
       }
-      __pyx_L48:;
-
-      /* "cyext_acv.pyx":2280
- *                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
- * 
- *         for i in range(N, nogil=True, num_threads=num_threads):             # <<<<<<<<<<<<<<
- *             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
- *             if((ss <= 1) and (ss>=0)):
- */
+      __pyx_L57:;
     }
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
     /* "cyext_acv.pyx":2301
  *                 sdp[R_buf[i]] = 0
@@ -36953,58 +36777,58 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
  * @cython.boundscheck(False)
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2308, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_asarray); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2308, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_asarray); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_v_sdp_global, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2308, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = NULL;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_sdp_global, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_9))) {
-    __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_9);
-    if (likely(__pyx_t_1)) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_9);
+    if (likely(__pyx_t_2)) {
       PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_9);
-      __Pyx_INCREF(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_2);
       __Pyx_INCREF(function);
       __Pyx_DECREF_SET(__pyx_t_9, function);
     }
   }
-  __pyx_t_3 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_9, __pyx_t_1, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_3 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_9, __pyx_t_2, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __pyx_t_9 = PyInt_FromSsize_t((__pyx_v_X.shape[0])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2308, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_t_9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2308, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_s_star, 2, (PyObject *(*)(char *)) __pyx_memview_get_long, (int (*)(char *, PyObject *)) __pyx_memview_set_long, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_1);
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
     if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
       __Pyx_INCREF(__pyx_t_4);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_1, function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
     }
   }
-  __pyx_t_9 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_3);
+  __pyx_t_9 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2308, __pyx_L1_error)
@@ -37022,23 +36846,23 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_pa_coal(__Pyx_memviewslice __
       __Pyx_DECREF_SET(__pyx_t_4, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_22) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_22, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
+  __pyx_t_2 = (__pyx_t_22) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_22, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_22); __pyx_t_22 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2308, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 2308, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GIVEREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_9);
   PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_9);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_t_1);
-  __pyx_t_2 = 0;
-  __pyx_t_9 = 0;
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_t_2);
   __pyx_t_1 = 0;
+  __pyx_t_9 = 0;
+  __pyx_t_2 = 0;
   __pyx_r = __pyx_t_4;
   __pyx_t_4 = 0;
   goto __pyx_L0;
@@ -56639,7 +56463,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_new, __pyx_k_new, sizeof(__pyx_k_new), 0, 0, 1, 1},
   {&__pyx_kp_s_no_default___reduce___due_to_non, __pyx_k_no_default___reduce___due_to_non, sizeof(__pyx_k_no_default___reduce___due_to_non), 0, 0, 1, 0},
   {&__pyx_n_s_node_idx_trees, __pyx_k_node_idx_trees, sizeof(__pyx_k_node_idx_trees), 0, 0, 1, 1},
-  {&__pyx_n_s_nogil, __pyx_k_nogil, sizeof(__pyx_k_nogil), 0, 0, 1, 1},
   {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
   {&__pyx_n_s_num_threads, __pyx_k_num_threads, sizeof(__pyx_k_num_threads), 0, 0, 1, 1},
   {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
@@ -61223,6 +61046,18 @@ static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *o
     return t;
 }
 
+/* MemviewDtypeToObject */
+  static CYTHON_INLINE PyObject *__pyx_memview_get_long(const char *itemp) {
+    return (PyObject *) __Pyx_PyInt_From_long(*(long *) itemp);
+}
+static CYTHON_INLINE int __pyx_memview_set_long(const char *itemp, PyObject *obj) {
+    long value = __Pyx_PyInt_As_long(obj);
+    if ((value == (long)-1) && PyErr_Occurred())
+        return 0;
+    *(long *) itemp = value;
+    return 1;
+}
+
 /* None */
   static CYTHON_INLINE Py_ssize_t __Pyx_pow_Py_ssize_t(Py_ssize_t b, Py_ssize_t e) {
     Py_ssize_t t = b;
@@ -61248,18 +61083,6 @@ static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *o
         e >>= 1;
     }
     return t;
-}
-
-/* MemviewDtypeToObject */
-  static CYTHON_INLINE PyObject *__pyx_memview_get_long(const char *itemp) {
-    return (PyObject *) __Pyx_PyInt_From_long(*(long *) itemp);
-}
-static CYTHON_INLINE int __pyx_memview_set_long(const char *itemp, PyObject *obj) {
-    long value = __Pyx_PyInt_As_long(obj);
-    if ((value == (long)-1) && PyErr_Occurred())
-        return 0;
-    *(long *) itemp = value;
-    return 1;
 }
 
 /* Declarations */

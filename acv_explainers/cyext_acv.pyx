@@ -1432,17 +1432,17 @@ cpdef shap_values_leaves_pa(const double[:, :] X,
                         if node_id[nv] == remove_va[ns]:
                             add = 1
                             node_id_v2 += [[node_id[nv]]]
-                            continue
+                            break
                     if add == 0:
                         for ci in range(len(C_b)):
                             for cj in range(len(C_b[ci])):
                                 if C_b[ci][cj] == node_id[nv]:
                                     add = 1
                                     node_id_v2 += [C_b[ci]]
-                                    continue
+                                    break
                             if add == 1:
                                 C_b.remove(C_b[ci])
-                                continue
+                                break
 
                 node_id = node_id_v2
             else:
@@ -1598,7 +1598,7 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
                     if i in c:
                         va_id.append(c)
                         C_buff.remove(c)
-                        continue
+                        break
 
     else:
         va_id = [[i] for i in S_star]
@@ -1606,10 +1606,10 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
     m = len(va_id)
 
     cdef long[:, :] sm_buf
-    sm_buf = np.zeros((2**data.shape[1], data.shape[1]), dtype=np.int)
+    sm_buf = np.zeros((data.shape[1], data.shape[1]), dtype=np.int)
 
     cdef long[:] sm_size
-    sm_size = np.zeros((2**data.shape[1]), dtype=np.int)
+    sm_size = np.zeros((data.shape[1]), dtype=np.int)
 
     cdef double p_s, p_si, lm_s, lm_si, coef, coef_0, p_off
 
@@ -1637,17 +1637,17 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
                         if node_id[nv] == remove_va[ns]:
                             add = 1
                             node_id_v2 += [[node_id[nv]]]
-                            continue
+                            break
                     if add == 0:
                         for ci in range(len(C_b)):
                             for cj in range(len(C_b[ci])):
                                 if C_b[ci][cj] == node_id[nv]:
                                     add = 1
                                     node_id_v2 += [C_b[ci]]
-                                    continue
+                                    break
                             if add == 1:
                                 C_b.remove(C_b[ci])
-                                continue
+                                break
 
                 node_id = node_id_v2
             else:
@@ -1842,7 +1842,7 @@ cdef compute_sdp_swing(const double[:, :] X, const long[:] fX,
                 p_su = 0
                 p_sd = 0
 
-                for j in prange(data.shape[0], nogil=True, num_threads=num_threads):
+                for j in range(data.shape[0]):
                     a_it = 0
                     b_it = 0
                     lm = 0
@@ -1924,10 +1924,10 @@ cpdef swing_sv_clf(const double[:, :] X,
     swings = np.zeros((N, m, 2))
 
     cdef long[:, :] sm_buf
-    sm_buf = np.zeros((2**data.shape[1], data.shape[1]), dtype=np.int)
+    sm_buf = np.zeros((data.shape[1], data.shape[1]), dtype=np.int)
 
     cdef long[:] sm_size
-    sm_size = np.zeros((2**data.shape[1]), dtype=np.int)
+    sm_size = np.zeros((data.shape[1]), dtype=np.int)
     if C[0] != []:
         C_buff = C.copy()
         coal_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
@@ -2107,7 +2107,7 @@ cpdef global_sdp_clf_cpp_pa_coal(double[:, :] X, long[:] fX,
                     p_s = 0
                     p_su = 0
                     p_sd = 0
-                    for j in prange(data.shape[0], nogil=True, num_threads=num_threads):
+                    for j in range(data.shape[0]):
 #                         print('debug', j)
                         a_it = 0
                         b_it = 0
@@ -2246,7 +2246,7 @@ cpdef global_sdp_clf_pa_coal(double[:, :] X, long[:] fX,
                     p_s = 0
                     p_su = 0
                     p_sd = 0
-                    for j in prange(data.shape[0], nogil=True, num_threads=num_threads):
+                    for j in range(data.shape[0]):
                         a_it = 0
                         b_it = 0
                         lm = 0
@@ -2277,7 +2277,7 @@ cpdef global_sdp_clf_pa_coal(double[:, :] X, long[:] fX,
                     mean_forest[R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_su) if p_su != 0 else 0
                     mean_forest[R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (scaling[b] *p_sd) if p_sd != 0 else 0
 
-        for i in prange(N, nogil=True, num_threads=num_threads):
+        for i in range(N):
             ss = (mean_forest[R_buf[i], 0] - mean_forest[R_buf[i], 2])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
             if((ss <= 1) and (ss>=0)):
                 sdp[R_buf[i]] = ss
