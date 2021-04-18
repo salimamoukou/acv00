@@ -549,7 +549,7 @@ class BaseTree:
 
                 self.partition_leaves = []
                 self.node_idx = []
-                self.data_leaves = []
+                # self.data_leaves = []
                 for leaf_id in self.leaf_idx:
                     node_id = [-1]
                     partition_leaf = [np.array([[-np.inf, np.inf]]) for idx2 in range(self.data.shape[1])]
@@ -558,12 +558,12 @@ class BaseTree:
 
                     self.partition_leaves.append(np.squeeze(np.array(partition_leaf)))
                     self.node_idx.append(list(set(node_id[1:])))
-                    self.data_leaves.append(np.array([(self.data[:, s] <= self.partition_leaves[-1][s, 1]) * \
-                                                          (self.data[:, s] > self.partition_leaves[-1][s, 0])
-                                                          for s in range(self.data.shape[1])]))
+                    # self.data_leaves.append(np.array([(self.data[:, s] <= self.partition_leaves[-1][s, 1]) * \
+                    #                                       (self.data[:, s] > self.partition_leaves[-1][s, 0])
+                    #                                       for s in range(self.data.shape[1])]))
 
                 self.partition_leaves_trees.append(self.partition_leaves)
-                self.data_leaves_trees.append(self.data_leaves)
+                # self.data_leaves_trees.append(self.data_leaves)
 
                 self.node_idx_trees.append(self.node_idx)
                 self.leaf_idx_trees.append(self.leaf_idx)

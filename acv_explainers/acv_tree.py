@@ -62,6 +62,12 @@ class ACVTree(BaseTree):
         return cyext_acv.global_sdp_clf_cpp_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, num_threads)
 
+    def cyext_importance_sdp_clf_r(self, X, data, C, global_proba, num_threads=10):
+        fX = np.argmax(self.predict(X), axis=1)
+        y_pred = np.argmax(self.predict(data), axis=1)
+        return cyext_acv.global_sdp_clf_cpp_pa_coal_r(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, num_threads)
+
     def cyext_importance_sdp_clf_slow(self, X, data, C, global_proba, num_threads=10):
         fX = np.argmax(self.predict(X), axis=1)
         y_pred = np.argmax(self.predict(data), axis=1)
@@ -96,7 +102,7 @@ class ACVTree(BaseTree):
     def shap_values_acv(self, x, S_star, N_star, C):
         out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))
         for i in range(len(self.trees)):
-            out += shap_values_acv_leaves(x, self.partition_leaves_trees[i], self.data_leaves_trees[i],
+            out += shap_values_acv_leaves(x, self.partition_leaves_trees[i], self.data,
                                           self.node_idx_trees[i],
                                           self.leaf_idx_trees[i], self.leaves_nb[i], self.node_sample_weight[i], self.values[i], C, S_star,
                                           N_star,

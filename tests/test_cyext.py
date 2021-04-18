@@ -69,9 +69,7 @@ def test_exp_cyext():
     assert np.allclose(cy_cat, py_cat)
 
 
-X_swing = X[50:100]
-
-
+# X_swing = X[50:100]
 # def test_swing_sv_cyext():
 #     cy = acvtree.cyext_swing_sv_clf(X_swing, data=data, C=[[]], thresholds=0.8,
 #                                     num_threads=5)

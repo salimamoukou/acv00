@@ -23,7 +23,7 @@ def compute_sdp_reg(X, tX, model, S, data):
                 for leaf_numb in range(model.leaves_nb[b]):
                     leaf_part = leaves_tree[leaf_numb]
                     leaf_id = model.leaf_idx_trees[b, leaf_numb]
-                    value = model.values[b, leaf_id] / model.trees[b].scaling
+                    value = model.values[b, leaf_id]
 
                     leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S],
                                         axis=0)
@@ -69,10 +69,10 @@ def compute_sdp_reg(X, tX, model, S, data):
                         leaf_id_l = model.leaf_idx_trees[l, leaf_numb_l]
 
                         leaf_part_b = model.partition_leaves_trees[b][leaf_numb_b]
-                        value_b = model.values[b, leaf_id_b] / model.trees[b].scaling
+                        value_b = model.values[b, leaf_id_b]
 
                         leaf_part_l = model.partition_leaves_trees[l][leaf_numb_l]
-                        value_l = model.values[l, leaf_id_l] / model.trees[l].scaling
+                        value_l = model.values[l, leaf_id_l]
 
                         leaf_bool = np.prod([(X[:, s] <= leaf_part_b[s, 1]) * (X[:, s] >= leaf_part_b[s, 0]) *
                                              (X[:, s] <= leaf_part_l[s, 1]) * (X[:, s] >= leaf_part_l[s, 0])
@@ -141,7 +141,7 @@ def compute_sdp_reg_cat(X, tX, model, S, data):
                 for leaf_numb in range(model.leaves_nb[b]):
                     leaf_part = leaves_tree[leaf_numb]
                     leaf_id = model.leaf_idx_trees[b, leaf_numb]
-                    value = model.values[b, leaf_id] / model.trees[b].scaling
+                    value = model.values[b, leaf_id]
 
                     leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S],
                                         axis=0)
@@ -185,10 +185,10 @@ def compute_sdp_reg_cat(X, tX, model, S, data):
 
                     for leaf_numb_l in range(model.leaves_nb[l]):
                         leaf_id_l = model.leaf_idx_trees[l, leaf_numb_l]
-                        value_b = model.values[b, leaf_id_b] / model.trees[b].scaling
+                        value_b = model.values[b, leaf_id_b]
 
                         leaf_part_l = model.partition_leaves_trees[l][leaf_numb_l]
-                        value_l = model.values[l, leaf_id_l] / model.trees[l].scaling
+                        value_l = model.values[l, leaf_id_l]
 
                         leaf_bool = np.prod([(X[:, s] <= leaf_part_b[s, 1]) * (X[:, s] >= leaf_part_b[s, 0]) *
                                              (X[:, s] <= leaf_part_l[s, 1]) * (X[:, s] >= leaf_part_l[s, 0])
@@ -259,7 +259,7 @@ def compute_sdp_clf_cat(X, tX, model, S, data):
         for leaf_numb in range(model.leaves_nb[b]):
             leaf_part = leaves_tree[leaf_numb]
             leaf_id = model.leaf_idx_trees[b, leaf_numb]
-            value = model.values[b, leaf_id] / model.trees[b].scaling
+            value = model.values[b, leaf_id]
 
             leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S], axis=0)
 
@@ -324,7 +324,7 @@ def compute_sdp_clf(X, tX, model, S, data):
         for leaf_numb in range(model.leaves_nb[b]):
             leaf_part = leaves_tree[leaf_numb]
             leaf_id = model.leaf_idx_trees[b, leaf_numb]
-            value = model.values[b, leaf_id] / model.trees[b].scaling
+            value = model.values[b, leaf_id]
 
             leaf_bool = np.prod([(X[:, s] <= leaf_part[s, 1]) * (X[:, s] >= leaf_part[s, 0]) for s in S], axis=0)
 

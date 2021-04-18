@@ -187,7 +187,7 @@ def shap_values_leaves_v2(x, partition_leaves, data, node_idx, leaf_idx, leaves_
     return phi / d
 
 
-def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx, leaves_nb, weight_samples, v, C,
+def shap_values_acv_leaves(x, partition_leaves, data, node_idx, leaf_idx, leaves_nb, weight_samples, v, C,
                            S_star, N_star,
                            num_outputs):
     """
@@ -213,9 +213,10 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
     for leaf_numb in range(leaves_nb):
         leaf_id = leaf_idx[leaf_numb]
         partition_leaf = partition_leaves[leaf_numb]
-        data_leaf = data_leaves[leaf_numb]
+        # data_leaf = data_leaves[leaf_numb]
         node_id = node_idx[leaf_numb]
-        Lm = np.sum(np.prod(data_leaf, axis=0))
+        lm = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                             for s in range(data.shape[1])], axis=0))
 
         va_id = S_star
         d = len(va_id)
@@ -240,11 +241,13 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
                 comp_si = np.prod([(x[:, s] <= partition_leaf[s, 1]) * (x[:, s] >= partition_leaf[s, 0])
                                    for s in N_star], axis=0)
 
-                Lsi = np.sum(np.prod(data_leaf[N_star, :], axis=0))
-                P_si = comp_si * Lm / Lsi
-                P_s = Lm / np.sum(weight_samples[leaf_idx])
+                lm_si = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                             for s in N_star], axis=0))
+
+                p_si = comp_si * lm / lm_si
+                p_s = lm / data.shape[0]
                 for a in convert_list(i):
-                    phi[:, a] += ((P_si - P_s)[:, None] * v[leaf_id][None, :])
+                    phi[:, a] += ((p_si - p_s)[:, None] * v[leaf_id][None, :])
                 continue
 
 
@@ -269,19 +272,21 @@ def shap_values_acv_leaves(x, partition_leaves, data_leaves, node_idx, leaf_idx,
                 for l in range(1, d - len(Sm)):
                     coef += comb(d - len(Sm) - 1, l) * comb(d - 1, l + len(S)) ** (-1)
 
-                Lsi = np.sum(np.prod(data_leaf[chain_l(S) + convert_list(i) + N_star, :], axis=0))
-                Ls = np.sum(np.prod(data_leaf[chain_l(S) + N_star, :], axis=0))
+                lm_si = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                             for s in chain_l(S) + convert_list(i) + N_star], axis=0))
+                lm_s = np.sum(np.prod([(data[:, s] <= partition_leaf[s, 1]) * (data[:, s] > partition_leaf[s, 0])
+                             for s in chain_l(S) + N_star], axis=0))
 
-                P_si = comp_si * Lm / Lsi
-                P_s = comp_s * Lm / Ls
+                p_si = comp_si * lm / lm_si
+                p_s = comp_s * lm / lm_s
                 if len(S) != 0:
                     for a in convert_list(i):
                         phi[:, a] += (
-                                (comb(d - 1, len(S)) ** (-1) + coef) * (P_si - P_s)[:, None] * v[leaf_id][None, :])
+                                (comb(d - 1, len(S)) ** (-1) + coef) * (p_si - p_s)[:, None] * v[leaf_id][None, :])
                 else:
-                    P_soff = Lm / np.sum(weight_samples[leaf_idx])
+                    P_soff = lm / data.shape[0]
                     for a in convert_list(i):
-                        phi[:, a] += ((P_si - P_soff)[:, None] * v[leaf_id][None, :] + coef * (P_si - P_s)[:, None] * v[
+                        phi[:, a] += ((p_si - P_soff)[:, None] * v[leaf_id][None, :] + coef * (p_si - p_s)[:, None] * v[
                                                                                                                           leaf_id][
                                                                                                                       None,
                                                                                                                       :])
