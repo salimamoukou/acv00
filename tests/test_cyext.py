@@ -3,6 +3,10 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import pandas as pd
 import random
+import pytest
+import sklearn
+import sklearn.pipeline
+import shap
 import time
 import pstats, cProfile
 
@@ -68,6 +72,25 @@ def test_exp_cyext():
     assert np.allclose(cy, py)
     assert np.allclose(cy_cat, py_cat)
 
+def test_sdp_reg_cyext():
+    xgboost = pytest.importorskip('xgboost')
+    np.random.seed(2021)
+    X, y = shap.datasets.boston()
+    X = X.values
+    model = xgboost.XGBRegressor(n_estimators=3)
+    model.fit(X, y)
+
+    acvtree = ACVTree(model, X)
+
+    x = X[:2]
+    cy = acvtree.cyext_compute_sdp_reg(x, 10, S=np.array([0, 1], dtype=np.int), data=X, num_threads=5)
+    cy_cat = acvtree.cyext_compute_sdp_reg_cat(x, 10,  S=np.array([0, 1], dtype=np.long), data=X, num_threads=5)
+
+    py = acvtree.compute_sdp_reg(X=x, tX=10, S=[0, 1], data=X)
+    py_cat = acvtree.compute_sdp_reg_cat(x, 10,  S=[0, 1], data=X)
+
+    assert np.allclose(cy, py)
+    assert np.allclose(cy_cat, py_cat)
 
 # X_swing = X[50:100]
 # def test_swing_sv_cyext():
