@@ -20,6 +20,19 @@ class ACVTree(BaseTree):
                                        self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                        self.node_idx_trees, S_star, N_star, C, num_threads)
 
+    def cyext_shap_values_acv_all(self, X, S_star, N_star, C, num_threads=10):
+
+        return cyext_acv.shap_values_acv_leaves_data(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+                                       self.leaf_idx_trees, self.leaves_nb, self.scalings,
+                                       self.node_idx_trees, S_star, N_star, C, num_threads)
+
+    def cyext_shap_values_acv_all_cpp(self, X, S_star, N_star, C, num_threads=10):
+
+        return cyext_acv.shap_values_acv_leaves_data_cpp(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+                                       self.leaf_idx_trees, self.leaves_nb, self.scalings,
+                                       self.node_idx_trees, S_star, N_star, C, num_threads)
+
+
     def cyext_compute_exp(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings,
