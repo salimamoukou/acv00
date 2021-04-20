@@ -1,29 +1,10 @@
 from distutils.core import setup, Extension
 from Cython.Distutils import build_ext
-import numpy
-# from setuptools.command.build_ext import build_ext as _build_ext
-
-# to publish use:
-# > python setup.py sdist bdist_wheel upload
-# which depends on ~/.pypirc
-
-# Extend the default build_ext class to bootstrap numpy installation
-# that are needed to build C extensions.
-# see https://stackoverflow.com/questions/19919905/how-to-bootstrap-numpy-installation-in-setup-py
-# class build_ext(_build_ext):
-#     def finalize_options(self):
-#         _build_ext.finalize_options(self)
-#         if isinstance(__builtins__, dict):
-#             __builtins__["__NUMPY_SETUP__"] = False
-#         else:
-#             setattr(__builtins__, "__NUMPY_SETUP__", False)
-#         import numpy
-#         print("numpy.get_include()", numpy.get_include())
-#         self.include_dirs.append(numpy.get_include())
 from Cython.Build import cythonize
+import numpy
 
-module1 = Extension('cext_acv', sources=['cext_acv/_cext.cc'])
-module2 = Extension('cyext_acv', ['acv_explainers/cyext_acv.pyx'], extra_compile_args=['-fopenmp'],
+c_ext = Extension('cext_acv', sources=['acv_explainers/cext_acv/_cext.cc'])
+cy_ext = Extension('cyext_acv', ['acv_explainers/cyext_acv/cyext_acv.pyx'], extra_compile_args=['-fopenmp'],
                     extra_link_args=['-fopenmp'])
 
 setup(name='acv',
@@ -33,7 +14,7 @@ setup(name='acv',
       description='ACV function optimized in C',
       include_dirs=[numpy.get_include()],
       cmdclass={'build_ext': build_ext},
-      ext_modules=cythonize([module1, module2]),
+      ext_modules=cythonize([c_ext, cy_ext]),
       # cmdclass={'build_ext': build_ext},
       # setup_requires=['numpy'],
       # install_requires=['numpy', 'scipy', 'scikit-learn', 'matplotlib', 'pandas', 'tqdm', 'ipython'],

@@ -11,7 +11,6 @@ import time
 import pstats, cProfile
 
 random.seed(2021)
-
 np.random.seed(2021)
 data_frame = pd.read_csv('/home/samoukou/Documents/ACV/data/lucas0_train.csv')
 

@@ -4,3 +4,10 @@ matplotlib
 seaborn
 rpy2 == 2.9.4
 tqdm
+Cython
+numpy
+sklearn
+pandas
+xgboost
+lightgbm
+catboost
