@@ -24,7 +24,7 @@ $ python3 setup.py install
 ```
 
 ## How does ACV work?
-ACV works for XGBoost, LightGBM, CatBoost, scikit-learn and pyspark tree models. 
+ACV works for XGBoost, LightGBM, CatBoostClassifier, scikit-learn and pyspark tree models. 
 To use it, we need to transform our model into ACVTree. 
 
 ```python
@@ -33,7 +33,7 @@ from acv_explainers import ACVTree
 forest = RandomForestClassifier() # or any Tree Based models
 #...trained the model
 
-acvtree = ACVTree(forest, data)
+acvtree = ACVTree(forest, data) # data should be np.ndarray with dtype=double
 ```
 
 ### Same Decision Probability
@@ -41,63 +41,48 @@ Given <img src="https://latex.codecogs.com/gif.latex?x%20%3D%20%28x_S%2C%20x_%7B
 * **How to compute <img src="https://latex.codecogs.com/gif.latex?SDP_S%28x%2C%20f%29" />  ?**
 
 ```python
-forest = RandomForestClassifier()
-#...trained the model
-
-sdp = acvtree.compute_sdp_clf(x=x, fx=fx, tx=threshold, S=id_var, data=data)
+sdp = acvtree.compute_sdp_clf(X, S, data, num_threads=5)
 
 """
 Description of the arguments    
    
-x (array): observation        
-fx (float): tree(x)
-threshold (float): threshold of the classifier
-forest (RandomForestClassifier): model
-S (list): index of variables on which we want to compute the SDP
-data (array): data used to compute the SDP
+X (np.ndarray): observations        
+S (np.ndarray): index of variables on which we want to compute the SDP
+data (np.ndarray): data used to compute the SDP
+num_threads (int): how many threads to use for parallelism 
 """
 ```
 * **How to compute the Sufficient Coalition <img src="https://latex.codecogs.com/gif.latex?S^\star" />** ?
 ```python 
 forest = RandomForestClassifier()
 #...trained the model
-sdp_cluster = []
-acvtree.compute_local_sdp_clf(x, fx, threshold, proba, index, data, sdp_cluster, decay, verbose=0, C=C)
-
+sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C=[[]], global_proba, num_threads=5)
 """
 Description of the arguments
 
-x (array): observation
-f (float): forest(x)
-threshold (float): the radius t of the SDP regressor (see paper: SDP for regression)
-proba (float): the level of the Sufficient Coalition \pi
-index (list): index of the variables of x
-data (array): data used for the estimation
-sdp_cluster (list): holder of the SDP
-decay (float): the probability decay used in the recursion step
+X (np.ndarray): observations
+data (np.ndarray): data used for the estimation
 C (list[list]): list of the index of variables group together
+global_proba (double): the level of the SDP, default value = 0.9
+
+sdp_index[i, size[i]] corresponds to the index of the variables in $S^\star$ of observation i  
 """
 ```
 
 *  **How to compute the Global SDP importance ?**
 ```python
-forest = RandomForestClassifier()  # or any Tree Based models
-#...trained the model
-
-acvtree.global_sdp_importance_clf(data, data_bground, columns_names, 
-                            global_proba, decay, threshold, proba, C=C, verbose=0)
+sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C=[[]], global_proba, num_threads=5)
 
 """
 Description of the arguments
 
-data (array): data used to compute the Global SDP
-data_bground (array): data used in the estimations of the SDP
-columns_names (list): names of the variables
-global_proba (float): proba used for the selection criterion. We count each time for a variable if it is on a set with SDP >= global proba
-decay (float): decay value used when recursively apply the local_sdp function .
-threshold (float): the radius t of the SDP regressor (see paper: SDP for regression)
-proba (float): the  level of the Sufficient Coalition
-C (list[list]): list of index of the variables group together
+X (np.ndarray): observations
+data (np.ndarray): data used for the estimation
+C (list[list]): list of the index of variables group together
+global_proba(double): the level of the SDP, default value = 0.9
+num_threads (int): how many threads to use for parallelism 
+
+sdp_importance:= corresponds to the global sdp of each variables 
 """
 ```
 ### Active Shapley values
@@ -107,27 +92,23 @@ The Active Shapley values is a SV based on a new game defined in the Paper ("The
 * **How to compute Active Shapley values ?**
 
 ```python
-forest = RandomForestClassifier()  # or any Tree Based models
-#...trained the model
+import acv_explainers
 
-# First, we need to compute the Sufficient coalition 
-sdp_cluster = []
-acvtree.compute_local_sdp_clf(x, fx, threshold, proba, index, data, sdp_cluster, decay, verbose=0, C=C)
-
+# First, we need to compute the Active and Null coalition
+sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C, global_proba, num_threads=5)
 # Then, we used the active coalition found to compute the Active Shapley values.
-S_star = sdp_cluster[0]
-N_star = sdp_cluster[-1]
+S_star, N_star = acv_explainers.utils.get_null_coalition(sdp_index, size)
 
-forest_asv = acvtree.shap_values_acv(x, C, N_star, S_star)
+forest_acv = acvtree.shap_values_acv(X, C, S_star, N_star)
 
 """
 Description of the arguments
 
-x (array): observation
-data (array): data used to compute the Shapley values
+X (array): observation
 C (list[list]): list of the different coalition of variables by their index
 S_star (list): index of variables in the Sufficient Coalition
 N_star (list): index of the remaining variables
+num_threads (int): how many threads to use for parallelism 
 """
 ```
 
@@ -136,20 +117,23 @@ Let assume we have a categorical variable Y with k modalities that we encoded by
 
 ```python
 
-cat_index = [[i for i in data.columns if data.dtypes[i] =='category']] # get the index of categorical variables
-forest_sv = acvtree.shap_values(x, C=cat_index)
+# cat_index := list(list) that contains the index of the dummies or one-hot variables grouped together
+# for each variable. For example, we have only 2 categorical variables Y, Z transformed into [Y_0, Y_1, Y_2]
+# and [Z_0, Z_1, Z_2]
+cat_index = [[0, 1, 2], [3, 4, 5]]
+forest_sv = acvtree.shap_values(x, C=cat_index, num_threads=5)
 ```
 In addition, we can compute the SV given any coalitions. For example, if we want the following coalition <img src="https://latex.codecogs.com/gif.latex?C_0%20%3D%20%28X_0%2C%20X_1%2C%20X_2%29%2C%20C_1%3D%28X_3%2C%20X_4%29%2C%20C_2%3D%28X_5%2C%20X_6%29" />
 
 ```python
 
 coalition = [[0, 1, 2], [3, 4], [5, 6]]
-forest_sv = acvtree.shap_values(x, C=coalition)
+forest_sv = acvtree.shap_values(x, C=coalition, num_threads=5)
 ```
-*Remarks:* The computation for a regressor is similar, we just need to remove "_clf" in each function. 
+*Remarks:* The computation for a regressor is similar, we just need to replace "_clf" in each function with "_reg".
 
 ## Examples and tutorials (a lot more to come...)
-We can find a tutorial of the usages of ACV in [demo_acv](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_tools.ipynb) and 
+We can find a tutorial of the usages of ACV in [demo_acv](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainers.ipynb) and 
 the notebooks below demonstrate different use cases for ACV. Look inside the notebook directory of the repository if you want to try playing with the original notebooks yourself.
 * [SDP on toy regression model](https://github.com/salimamoukou/acv00/blob/main/notebooks/sdp_on_regression.ipynb)
 * [SDP on lung cancer classification](https://github.com/salimamoukou/acv00/blob/main/notebooks/sdp_on_lucas_data.ipynb)

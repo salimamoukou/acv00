@@ -767,3 +767,24 @@ def safe_isinstance(obj, class_path_str):
             return True
 
     return False
+
+
+def get_null_coalition(s_star, len_s_star):
+    n_star = -np.ones(s_star.shape, dtype=np.long)
+    index = list(range(s_star.shape[1]))
+
+    for i in range(s_star.shape[0]):
+        s_star_index = [s_star[i, j] for j in range(s_star.shape[1])]
+        null_coalition = list(set(index) - set(s_star_index))
+        n_star[i, len_s_star[i]:] = np.array(null_coalition)
+    return s_star, n_star
+
+
+def get_active_null_coalition_list(s_star, len_s_star):
+    index = list(range(s_star.shape[1]))
+    s_star_all = []
+    n_star_all = []
+    for i in range(s_star.shape[0]):
+        s_star_all.append([s_star[i, j] for j in range(len_s_star[i])])
+        n_star_all.append(list(set(index) - set(s_star_all[-1])))
+    return s_star_all, n_star_all
