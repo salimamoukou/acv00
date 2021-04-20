@@ -25,7 +25,7 @@ def test_xgboost_binary():
         acvtree = ACVTree(model, X_train.values)
 
         x = X_train.values[:10]
-        shap_values = acvtree.cyext_shap_values(x, C=[[]])
+        shap_values = acvtree.shap_values(x, C=[[]])
 
         log_odds = []
         exp_log_odds = []
@@ -53,7 +53,7 @@ def test_xgboost_multiclass():
     acvtree = ACVTree(model, X)
 
     x = X[:10]
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
     y_pred = acvtree.predict(x)
     exp = np.mean(acvtree.predict(X), axis=0)
@@ -72,7 +72,7 @@ def test_xgboost_regressor():
     acvtree = ACVTree(model, X)
 
     x = X[:10]
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
     y_pred = acvtree.predict(x)
     exp = np.mean(acvtree.predict(X))
@@ -96,7 +96,7 @@ def test_catboost_binary():
     acvtree = ACVTree(model, X)
 
     x = X[:10]
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
     y_pred = acvtree.predict(x)
     exp = np.mean(acvtree.predict(X))
@@ -124,7 +124,7 @@ def test_catboost_multiclass():
     y_pred = acvtree.predict(x)
     exp = np.mean(acvtree.predict(X), axis=0)
 
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
 
 def test_lightgbm_regressor():
@@ -139,7 +139,7 @@ def test_lightgbm_regressor():
     acvtree = ACVTree(model, X)
 
     x = X[:10]
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
     y_pred = acvtree.predict(x)
     exp = np.mean(acvtree.predict(X))
@@ -163,7 +163,7 @@ def test_lightgbm_multiclass():
     y_pred = acvtree.predict(x)
     exp = np.mean(acvtree.predict(X), axis=0)
 
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
     assert np.allclose(np.sum(shap_values, axis=1), y_pred - exp)
 
@@ -180,7 +180,7 @@ def test_lightgbm_binary():
     acvtree = ACVTree(model, X_train.values)
 
     x = X_train.values[:10]
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
     log_odds = []
     exp_log_odds = []
@@ -212,7 +212,7 @@ def test_sklearn_random_forest_multiclass():
     y_pred = acvtree.predict(x)
     exp = np.mean(acvtree.predict(X), axis=0)
 
-    shap_values = acvtree.cyext_shap_values(x, C=[[]])
+    shap_values = acvtree.shap_values(x, C=[[]])
 
     assert np.allclose(np.sum(shap_values, axis=1), y_pred - exp)
 
@@ -232,7 +232,7 @@ def test_sklearn_regressor():
         acvtree = ACVTree(model, X)
 
         x = X[:10]
-        shap_values = acvtree.cyext_shap_values(x, C=[[]])
+        shap_values = acvtree.shap_values(x, C=[[]])
 
         y_pred = acvtree.predict(x)
         exp = np.mean(acvtree.predict(X))
@@ -255,7 +255,7 @@ def test_sklearn_binary():
         acvtree = ACVTree(model, X_train.values)
 
         x = X_train.values[:10]
-        shap_values = acvtree.cyext_shap_values(x, C=[[]])
+        shap_values = acvtree.shap_values(x, C=[[]])
 
         y_pred = acvtree.predict(x)
         exp = np.mean(acvtree.predict(X_train.values), axis=0)
