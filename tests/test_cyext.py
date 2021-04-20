@@ -100,3 +100,45 @@ def test_sdp_reg_cyext():
 #     assert np.allclose(cy[0], py[0])
 #     assert np.allclose(cy[1], py[1])
 #     assert np.allclose(cy[2], py[2])
+
+
+def get_null_coalition(s_star, len_s_star):
+    n_star = -np.ones(s_star.shape, dtype=np.long)
+    index = list(range(s_star.shape[1]))
+
+    for i in range(s_star.shape[0]):
+        s_star_index = [s_star[i, j] for j in range(s_star.shape[1])]
+        null_coalition = list(set(index) - set(s_star_index))
+        n_star[i, len_s_star[i]:] = np.array(null_coalition)
+    return s_star, n_star
+
+
+def get_active_null_coalition_list(s_star, len_s_star):
+    index = list(range(s_star.shape[1]))
+    s_star_all = []
+    n_star_all = []
+    for i in range(s_star.shape[0]):
+        s_star_all.append([s_star[i, j] for j in range(len_s_star[i])])
+        n_star_all.append(list(set(index) - set(s_star_all[-1])))
+    return s_star_all, n_star_all
+
+
+def test_cyext_all_acv():
+    x = X[:100]
+    global_proba = 0.9
+    sdp_importance, sdp_index, size, sdp = acvtree.cyext_importance_sdp_clf(X=x, data=data, C=[[]],
+                                                                            global_proba=global_proba, num_threads=5)
+
+    s_star_all, n_star_all = get_null_coalition(sdp_index, size)
+    s_star_l, n_star_l = get_active_null_coalition_list(sdp_index, size)
+
+    sv_all = acvtree.cyext_shap_values_acv_all_cpp(x, C=C, N_star=n_star_all,
+                                                   S_star=s_star_all, size=size)
+    sv = []
+    i = 0
+    for s, n in zip(s_star_l, n_star_l):
+        sv.append(acvtree.cyext_shap_values_acv(np.expand_dims(x[i], 0), C=C, N_star=n,
+                                                S_star=s))
+        i += 1
+    sv = np.concatenate(sv, axis=0)
+    np.allclose(sv, sv_all)
