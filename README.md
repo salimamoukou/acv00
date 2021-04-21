@@ -60,6 +60,7 @@ num_threads (int): how many threads to use for parallelism
 forest = RandomForestClassifier()
 #...trained the model
 sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C=[[]], global_proba=0.9, num_threads=5)
+
 """
 Description of the arguments
 
@@ -68,7 +69,8 @@ data (np.ndarray[2]): data used for the estimation
 C (list[list]): list of the index of variables group together
 global_proba (double): the level of the SDP, default value = 0.9
 
-sdp_index[i, size[i]] corresponds to the index of the variables in $S^\star$ of observation i  
+sdp_index[i, :size[i]] corresponds to the index of the variables in $S^\star$ of observation i  
+sdp[i] corresponds to the SDP value of the $S^\star$ of observation i
 """
 ```
 
@@ -135,9 +137,9 @@ Let assume we have a categorical variable Y with k modalities that we encoded by
 
 ```python
 
-# cat_index := list(list) that contains the index of the dummies or one-hot variables grouped together
-# for each variable. For example, we have only 2 categorical variables Y, Z transformed into [Y_0, Y_1, Y_2]
-# and [Z_0, Z_1, Z_2]
+# cat_index := list(list) that contains the index of the dummies or one-hot variables grouped 
+# together for each variable. For example, we have only 2 categorical variables Y, Z 
+# transformed into [Y_0, Y_1, Y_2] and [Z_0, Z_1, Z_2]
 
 cat_index = [[0, 1, 2], [3, 4, 5]]
 forest_sv = acvtree.shap_values(X, C=cat_index, num_threads=5)
@@ -154,14 +156,14 @@ forest_sv = acvtree.shap_values(X, C=coalition, num_threads=5)
 ## Examples and tutorials (a lot more to come...)
 We can find a tutorial of the usages of ACV in [demo_acv](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/demo_acv_explainers.ipynb) and 
 the notebooks below demonstrate different use cases for ACV. Look inside the notebook directory of the repository if you want to try playing with the original notebooks yourself.
-* [SDP on toy regression model](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/sdp_on_regression.ipynb)
-* [SDP on lung cancer classification](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/sdp_on_lucas_data.ipynb)
+* [SDP on toy regression model](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_regression.ipynb)
+* [SDP on lung cancer classification](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_lucas_data.ipynb)
 
 ## Experiments of the papers
-* [Comparisons of the different estimators](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/comparisons_of_the_different_estimators.ipynb)
-* [Comparisons of SV on toy model: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/coalition_or_sum_toy_model.ipynb)
-* [Comparisons of SV on Census: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/coalition_or_sum_adult.ipynb)
-* [Active Shapley + SDP on toy model](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/sdp_on_regression.ipynb)
-* [SDP and global SDP on Lucas](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/sdp_on_lucas_data.ipynb)
+* [Comparisons of the different estimators](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/comparisons_of_the_different_estimators.ipynb)
+* [Comparisons of SV on toy model: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/coalition_or_sum_toy_model.ipynb)
+* [Comparisons of SV on Census: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/coalition_or_sum_adult.ipynb)
+* [Active Shapley + SDP on toy model](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_regression.ipynb)
+* [SDP and global SDP on Lucas](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_lucas_data.ipynb)
 
 
