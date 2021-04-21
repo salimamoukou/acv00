@@ -94,9 +94,9 @@ def test_sdp_reg_cyext():
 
 # X_swing = X[50:100]
 # def test_swing_sv_cyext():
-#     cy = acvtree.cyext_swing_sv_clf(X_swing, data=data, C=[[]], thresholds=0.8,
+#     cy = acvtree.swing_sv_clf(X_swing, data=data, C=[[]], thresholds=0.8,
 #                                     num_threads=5)
-#     py = acvtree.swing_sv_clf(X=X_swing, data=data, C=[[]], threshold=0.8)
+#     py = acvtree.py_swing_sv_clf(X=X_swing, data=data, C=[[]], threshold=0.8)
 #     assert np.allclose(cy[0], py[0])
 #     assert np.allclose(cy[1], py[1])
 #     assert np.allclose(cy[2], py[2])

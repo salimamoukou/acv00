@@ -156,14 +156,8 @@ forest_sv = acvtree.shap_values(X, C=coalition, num_threads=5)
 ## Examples and tutorials (a lot more to come...)
 We can find a tutorial of the usages of ACV in [demo_acv](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer/demo_acv_explainers.ipynb) and 
 the notebooks below demonstrate different use cases for ACV. Look inside the notebook directory of the repository if you want to try playing with the original notebooks yourself.
-* [SDP on toy regression model](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_regression.ipynb)
-* [SDP on lung cancer classification](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_lucas_data.ipynb)
 
 ## Experiments of the papers
 * [Comparisons of the different estimators](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/comparisons_of_the_different_estimators.ipynb)
 * [Comparisons of SV on toy model: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/coalition_or_sum_toy_model.ipynb)
 * [Comparisons of SV on Census: Coalition or SUM ?](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/coalition_or_sum_adult.ipynb)
-* [Active Shapley + SDP on toy model](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_regression.ipynb)
-* [SDP and global SDP on Lucas](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper/sdp_on_lucas_data.ipynb)
-
-
