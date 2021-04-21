@@ -22,7 +22,10 @@ Install the acv package:
 ```
 $ python3 setup.py install 
 ```
-
+**OSX users**: ACV uses Cython extensions that need to be compiled with multi-threading support enabled. 
+The default Apple Clang compiler does not support OpenMP.
+To solve this issue, obtain the lastest gcc version with Homebrew that has multi-threading enabled: 
+see for example [pysteps installation for OSX.](https://pypi.org/project/pysteps/1.0.0/)
 ## How does ACV work?
 ACV works for XGBoost, LightGBM, CatBoostClassifier, scikit-learn and pyspark tree models. 
 To use it, we need to transform our model into ACVTree. 
@@ -56,7 +59,7 @@ num_threads (int): how many threads to use for parallelism
 ```python 
 forest = RandomForestClassifier()
 #...trained the model
-sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C=[[]], global_proba, num_threads=5)
+sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C=[[]], global_proba=0.9, num_threads=5)
 """
 Description of the arguments
 
@@ -71,7 +74,7 @@ sdp_index[i, size[i]] corresponds to the index of the variables in $S^\star$ of 
 
 *  **How to compute the Global SDP importance ?**
 ```python
-sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C=[[]], global_proba, num_threads=5)
+sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C=[[]], global_proba=0.9, num_threads=5)
 
 """
 Description of the arguments
@@ -100,6 +103,20 @@ sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C, gl
 # Then, we used the active coalition found to compute the Active Shapley values.
 S_star, N_star = acv_explainers.utils.get_null_coalition(sdp_index, size)
 
+forest_acv_adap = acvtree.shap_values_acv_adap(X, C, S_star, N_star)
+
+"""
+Description of the arguments
+
+X (np.ndarray[2]): observations
+C (list[list]): list of the different coalition of variables by their index
+S_star (np.ndarray[2]): index of variables in the Sufficient Coalition
+N_star (np.ndarray[2]): index of the remaining variables
+num_threads (int): how many threads to use for parallelism 
+"""
+# We can also compute ACV with the same active and null coalition for each observations.
+# This is much faster than the previous method.
+
 forest_acv = acvtree.shap_values_acv(X, C, S_star, N_star)
 
 """
@@ -123,14 +140,14 @@ Let assume we have a categorical variable Y with k modalities that we encoded by
 # and [Z_0, Z_1, Z_2]
 
 cat_index = [[0, 1, 2], [3, 4, 5]]
-forest_sv = acvtree.shap_values(x, C=cat_index, num_threads=5)
+forest_sv = acvtree.shap_values(X, C=cat_index, num_threads=5)
 ```
 In addition, we can compute the SV given any coalitions. For example, if we want the following coalition <img src="https://latex.codecogs.com/gif.latex?C_0%20%3D%20%28X_0%2C%20X_1%2C%20X_2%29%2C%20C_1%3D%28X_3%2C%20X_4%29%2C%20C_2%3D%28X_5%2C%20X_6%29" />
 
 ```python
 
 coalition = [[0, 1, 2], [3, 4], [5, 6]]
-forest_sv = acvtree.shap_values(x, C=coalition, num_threads=5)
+forest_sv = acvtree.shap_values(X, C=coalition, num_threads=5)
 ```
 *Remarks:* The computation for a regressor is similar, we just need to replace "_clf" in each function with "_reg".
 
