@@ -35,14 +35,14 @@ class ACVTree(BaseTree):
                                       num_threads)
 
     def compute_sdp_clf(self, X, S, data, num_threads=10):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.compute_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_clf_cat(self, X, S, data, num_threads=10):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.compute_sdp_clf_cat(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
@@ -59,21 +59,21 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def swing_sv_clf(self, X, data, C=[[]], thresholds=0.9, num_threads=10):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.swing_sv_clf_direct(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, thresholds, num_threads)
 
     def swing_sv_clf_slow(self, X, data, C=[[]], thresholds=0.9, num_threads=5):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.swing_sv_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                       self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                       C, thresholds, num_threads)
 
     def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.global_sdp_clf_cpp_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, num_threads)
@@ -86,21 +86,21 @@ class ACVTree(BaseTree):
                                                     self.scalings, C, global_proba, num_threads)
 
     def importance_sdp_clf_r(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.global_sdp_clf_cpp_pa_coal_r(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                       self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                       self.scalings, C, global_proba, num_threads)
 
     def importance_sdp_clf_slow(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.global_sdp_clf_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, num_threads)
 
     def importance_sdp_clf_slowv2(self, X, data, C=[[]], global_proba=0.9):
-        fX = np.argmax(self.predict(X), axis=1)
-        y_pred = np.argmax(self.predict(data), axis=1)
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.global_sdp_clf_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba)
 

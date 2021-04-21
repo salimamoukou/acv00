@@ -30,7 +30,7 @@ class BaseTree:
         self.tree_limit = None  # used for limiting the number of trees we use by default (like from early stopping)
         self.num_stacked_models = 1  # If this is greater than 1 it means we have multiple stacked models with the same number of trees in each model (XGBoost multi-output style)
         self.cat_feature_indices = None  # If this is set it tells us which features are treated categorically
-
+        self.model = model
         # we use names like keras
         objective_name_map = {
             "mse": "squared_error",
