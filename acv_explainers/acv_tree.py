@@ -78,6 +78,35 @@ class ACVTree(BaseTree):
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, num_threads)
 
+    def importance_sdp_clf_p(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv.global_sdp_clf_p(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, num_threads)
+
+    def importance_sdp_clf_p2(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv.global_sdp_clf_p2(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, num_threads)
+
+
+    def importance_sdp_clf_p3(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv.global_sdp_clf_p3(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, num_threads)
+
+    def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv.global_sdp_clf_ptrees(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, num_threads)
+
     def importance_sdp_reg(self, X, tX, data, C=[[]], global_proba=0.9, num_threads=10):
         fX = self.predict(X)
         y_pred = self.predict(data)

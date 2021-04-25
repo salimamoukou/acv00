@@ -121,4 +121,20 @@ def test_cyext_all_acv():
                                                 S_star=s))
         i += 1
     sv = np.concatenate(sv, axis=0)
-    np.allclose(sv, sv_all)
+    assert np.allclose(sv, sv_all)
+
+
+def test_cyext_sdp_para():
+    x = X[:100]
+    global_proba = 0.9
+    C = [[]]
+    sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=[[]],
+                                                                            global_proba=global_proba, num_threads=5)
+
+    sdp_importance_p, sdp_index_p, size_p, sdp_p = acvtree.importance_sdp_clf_p(X=x, data=data, C=[[]],
+                                                                      global_proba=global_proba, num_threads=5)
+
+    assert np.allclose(sdp_importance, sdp_importance_p)
+    assert np.allclose(sdp_index_p, sdp_index)
+    assert np.allclose(size, size_p)
+    assert np.allclose(sdp, sdp_p)
