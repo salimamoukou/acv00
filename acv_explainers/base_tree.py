@@ -549,6 +549,7 @@ class BaseTree:
 
                 self.partition_leaves = []
                 self.node_idx = []
+                self.max_var = []
                 # self.data_leaves = []
                 for leaf_id in self.leaf_idx:
                     node_id = [-1]
@@ -558,6 +559,7 @@ class BaseTree:
 
                     self.partition_leaves.append(np.squeeze(np.array(partition_leaf)))
                     self.node_idx.append(list(set(node_id[1:])))
+                    self.max_var.append(len(self.node_idx[-1]))
                     # self.data_leaves.append(np.array([(self.data[:, s] <= self.partition_leaves[-1][s, 1]) * \
                     #                                       (self.data[:, s] > self.partition_leaves[-1][s, 0])
                     #                                       for s in range(self.data.shape[1])]))
@@ -578,7 +580,7 @@ class BaseTree:
             self.leaves_nb = np.array(self.leaves_nb, dtype=np.int)
             self.scalings = np.array(self.scalings, dtype=np.float)
             self.data = np.array(self.data, dtype=np.float)
-
+            self.max_var = np.max(self.max_var)
 
 
 
