@@ -39,13 +39,13 @@ def test_sv_cyext_coalition():
 
 
 def test_sv_acv_cyext():
-    cy = acvtree.shap_values_acv(X, list(range(8)), list(range(8, 11)), [[]], 5)
+    cy = acvtree.shap_values_acv(X, np.array(list(range(8))), np.array(list(range(8, 11))), [[]], 5)
     py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[]])
     assert np.allclose(cy, py)
 
 
 def test_sv_acv_cyext_coalition():
-    cy = acvtree.shap_values_acv(X, list(range(8)), list(range(8, 11)),
+    cy = acvtree.shap_values_acv(X, np.array(list(range(8))), np.array(list(range(8, 11))),
                                        [[0, 1, 2, 3]], 5)
     py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[0, 1, 2, 3]])
     assert np.allclose(cy, py)
@@ -117,8 +117,8 @@ def test_cyext_all_acv():
     sv = []
     i = 0
     for s, n in zip(s_star_l, n_star_l):
-        sv.append(acvtree.shap_values_acv(np.expand_dims(x[i], 0), C=C, N_star=n,
-                                                S_star=s))
+        sv.append(acvtree.shap_values_acv(np.expand_dims(x[i], 0), C=C, N_star=np.array(n),
+                                                S_star=np.array(s)))
         i += 1
     sv = np.concatenate(sv, axis=0)
     assert np.allclose(sv, sv_all)
@@ -131,7 +131,7 @@ def test_cyext_sdp_para():
     sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=[[]],
                                                                             global_proba=global_proba, num_threads=5)
 
-    sdp_importance_p, sdp_index_p, size_p, sdp_p = acvtree.importance_sdp_clf_p(X=x, data=data, C=[[]],
+    sdp_importance_p, sdp_index_p, size_p, sdp_p = acvtree.importance_sdp_clf_p2(X=x, data=data, C=[[]],
                                                                       global_proba=global_proba, num_threads=5)
 
     assert np.allclose(sdp_importance, sdp_importance_p)
