@@ -26,7 +26,7 @@ class ACVTree(BaseTree):
 
     def shap_values_acv_adap_cp(self, X, S_star, N_star, size, C=[[]], num_threads=10):
         return cyext_acv.shap_values_acv_leaves_data_cp(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
-                                       self.leaf_idx_trees, self.leaves_nb, self.scalings,
+                                       self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, S_star, N_star, size, C, num_threads)
 
     def compute_exp(self, X, S, data, num_threads=10):
