@@ -19,15 +19,17 @@ class ACVTree(BaseTree):
                                        self.node_idx_trees, S_star, N_star, C, num_threads)
 
     def shap_values_acv_adap(self, X, S_star, N_star, size, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_acv_leaves_data_cpp(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
-                                       self.leaf_idx_trees, self.leaves_nb, self.scalings,
-                                       self.node_idx_trees, S_star, N_star, size, C, num_threads)
-
-
-    def shap_values_acv_adap_cp(self, X, S_star, N_star, size, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_acv_leaves_data_cp(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+        return cyext_acv.shap_values_acv_leaves_adap(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, S_star, N_star, size, C, num_threads)
+
+    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, num_threads)
+
 
     def compute_exp(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
@@ -76,39 +78,21 @@ class ACVTree(BaseTree):
                                       self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                       C, thresholds, num_threads)
 
-    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_cpp_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
-                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, num_threads)
+    def shap_values_nopa(self, X, C=[[]], num_threads=10):
+        return cyext_acv.shap_values_leaves_nopa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+                                       self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                       self.node_idx_trees, C, num_threads)
 
-    def importance_sdp_clf_p(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_p(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
-                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, num_threads)
+    def shap_values_acv_nopa(self, X, S_star, N_star, C=[[]], num_threads=10):
+        return cyext_acv.shap_values_acv_leaves_nopa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+                                       self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                       self.node_idx_trees, S_star, N_star, C, num_threads)
+
 
     def importance_sdp_clf_p2(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
         fX = np.argmax(self.model.predict_proba(X), axis=1)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_p2(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
-                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, num_threads)
-
-
-    def importance_sdp_clf_p3(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_p3(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
-                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, num_threads)
-
-    def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_ptrees(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+        return cyext_acv.global_sdp_clf_cpp_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, num_threads)
 
@@ -118,30 +102,6 @@ class ACVTree(BaseTree):
         return cyext_acv.global_sdp_reg_cpp_pa_coal(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, num_threads)
-
-    def importance_sdp_clf_r(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_cpp_pa_coal_r(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
-                                                      self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                      self.scalings, C, global_proba, num_threads)
-
-    def importance_sdp_clf_slow(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
-                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, num_threads)
-
-    def importance_sdp_clf_slowv2(self, X, data, C=[[]], global_proba=0.9):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
-                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba)
-
-    def shap_values_acv_all(self, X, S_star, N_star, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_acv_leaves_data(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
-                                       self.leaf_idx_trees, self.leaves_nb, self.scalings,
-                                       self.node_idx_trees, S_star, N_star, C, num_threads)
 
     def py_shap_values(self, x, C=[[]]):
         out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))
@@ -220,6 +180,7 @@ class ACVTree(BaseTree):
                           proba, C, verbose):
         return global_sdp_importance(data, data_bground, columns_names, global_proba, decay, threshold,
                           proba, C, verbose, self.compute_sdp_reg)
+
 
 
 

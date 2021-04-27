@@ -25,15 +25,36 @@ acvtree = ACVTree(forest, data_frame.values)
 X = np.array(data_frame.values, dtype=np.float)[:100]
 data = np.array(data_frame.values, dtype=np.float)
 
+def test_sv_acv_cyext_nopa():
+    cy = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, 11))), [[]], 5)
+    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[]])
+    assert np.allclose(cy, py)
+
+
+def test_sv_acv_cyext_coalition_nopa():
+    cy = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, 11))),
+                                       [[0, 1, 2, 3]], 5)
+    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[0, 1, 2, 3]])
+    assert np.allclose(cy, py)
 
 def test_sv_cyext():
     cy = acvtree.shap_values(X, [[]], 5)
     py = acvtree.py_shap_values(X, [[]])
     assert np.allclose(cy, py)
 
+def test_sv_cyext_nopa():
+    cy = acvtree.shap_values_nopa(X, [[]], 5)
+    py = acvtree.py_shap_values(X, [[]])
+    assert np.allclose(cy, py)
+
 
 def test_sv_cyext_coalition():
     cy = acvtree.shap_values(X, [[0, 1, 2, 3]], 5)
+    py = acvtree.py_shap_values(X, [[0, 1, 2, 3]])
+    assert np.allclose(cy, py)
+
+def test_sv_cyext_coalition_nopa():
+    cy = acvtree.shap_values_nopa(X, [[0, 1, 2, 3]], 5)
     py = acvtree.py_shap_values(X, [[0, 1, 2, 3]])
     assert np.allclose(cy, py)
 
@@ -103,17 +124,17 @@ def test_sdp_reg_cyext():
 
 
 def test_cyext_all_acv():
-    x = data[25:40]
+    x = data[:100]
     global_proba = 0.9
-    C = [[0, 1, 2]]
-    sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf_p2(X=x, data=data, C=C,
-                                                                         global_proba=global_proba, num_threads=5)
+    C = [[]]
+    sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=C,
+                                                                      global_proba=global_proba, num_threads=5)
 
     s_star_all, n_star_all = acv_explainers.utils.get_null_coalition(sdp_index, size)
     s_star_l, n_star_l = acv_explainers.utils.get_active_null_coalition_list(sdp_index, size)
 
-    sv_all = acvtree.shap_values_acv_adap_cp(x, C=C, N_star=n_star_all,
-                                             S_star=s_star_all, size=size)
+    sv_all = acvtree.shap_values_acv_adap(x, C=C, N_star=n_star_all,
+                                          S_star=s_star_all, size=size)
     sv = []
     i = 0
     for s, n in zip(s_star_l, n_star_l):
@@ -124,19 +145,19 @@ def test_cyext_all_acv():
             sv.append(acvtree.shap_values(np.expand_dims(x[i], 0), C=C))
         i += 1
     sv = np.concatenate(sv, axis=0)
+    assert np.allclose(sv, sv_all)
 
-
-def test_cyext_sdp_para():
-    x = X[:100]
-    global_proba = 0.9
-    C = [[]]
-    sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=[[]],
-                                                                            global_proba=global_proba, num_threads=5)
-
-    sdp_importance_p, sdp_index_p, size_p, sdp_p = acvtree.importance_sdp_clf_p2(X=x, data=data, C=[[]],
-                                                                      global_proba=global_proba, num_threads=5)
-
-    assert np.allclose(sdp_importance, sdp_importance_p)
-    assert np.allclose(sdp_index_p, sdp_index)
-    assert np.allclose(size, size_p)
-    assert np.allclose(sdp, sdp_p)
+# def test_cyext_sdp_para():
+#     x = X[:100]
+#     global_proba = 0.9
+#     C = [[]]
+#     sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=[[]],
+#                                                                             global_proba=global_proba, num_threads=5)
+#
+#     sdp_importance_p, sdp_index_p, size_p, sdp_p = acvtree.importance_sdp_clf_p2(X=x, data=data, C=[[]],
+#                                                                       global_proba=global_proba, num_threads=5)
+#
+#     assert np.allclose(sdp_importance, sdp_importance_p)
+#     assert np.allclose(sdp_index_p, sdp_index)
+#     assert np.allclose(size, size_p)
+#     assert np.allclose(sdp, sdp_p)
