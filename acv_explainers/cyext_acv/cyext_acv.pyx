@@ -1686,7 +1686,6 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
         va_id = [[S_star[i]] for i in range(S_star.shape[0])]
 
     m = va_id.size()
-
     cdef double p_s, p_si, coef, coef_0, p_off
     cdef double[:, :, :] lm_s, lm_si
     cdef double[:, :] lm_star
@@ -1696,7 +1695,7 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
 
     for b in range(n_trees):
         for i in range(N):
-            for j in range(m):
+            for j in range(data.shape[1]):
                 for i2 in range(d):
                     for leaf_numb in range(phi_b.shape[0]):
                         phi_n[leaf_numb, i, j, i2] = 0
@@ -1865,7 +1864,7 @@ cpdef shap_values_acv_leaves(const double[:, :] X,
                                     phi_b[leaf_numb, counter, i, va_id[va][nv], i2] += (p_si-p_off)*values[b, leaf_idx_trees[b, leaf_numb], i2] + coef * (p_si - p_s) * values[b, leaf_idx_trees[b, leaf_numb], i2]
 
         for i in range(N):
-            for j in range(m):
+            for j in range(data.shape[1]):
                 for i2 in range(d):
                     for leaf_numb in range(phi_b.shape[0]):
                         phi[i, j, i2] += phi_n[leaf_numb, i, j, i2]
@@ -4041,7 +4040,7 @@ cpdef single_shap_values_acv_leaves_cp2(const double[:] X,
     lm_star = np.zeros((va_id.size(), max_leaves))
 
     for b in range(n_trees):
-        for j in range(m):
+        for j in range(data.shape[1]):
             for i2 in range(d):
                 for leaf_numb in range(phi_b.shape[0]):
                     phi_n[leaf_numb, j, i2] = 0
@@ -4210,7 +4209,7 @@ cpdef single_shap_values_acv_leaves_cp2(const double[:] X,
                             for i2 in range(d):
                                 phi_b[leaf_numb, counter, va_id[va][nv], i2] += (p_si-p_off)*values[b, leaf_idx_trees[b, leaf_numb], i2] + coef * (p_si - p_s) * values[b, leaf_idx_trees[b, leaf_numb], i2]
 
-        for j in range(m):
+        for j in range(data.shape[1]):
             for i2 in range(d):
                 for leaf_numb in range(phi_b.shape[0]):
                     phi[j, i2] += phi_n[leaf_numb, j, i2]

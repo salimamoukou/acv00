@@ -103,25 +103,27 @@ def test_sdp_reg_cyext():
 
 
 def test_cyext_all_acv():
-    x = X[:100]
+    x = data[25:40]
     global_proba = 0.9
-    C = [[]]
-    sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=[[]],
-                                                                            global_proba=global_proba, num_threads=5)
+    C = [[0, 1, 2]]
+    sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf_p2(X=x, data=data, C=C,
+                                                                         global_proba=global_proba, num_threads=5)
 
     s_star_all, n_star_all = acv_explainers.utils.get_null_coalition(sdp_index, size)
     s_star_l, n_star_l = acv_explainers.utils.get_active_null_coalition_list(sdp_index, size)
 
-    sv_all = acvtree.shap_values_acv_adap(x, C=C, N_star=n_star_all,
-                                                   S_star=s_star_all, size=size)
+    sv_all = acvtree.shap_values_acv_adap_cp(x, C=C, N_star=n_star_all,
+                                             S_star=s_star_all, size=size)
     sv = []
     i = 0
     for s, n in zip(s_star_l, n_star_l):
-        sv.append(acvtree.shap_values_acv(np.expand_dims(x[i], 0), C=C, N_star=np.array(n),
-                                                S_star=np.array(s)))
+        if len(s_star_l) != X.shape[1]:
+            sv.append(acvtree.shap_values_acv(np.expand_dims(x[i], 0), C=C, N_star=np.array(n).astype(np.long),
+                                              S_star=np.array(s).astype(np.long)))
+        else:
+            sv.append(acvtree.shap_values(np.expand_dims(x[i], 0), C=C))
         i += 1
     sv = np.concatenate(sv, axis=0)
-    assert np.allclose(sv, sv_all)
 
 
 def test_cyext_sdp_para():
