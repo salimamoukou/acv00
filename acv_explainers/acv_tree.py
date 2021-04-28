@@ -23,13 +23,20 @@ class ACVTree(BaseTree):
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, S_star, N_star, size, C, num_threads)
 
-    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
+    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=0):
         fX = np.argmax(self.model.predict_proba(X), axis=1)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1)
         return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, num_threads)
+                                                    self.scalings, C, global_proba, minimal)
 
+
+    def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, minimal=0):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv.global_sdp_clf_ptrees(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, minimal)
 
     def compute_exp(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
