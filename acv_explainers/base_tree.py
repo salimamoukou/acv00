@@ -15,7 +15,7 @@ class BaseTree:
     This object provides a common interface to many different types of models.
     """
 
-    def __init__(self, model, data=None, data_missing=None):
+    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, C=[[]]):
         self.model_type = "internal"
         self.trees = None
         self.base_offset = 0
@@ -31,6 +31,9 @@ class BaseTree:
         self.num_stacked_models = 1  # If this is greater than 1 it means we have multiple stacked models with the same number of trees in each model (XGBoost multi-output style)
         self.cat_feature_indices = None  # If this is set it tells us which features are treated categorically
         self.model = model
+        self.cache = cache
+        self.cache_normalized = cache_normalized
+        self.C = C
         # we use names like keras
         objective_name_map = {
             "mse": "squared_error",
@@ -550,7 +553,7 @@ class BaseTree:
                 self.partition_leaves = []
                 self.node_idx = []
                 self.max_var = []
-                # self.data_leaves = []
+                self.data_leaves = []
                 for leaf_id in self.leaf_idx:
                     node_id = [-1]
                     partition_leaf = [np.array([[-np.inf, np.inf]]) for idx2 in range(self.data.shape[1])]
@@ -562,7 +565,7 @@ class BaseTree:
                     self.max_var.append(len(self.node_idx[-1]))
                     # self.data_leaves.append(np.array([(self.data[:, s] <= self.partition_leaves[-1][s, 1]) * \
                     #                                       (self.data[:, s] > self.partition_leaves[-1][s, 0])
-                    #                                       for s in range(self.data.shape[1])]))
+                    #                                       for s in range(self.data.shape[1])], dtype=np.int).transpose())
 
                 self.partition_leaves_trees.append(self.partition_leaves)
                 # self.data_leaves_trees.append(self.data_leaves)
@@ -572,21 +575,30 @@ class BaseTree:
 
             leaf_idx_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb)), dtype=np.int)
             partition_leaves_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb), self.data.shape[1], 2))
+            # data_leaves_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb), self.data.shape[0], self.data.shape[1]), dtype=np.int)
             for i in range(len(self.leaves_nb)):
                 leaf_idx_trees[i, :self.leaves_nb[i]] = np.array(self.leaf_idx_trees[i], dtype=np.int)
                 partition_leaves_trees[i, :self.leaves_nb[i]] = np.array(self.partition_leaves_trees[i])
+                # data_leaves_trees[i, :self.leaves_nb[i]] = np.array(self.data_leaves_trees[i], dtype=np.int)
+
             self.leaf_idx_trees = leaf_idx_trees
             self.partition_leaves_trees = partition_leaves_trees
             self.leaves_nb = np.array(self.leaves_nb, dtype=np.int)
             self.scalings = np.array(self.scalings, dtype=np.float)
             self.data = np.array(self.data, dtype=np.float)
             self.max_var = np.max(self.max_var)
+            # self.data_leaves_trees = data_leaves_trees
 
 
 
 
             self.num_nodes = np.array([len(t.values) for t in self.trees], dtype=np.int32)
             self.max_depth = np.max([t.max_depth for t in self.trees])
+
+            if self.cache:
+                self.lm, self.lm_s, self.lm_si = self.leaves_cache(C=self.C)
+                if self.cache_normalized:
+                    self.lm_n, self.lm_s_n, self.lm_si_n = self.leaves_cache_normalized(C=self.C)
 
             # make sure the base offset is a 1D array
             if not hasattr(self.base_offset, "__len__") or len(self.base_offset) == 0:

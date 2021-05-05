@@ -4,14 +4,17 @@ from .utils_exp import *
 from .utils_sdp import *
 import numpy as np
 import cyext_acv
+import cyext_acv_ba
 
 
 class ACVTree(BaseTree):
 
     def shap_values(self, X, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_leaves_pa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+        if not self.cache:
+            return cyext_acv.shap_values_leaves_pa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, C, num_threads)
+        return self.shap_values_cache(X, C)
 
     def shap_values_acv(self, X, S_star, N_star, C=[[]], num_threads=10):
         return cyext_acv.shap_values_acv_leaves(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
@@ -29,7 +32,6 @@ class ACVTree(BaseTree):
         return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, minimal)
-
 
     def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, minimal=0):
         fX = np.argmax(self.model.predict_proba(X), axis=1)
@@ -96,6 +98,10 @@ class ACVTree(BaseTree):
                                        self.node_idx_trees, S_star, N_star, C, num_threads)
 
 
+    def compute_exp_normalized(self, X, S, data, num_threads=10):
+        return cyext_acv.compute_exp_normalized(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings,
+                                  num_threads)
     def importance_sdp_clf_p2(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
         fX = np.argmax(self.model.predict_proba(X), axis=1)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1)
@@ -109,6 +115,37 @@ class ACVTree(BaseTree):
         return cyext_acv.global_sdp_reg_cpp_pa_coal(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, num_threads)
+
+    def shap_values_normalized(self, X, C=[[]], num_threads=10):
+        if not self.cache_normalized:
+            return cyext_acv.shap_values_leaves_normalized(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+                                       self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                       self.node_idx_trees, C, num_threads)
+        return self.shap_values_normalized_cache(X, C)
+
+    def shap_values_cache(self, X, C=[[]], num_threads=10):
+        return cyext_acv.shap_values_leaves_cache(np.array(X, dtype=np.float), self.data, self.values,
+                                                  self.partition_leaves_trees,
+                                                  self.leaf_idx_trees, self.leaves_nb, self.lm, self.lm_s, self.lm_si,
+                                                  self.max_var,
+                                                  self.node_idx_trees, C, num_threads)
+
+    def shap_values_normalized_cache(self, X, C=[[]], num_threads=10):
+        return cyext_acv.shap_values_leaves_normalized_cache(np.array(X, dtype=np.float), self.data, self.values,
+                                                  self.partition_leaves_trees,
+                                                  self.leaf_idx_trees, self.leaves_nb, self.lm_n, self.lm_s_n, self.lm_si_n,
+                                                  self.max_var,
+                                                  self.node_idx_trees, C, num_threads)
+
+    def leaves_cache(self, C=[[]], num_threads=10):
+        return cyext_acv.leaves_cache(self.data, self.values, self.partition_leaves_trees,
+                                      self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                      self.node_idx_trees, C, num_threads)
+
+    def leaves_cache_normalized(self, C=[[]], num_threads=10):
+        return cyext_acv.leaves_cache_normalized(self.data, self.values, self.partition_leaves_trees,
+                                      self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                      self.node_idx_trees, C, num_threads)
 
     def py_shap_values(self, x, C=[[]]):
         out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))

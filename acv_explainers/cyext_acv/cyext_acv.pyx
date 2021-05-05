@@ -22,6 +22,8 @@ cdef extern from "limits.h":
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef compute_exp(double[:, :] X, long[:] S, double[:, :] data, double[:, :, :] values,
         double[:, :, :, :] partition_leaves_trees, long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling,
         int num_threads):
@@ -88,9 +90,92 @@ cpdef compute_exp(double[:, :] X, long[:] S, double[:, :] data, double[:, :, :] 
     return np.asarray(mean_forest)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_exp_normalized(double[:, :] X, long[:] S, double[:, :] data, double[:, :, :] values,
+        double[:, :, :, :] partition_leaves_trees, long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling,
+        int num_threads):
+
+    cdef unsigned int N = X.shape[0]
+    cdef unsigned int m = X.shape[1]
+    cdef unsigned int S_size = S.shape[0]
+    cdef unsigned int d = values.shape[2]
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
+
+    if S_size == m:
+        return np.ones(shape=(N, values.shape[2]))
+    elif S_size == 0:
+        return np.zeros(shape=(N, values.shape[2]))
+
+    cdef int n_trees = values.shape[0]
+    cdef double[:, :, :] leaves_tree
+    cdef double[:, :] leaf_part
+    cdef double[:] value
+
+    cdef double[:, :] mean_forest
+    mean_forest = np.zeros((N, d))
+
+    cdef double[:, :, :, :] mean_forest_b
+    mean_forest_b = np.zeros((n_trees, max_leaves, N, d))
+
+    cdef unsigned int it, it_s, nb_leaf, lm, p_ss, o_all
+    cdef int b, leaf_numb, i, s, j
+    cdef double[:, :, :] p_n
+    p_n = np.zeros((n_trees, max_leaves, N))
+    cdef double z
+
+    for b in range(n_trees):
+        nb_leaf = leaves_nb[b]
+        for leaf_numb in prange(nb_leaf, nogil=True, schedule='dynamic'):
+            lm = 0
+            p_ss = 0
+            for i in range(data.shape[0]):
+                it = 0
+                it_s = 0
+                for s in range(m):
+                    if((data[i, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[i, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
+                        it = it + 1
+                for s in range(S_size):
+                    if((data[i, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 1]) and (data[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 0])):
+                        it_s = it_s + 1
+                if it == m:
+                    lm = lm + 1
+                if it_s == S_size:
+                    p_ss = p_ss + 1
+
+            for i in range(N):
+                o_all = 0
+                for s in range(S_size):
+                    if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
+                        o_all = o_all + 1
+                if o_all > 0:
+                    continue
+
+                p_n[b, leaf_numb, i] += (1.*lm)/p_ss
+
+                for j in range(d):
+                    mean_forest_b[b, leaf_numb, i, j] += (lm * values[b, leaf_idx_trees[b, leaf_numb], j]) / p_ss if p_ss != 0 else 0
+
+
+    for i in range(N):
+        for b in range(n_trees):
+            z = 0
+            for leaf_numb in range(leaves_nb[b]):
+                z += p_n[b, leaf_numb, i]
+            for leaf_numb in range(leaves_nb[b]):
+                for j in range(d):
+                    mean_forest[i, j] += mean_forest_b[b, leaf_numb, i, j]/z if z !=0 else 0
+
+
+    return np.asarray(mean_forest)
+
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef compute_exp_cat(double[:, :] X, long[:] S, double[:, :] data, double[:, :, :] values,
         double[:, :, :, :] partition_leaves_trees, long[:, :] leaf_idx_trees,  long[:] leaves_nb, double[:] scaling,
         int num_threads):
@@ -124,7 +209,7 @@ cpdef compute_exp_cat(double[:, :] X, long[:] S, double[:, :] data, double[:, :,
             for i in range(N):
                 o_all = 0
                 for s in range(S_size):
-                    if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] < partition_leaves_trees[b, leaf_numb, S[s], 0])):
+                    if ((X[i, S[s]] > partition_leaves_trees[b, leaf_numb, S[s], 1]) or (X[i, S[s]] <= partition_leaves_trees[b, leaf_numb, S[s], 0])):
                         o_all = o_all + 1
                 if o_all > 0:
                     continue
@@ -136,7 +221,7 @@ cpdef compute_exp_cat(double[:, :] X, long[:] S, double[:, :] data, double[:, :,
                     it = 0
                     it_s = 0
                     for s in range(m):
-                        if((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] >= partition_leaves_trees[b, leaf_numb, s, 0])):
+                        if((data[j, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[j, s] > partition_leaves_trees[b, leaf_numb, s, 0])):
                             it = it +  1
 
                     for s in range(S_size):
@@ -160,6 +245,8 @@ cpdef compute_exp_cat(double[:, :] X, long[:] S, double[:, :] data, double[:, :,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef compute_sdp_clf_cat(double[:, :] X, long[:] fX,
             long[:] y_pred, long[:] S, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
@@ -262,6 +349,8 @@ cpdef compute_sdp_clf_cat(double[:, :] X, long[:] fX,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef compute_sdp_clf(double[:, :] X, long[:] fX,
             long[:] y_pred, long[:] S, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
@@ -283,8 +372,8 @@ cpdef compute_sdp_clf(double[:, :] X, long[:] fX,
     cdef double[:, :] leaf_part
     cdef double[:] value
 
-    cdef double[:, :, :] mean_forest_b
-    mean_forest_b = np.zeros((max_leaves, N, 3))
+    cdef double[:, :, :, :] mean_forest_b
+    mean_forest_b = np.zeros((n_trees, max_leaves, N, 3))
 
     cdef double[:] sdp
     sdp = np.zeros((N))
@@ -293,6 +382,12 @@ cpdef compute_sdp_clf(double[:, :] X, long[:] fX,
     cdef unsigned int it, it_s, a_it, b_it, p, p_s, p_u, p_d, p_su, p_sd, nb_leaf, o_all, down, up
     cdef double ss, ss_u, ss_a, ss_d
     cdef int b, leaf_numb, i, s, j, lm, lm_s
+
+    cdef double[:, :, :] p_n, p_u_n, p_d_n
+    p_n = np.zeros((n_trees, max_leaves, N))
+    p_u_n = np.zeros((n_trees, max_leaves, N))
+    p_d_n = np.zeros((n_trees, max_leaves, N))
+    cdef double n, n_u, n_d
 
     for b in range(n_trees):
         nb_leaf = leaves_nb[b]
@@ -339,26 +434,34 @@ cpdef compute_sdp_clf(double[:, :] X, long[:] fX,
                         p_d = p_d + lm
                         p_sd = p_sd + lm_s
 
-                mean_forest_b[leaf_numb, i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_s) if p_s != 0 else 0
-                mean_forest_b[leaf_numb, i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_su) if p_su != 0 else 0
-                mean_forest_b[leaf_numb, i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_sd) if p_sd != 0 else 0
+                mean_forest_b[b, leaf_numb, i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_s) if p_s != 0 else 0
+                mean_forest_b[b, leaf_numb, i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_su) if p_su != 0 else 0
+                mean_forest_b[b, leaf_numb, i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_sd) if p_sd != 0 else 0
+
+                p_n[b, leaf_numb, i] += (1.*p)/p_s if p_s != 0 else 0
+                p_u_n[b, leaf_numb, i] += (1.*p_u)/p_su if p_su != 0 else 0
+                p_d_n[b, leaf_numb, i] += (1.*p_d)/p_sd if p_sd != 0 else 0
 
     for i in range(N):
         ss_u = 0
         ss_d = 0
         ss_a = 0
+        for b in range(n_trees):
+            nb_leaf = leaves_nb[b]
+            n = 0
+            n_u = 0
+            n_d = 0
+            for leaf_numb in range(nb_leaf):
+                n += p_n[b, leaf_numb, i]
+                n_u += p_u_n[b, leaf_numb, i]
+                n_d += p_d_n[b, leaf_numb, i]
 
-        for leaf_numb in range(max_leaves):
-            ss_a += mean_forest_b[leaf_numb, i, 0]
-            ss_u += mean_forest_b[leaf_numb, i, 1]
-            ss_d += mean_forest_b[leaf_numb, i, 2]
-        ss = (ss_a - ss_d)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
-        if((ss <= 1) and (ss>=0)):
-            sdp[i] = ss
-        elif(ss > 1):
-            sdp[i] = 1
-        else:
-            sdp[i] = 0
+            for leaf_numb in range(max_leaves):
+                ss_a += mean_forest_b[b, leaf_numb, i, 0]/n if n !=0 else 0
+                ss_u += mean_forest_b[b, leaf_numb, i, 1]/n_u if n_u !=0 else 0
+                ss_d += mean_forest_b[b, leaf_numb, i, 2]/n_d if n_d !=0 else 0
+
+        sdp[i] = (ss_a - ss_d)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
 
     return np.array(sdp)
 
@@ -369,119 +472,8 @@ def powerset(iterable):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef global_sdp_clf_dist_coal(double[:, :] X, long[:] fX,
-            long[:] y_pred, double[:, :] data,
-            double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling,
-            float global_proba, list C):
-
-    cdef unsigned int N = X.shape[0]
-    cdef unsigned int m = X.shape[1]
-
-    cdef int n_trees = values.shape[0]
-    cdef double[:, :, :] leaves_tree
-    cdef double[:, :] leaf_part
-    cdef double[:] value
-
-    cdef double[:, :] mean_forest
-    mean_forest = np.zeros((N, 3))
-
-    # cdef double[:] sdp
-    cdef double[:] sdp_global
-    sdp = np.zeros((N))
-    sdp_global = np.zeros((m))
-
-    cdef long[:] lm, lm_u, lm_d, lm_s
-    cdef int it, it_s, a_it, b_it, o_all
-    cdef double p, p_s, ss, p_u, p_d, p_su, p_sd
-    cdef unsigned int b, leaf_numb, nb_leaf, i, s, down, up, s_1, set_size, pow_set_size, counter, ci, cj, ite
-    cdef list power, va_id, R, r
-
-    cdef long[:] S
-    S = -np.ones(shape=(m), dtype=np.int)
-
-    if C[0] != []:
-        remove_va = [C[ci][cj] for cj in range(len(C[ci])) for ci in range(len(C))]
-        va_id = [[i] for i in range(m) if i not in remove_va] + C
-    else:
-        va_id = [[i] for i in range(m)]
-
-    set_size = len(va_id)
-    pow_set_size = 2**set_size-1
-
-    for counter in range(1, pow_set_size):
-        S_size = 0
-        for ci in range(set_size):
-            if((counter & (1 << ci)) > 0):
-                for cj in range(len(va_id[ci])):
-                    S[S_size] = va_id[ci][cj]
-                    S_size += 1
-
-        mean_forest = np.zeros((X.shape[0], 3))
-
-        for b in range(n_trees):
-            leaves_tree = partition_leaves_trees[b]
-            nb_leaf = leaves_nb[b]
-
-            for leaf_numb in range(nb_leaf):
-                leaf_part = leaves_tree[leaf_numb]
-                lm = np.zeros(data.shape[0], dtype=np.int)
-                lm_s = np.zeros(data.shape[0], dtype=np.int)
-
-                for i in range(data.shape[0]):
-                    a_it = 0
-                    b_it = 0
-                    for s in range(m):
-                        if ((data[i, s] <= leaf_part[s, 1]) and (data[i, s] >= leaf_part[s, 0])):
-                            a_it += 1
-                    for s in range(S_size):
-                        if ((data[i, S[s]] <= leaf_part[S[s], 1]) and (data[i, S[s]] >= leaf_part[S[s], 0])):
-                            b_it +=1
-
-                    if a_it == m:
-                        lm[i] = 1
-
-                    if b_it == S_size:
-                        lm_s[i] = 1
-
-                for i in range(N):
-                    o_all = 0
-                    for s in range(S_size):
-                        if ((X[i, S[s]] > leaf_part[S[s], 1]) or (X[i, S[s]] < leaf_part[S[s], 0])):
-                            o_all +=1
-                    if o_all > 0:
-                        continue
-
-                    p = 0
-                    p_u = 0
-                    p_d = 0
-                    p_s = 0
-                    p_su = 0
-                    p_sd = 0
-                    for j in range(data.shape[0]):
-                        p += lm[j]
-                        p_s += lm_s[j]
-                        if fX[i] == y_pred[j]:
-                            p_u += lm[j]
-                            p_su += lm_s[j]
-                        else:
-                            p_d += lm[j]
-                            p_sd += lm_s[j]
-
-                    mean_forest[i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_s) if p_s != 0 else 0
-                    mean_forest[i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_su) if p_su != 0 else 0
-                    mean_forest[i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_sd) if p_sd != 0 else 0
-
-        for i in range(N):
-            ss = (mean_forest[i, 0] - mean_forest[i, 2])/((mean_forest[i, 1] - mean_forest[i, 2])) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
-            if ss >= global_proba:
-                    for s in range(S_size):
-                        sdp_global[S[s]] += 1
-
-    return np.asarray(sdp_global)/(X.shape[0] * pow_set_size)
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef compute_sdp_reg(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, long[:] S, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
@@ -647,6 +639,8 @@ cpdef compute_sdp_reg(double[:, :] X, double[:] fX, double tX,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef compute_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, long[:] S, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
@@ -853,11 +847,10 @@ cdef unsigned long _comb_int_long(unsigned long N, unsigned long k) nogil:
 
     return val
 
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-# @cython.cdivision(True)
+@cython.cdivision(True)
 cpdef shap_values_leaves_pa(const double[:, :] X,
     const double[:, :] data,
     const double[:, :, :] values,
@@ -1073,9 +1066,274 @@ cpdef shap_values_leaves_pa(const double[:, :] X,
 
     return np.asarray(phi)/m
 
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef shap_values_leaves_normalized(const double[:, :] X,
+    const double[:, :] data,
+    const double[:, :, :] values,
+    const double[:, :, :, :] partition_leaves_trees,
+    const long[:, :] leaf_idx_trees,
+    const long[::1] leaves_nb,
+    const long scaling,
+    const vector[vector[vector[long]]] node_idx_trees,
+    const vector[vector[long]] C, int num_threads):
+
+
+    cdef unsigned int d = values.shape[2]
+    cdef unsigned int N = X.shape[0]
+    cdef unsigned int m = X.shape[1]
+    cdef unsigned int n_trees = values.shape[0]
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
+
+    cdef double[:, :, :] phi
+    phi = np.zeros((N, m, d))
+
+    cdef double[ :, :, :,  :, :] phi_b
+    phi_b = np.zeros((max_leaves, 2**scaling, N, m, d))
+
+    cdef long[:, :, :, ::1] S
+    S = np.zeros((m, 2**scaling, max_leaves, m), dtype=np.int)
+
+    cdef unsigned int a_it, nb_leaf, va,  counter, ci, cj, ite, pow_set_size, nv, ns, add
+    cdef unsigned int b, leaf_numb, i, s, j, i1, i2, l, na_bool, o_all, leaf_n
+    cdef double lm
+
+    cdef vector[vector[long]] C_buff, va_id, buff
+    cdef vector[long] coal_va, remove_va, node_id_b, buff_l
+    buff.resize(max_leaves)
+    for i in range(max_leaves):
+        buff[i].resize(1)
+
+    cdef vector[vector[vector[long]]] node_id_v2, C_b, Sm, node_id
+    node_id_v2.resize(max_leaves)
+    C_b.resize(max_leaves)
+    Sm.resize(max_leaves)
+    node_id.resize(max_leaves)
+
+    cdef vector[vector[vector[vector[long]]]] node_id_va
+    node_id_va.resize(m)
+    for i in range(m):
+        node_id_va[i].resize(max_leaves)
+
+    cdef int S_size, va_size,  b_it, nv_bool
+
+    cdef long set_size
+
+    if C[0].size() != 0:
+        C_buff = C
+        for ci in range(C.size()):
+            for cj in range(C[ci].size()):
+                coal_va.push_back(C[ci][cj])
+
+        for i in range(m):
+            if not std_find[vector[long].iterator, long](coal_va.begin(), coal_va.end(), i) != coal_va.end():
+                remove_va.push_back(i)
+                buff[0][0] = i
+                va_id.push_back(buff[0])
+            else:
+                for ci in range(C_buff.size()):
+                    if (std_find[vector[long].iterator, long](C_buff[ci].begin(), C_buff[ci].end(), i) != C_buff[ci].end()):
+                        va_id.push_back(C_buff[ci])
+                        std_remove[vector[vector[long]].iterator, vector[long]](C_buff.begin(), C_buff.end(), C_buff[ci])
+                        C_buff.pop_back()
+                        break
+
+    else:
+        for i in range(m):
+            buff[0][0] = i
+            va_id.push_back(buff[0])
+
+    cdef double p_s, p_si, coef, coef_0, n_s, n_si
+    cdef double[:, :, :, :] lm_s, lm_si, lm_n, csi, cs
+    lm_n = np.zeros((va_id.size(), max_leaves, max_leaves, 2**scaling))
+    lm_s = np.zeros((va_id.size(), max_leaves, max_leaves, 2**scaling))
+    lm_si = np.zeros((va_id.size(), max_leaves, max_leaves, 2**scaling))
+    csi = np.zeros((va_id.size(), max_leaves, max_leaves, 2**scaling))
+    cs = np.zeros((va_id.size(), max_leaves, max_leaves, 2**scaling))
+
+    for b in range(n_trees):
+        for leaf_numb in range(phi_b.shape[0]):
+            for counter in range(phi_b.shape[1]):
+                for i in range(N):
+                    for j in range(m):
+                        for i2 in range(d):
+                            phi_b[leaf_numb, counter, i, j, i2] = 0
+        nb_leaf = leaves_nb[b]
+        for leaf_numb in prange(nb_leaf, nogil=True, schedule='dynamic'):
+            node_id_v2[leaf_numb].clear()
+            lm = 0
+            for i in range(data.shape[0]):
+                a_it = 0
+                for s in range(data.shape[1]):
+                    if (data[i, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[i, s] > partition_leaves_trees[b, leaf_numb, s, 0]):
+                        a_it = a_it + 1
+                if a_it == data.shape[1]:
+                    lm = lm + 1
+
+            if C[0].size() != 0:
+                C_b[leaf_numb] = C
+                for nv in range(node_idx_trees[b][leaf_numb].size()):
+                    add = 0
+                    for ns in range(remove_va.size()):
+                        if node_idx_trees[b][leaf_numb][nv] == remove_va[ns]:
+                            add = 1
+                            buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][nv]
+                            node_id_v2[leaf_numb].push_back(buff[leaf_numb])
+                            break
+                    if add == 0:
+                        for ci in range(C_b[leaf_numb].size()):
+                            for cj in range(C_b[leaf_numb][ci].size()):
+                                if C_b[leaf_numb][ci][cj] == node_idx_trees[b][leaf_numb][nv]:
+                                    add = 1
+                                    node_id_v2[leaf_numb].push_back(C_b[leaf_numb][ci])
+                                    break
+                            if add == 1:
+                                std_remove[vector[vector[long]].iterator, vector[long]](C_b[leaf_numb].begin(), C_b[leaf_numb].end(), C_b[leaf_numb][ci])
+                                C_b[leaf_numb].pop_back()
+                                break
+                node_id[leaf_numb] = node_id_v2[leaf_numb]
+            else:
+                node_id[leaf_numb].clear()
+                for i in range(node_idx_trees[b][leaf_numb].size()):
+                    buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][i]
+                    node_id[leaf_numb].push_back(buff[leaf_numb])
+
+
+            for va in range(va_id.size()):
+                node_id_va[va][leaf_numb] = node_id[leaf_numb]
+                if not std_find[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va]) != node_id_va[va][leaf_numb].end():
+                    continue
+
+                std_remove[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va])
+                node_id_va[va][leaf_numb].pop_back()
+
+                set_size = node_id_va[va][leaf_numb].size()
+                pow_set_size = 2**set_size
+
+                for counter in range(0, pow_set_size):
+                    va_size = 0
+                    S_size = 0
+                    for ci in range(set_size):
+                        if((counter & (1 << ci)) > 0):
+                            for cj in range(node_id_va[va][leaf_numb][ci].size()):
+                                S[va, counter, leaf_numb, S_size] = node_id_va[va][leaf_numb][ci][cj]
+                                S_size = S_size + 1
+                            va_size = va_size + 1
+
+                    for leaf_n in range(nb_leaf):
+                        lm_s[va, leaf_numb, leaf_n, counter] = 0
+                        lm_si[va, leaf_numb, leaf_n,  counter] = 0
+                        lm_n[va, leaf_numb, leaf_n, counter] = 0
+                        for i in range(data.shape[0]):
+                            a_it = 0
+                            for s in range(data.shape[1]):
+                                if (data[i, s] <= partition_leaves_trees[b, leaf_n, s, 1]) and (data[i, s] > partition_leaves_trees[b, leaf_n, s, 0]):
+                                    a_it = a_it + 1
+                            if a_it == data.shape[1]:
+                                lm_n[va, leaf_numb, leaf_n, counter] = lm_n[va, leaf_numb, leaf_n, counter] + 1
+
+                            b_it = 0
+                            for s in range(S_size):
+                                if ((data[i, S[va, counter, leaf_numb, s]] <= partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 1]) * (data[i, S[va, counter, leaf_numb, s]] > partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 0])):
+                                    b_it = b_it + 1
+
+                            if b_it == S_size:
+                                lm_s[va, leaf_numb, leaf_n, counter] = lm_s[va, leaf_numb, leaf_n, counter] + 1
+
+                                nv_bool = 0
+                                for nv in range(va_id[va].size()):
+                                    if ((data[i, va_id[va][nv]] > partition_leaves_trees[b, leaf_n, va_id[va][nv], 1]) or (data[i, va_id[va][nv]] <= partition_leaves_trees[b, leaf_n, va_id[va][nv], 0])):
+                                        nv_bool = nv_bool + 1
+                                        continue
+
+                                if nv_bool == 0:
+                                    lm_si[va, leaf_numb, leaf_n, counter] = lm_si[va, leaf_numb, leaf_n, counter] + 1
+
+                    for i in range(N):
+
+                        coef = 0
+                        for l in range(1, m - set_size):
+                            coef = coef + (1.*binomialC(m - set_size - 1, l))/binomialC(m - 1, l + va_size) if binomialC(m - 1, l + va_size) !=0 else 0
+
+                        coef_0 = 1./binomialC(m-1, va_size) if binomialC(m-1, va_size) !=0 else 0
+
+                        n_s = 0
+                        n_si = 0
+                        if S_size == 0:
+                            p_s = lm/data.shape[0]
+                            n_s = 0
+                            n_si = 0
+                            for leaf_n in range(nb_leaf):
+                                csi[va, leaf_numb, leaf_n, counter] = 0
+                                cs[va, leaf_numb, leaf_n, counter] = 0
+
+                                o_all = 0
+                                for s in range(S_size):
+                                    if ((X[i, S[va, counter, leaf_numb, s]] <= partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 1]) * (X[i, S[va, counter, leaf_numb, s]] > partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 0])):
+                                        o_all = o_all + 1
+
+                                if o_all == S_size:
+                                    cs[va, leaf_numb, leaf_n, counter] = 1
+                                    nv_bool = 0
+                                    for nv in range(va_id[va].size()):
+                                        if ((X[i, va_id[va][nv]] > partition_leaves_trees[b, leaf_n, va_id[va][nv], 1]) or (X[i, va_id[va][nv]] <= partition_leaves_trees[b, leaf_n, va_id[va][nv], 0])):
+                                            nv_bool = nv_bool + 1
+                                            continue
+
+                                    if nv_bool == 0:
+                                        csi[va, leaf_numb, leaf_n, counter] = 1
+
+                                n_si = n_si + (csi[va, leaf_numb, leaf_n, counter]*lm_n[va, leaf_numb, leaf_n, counter])/lm_si[va, leaf_numb, leaf_n, counter] if lm_si[va, leaf_numb, leaf_n, counter] !=0 else 0
+
+                            p_si = (csi[va, leaf_numb, leaf_numb, counter] * lm)/(lm_si[va, leaf_numb, leaf_numb, counter] * n_si) if n_si*lm_si[va, leaf_numb, leaf_numb, counter] !=0 else 0
+                        else:
+
+                            for leaf_n in range(nb_leaf):
+                                csi[va, leaf_numb, leaf_n, counter] = 0
+                                cs[va, leaf_numb, leaf_n, counter] = 0
+
+                                o_all = 0
+                                for s in range(S_size):
+                                    if ((X[i, S[va, counter, leaf_numb, s]] <= partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 1]) * (X[i, S[va, counter, leaf_numb, s]] > partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 0])):
+                                        o_all = o_all + 1
+
+                                if o_all == S_size:
+                                    cs[va, leaf_numb, leaf_n, counter] = 1
+                                    nv_bool = 0
+                                    for nv in range(va_id[va].size()):
+                                        if ((X[i, va_id[va][nv]] > partition_leaves_trees[b, leaf_n, va_id[va][nv], 1]) or (X[i, va_id[va][nv]] <= partition_leaves_trees[b, leaf_n, va_id[va][nv], 0])):
+                                            nv_bool = nv_bool + 1
+                                            continue
+
+                                    if nv_bool == 0:
+                                        csi[va, leaf_numb, leaf_n, counter] = 1
+
+                                n_s = n_s + (cs[va, leaf_numb, leaf_n, counter]*lm_n[va, leaf_numb, leaf_n, counter])/lm_s[va, leaf_numb, leaf_n, counter] if lm_s[va, leaf_numb, leaf_n, counter] !=0 else 0
+                                n_si = n_si + (csi[va, leaf_numb, leaf_n, counter]*lm_n[va, leaf_numb, leaf_n, counter])/lm_si[va, leaf_numb, leaf_n, counter] if lm_si[va, leaf_numb, leaf_n, counter] !=0 else 0
+
+                            p_s = (cs[va, leaf_numb, leaf_numb, counter] * lm)/(lm_s[va, leaf_numb, leaf_numb, counter] * n_s) if n_s*lm_s[va, leaf_numb, leaf_numb, counter] !=0 else 0
+                            p_si = (csi[va, leaf_numb, leaf_numb, counter] * lm)/(lm_si[va, leaf_numb,  leaf_numb, counter] * n_si) if n_si*lm_si[va, leaf_numb, leaf_numb, counter] !=0 else 0
+
+                        for nv in range(va_id[va].size()):
+                            for i2 in range(d):
+                                phi_b[leaf_numb, counter, i, va_id[va][nv], i2] += (coef_0 + coef) * (p_si - p_s) * values[b, leaf_idx_trees[b, leaf_numb], i2]
+
+        for i in range(N):
+            for j in range(m):
+                for i2 in range(d):
+                    for leaf_numb in range(phi_b.shape[0]):
+                        for counter in range(phi_b.shape[1]):
+                            phi[i, j, i2] += phi_b[leaf_numb, counter, i, j, i2]
+
+    return np.asarray(phi)/m
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef shap_values_acv_leaves(const double[:, :] X,
     const double[:, :] data,
     const double[:, :, :] values,
@@ -1604,7 +1862,7 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
 
     for b in range(n_trees):
         for leaf_numb in range(leaves_nb[b]):
-            for i in prange(N, nogil=True, num_threads=num_threads):
+            for i in prange(N, nogil=True, schedule='dynamic'):
                 csm = 0
                 o_all = 0
                 for s in range(S_size):
@@ -2092,7 +2350,7 @@ cpdef global_sdp_reg_cpp_pa_coal(double[:, :] X, double[:] fX, double tX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0:
+        if R.size() == 0 or S_size >= X.shape[1]/2:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -2109,7 +2367,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
-
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
     cdef int n_trees = values.shape[0]
     cdef double[:, :, :] leaves_tree
     cdef double[:, :] leaf_part
@@ -2168,6 +2426,11 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
     cdef long[:, :] s_star
     s_star = -1*np.ones((N, X.shape[1]), dtype=np.int)
 
+    cdef double[:, :, :] p_n, p_u_n, p_d_n
+    p_n = np.zeros((n_trees, max_leaves, N))
+    p_u_n = np.zeros((n_trees, max_leaves, N))
+    p_d_n = np.zeros((n_trees, max_leaves, N))
+    cdef double n, n_u, n_d
 
     cdef long power_set_size = 2**m
     S = np.zeros((data.shape[1]), dtype=np.int)
@@ -2182,13 +2445,14 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
             N = R.size()
             for i in range(N):
                 R_buf[i] = R[i]
-                # for j in range(3):
-                #   mean_forest[R_buf[i], j] = 0
 
             for b in range(n_trees):
                 nb_leaf = leaves_nb[b]
                 for leaf_numb in range(nb_leaf):
                     for i in range(N):
+                        p_n[b, leaf_numb, R_buf[i]] = 0
+                        p_u_n[b, leaf_numb, R_buf[i]] = 0
+                        p_d_n[b, leaf_numb, R_buf[i]] = 0
                         for j in range(3):
                             mean_forest_b[b, leaf_numb, R_buf[i], j] = 0
 
@@ -2236,9 +2500,13 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
                                 p_d += lm
                                 p_sd += lm_s
 
-                        mean_forest_b[b, leaf_numb, R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (p_s) if p_s != 0 else 0
-                        mean_forest_b[b, leaf_numb, R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (p_su) if p_su != 0 else 0
-                        mean_forest_b[b, leaf_numb, R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) / (p_sd) if p_sd != 0 else 0
+                        mean_forest_b[b, leaf_numb, R_buf[i], 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]]) /p_s if p_s != 0 else 0
+                        mean_forest_b[b, leaf_numb, R_buf[i], 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]])/p_su if p_su != 0 else 0
+                        mean_forest_b[b, leaf_numb, R_buf[i], 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[R_buf[i]]])/p_sd if p_sd != 0 else 0
+
+                        p_n[b, leaf_numb, R_buf[i]] += (1.*p)/p_s if p_s != 0 else 0
+                        p_u_n[b, leaf_numb, R_buf[i]] += (1.*p_u)/p_su if p_su != 0 else 0
+                        p_d_n[b, leaf_numb, R_buf[i]] += (1.*p_d)/p_sd if p_sd != 0 else 0
 
             for i in range(N):
                 ss_u = 0
@@ -2246,10 +2514,19 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
                 ss_a = 0
                 for b in range(n_trees):
                     nb_leaf = leaves_nb[b]
+                    n = 0
+                    n_u = 0
+                    n_d = 0
                     for leaf_numb in range(nb_leaf):
-                        ss_a += mean_forest_b[b, leaf_numb, R_buf[i], 0]
-                        ss_u += mean_forest_b[b, leaf_numb, R_buf[i], 1]
-                        ss_d += mean_forest_b[b, leaf_numb, R_buf[i], 2]
+                        n += p_n[b, leaf_numb, R_buf[i]]
+                        n_u += p_u_n[b, leaf_numb, R_buf[i]]
+                        n_d += p_d_n[b, leaf_numb, R_buf[i]]
+
+                    for leaf_numb in range(nb_leaf):
+                        ss_a += mean_forest_b[b, leaf_numb, R_buf[i], 0]/n if n !=0 else 0
+                        ss_u += mean_forest_b[b, leaf_numb, R_buf[i], 1]/n_u if n_u !=0 else 0
+                        ss_d += mean_forest_b[b, leaf_numb, R_buf[i], 2]/n_d if n_d !=0 else 0
+
                 ss = (ss_a - ss_d)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
                 if ss >= global_proba and ss >= sdp[R_buf[i]]:
                     sdp[R_buf[i]] = ss
@@ -2275,7 +2552,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0:
+        if R.size() == 0 or S_size >= X.shape[1]/2:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -2470,6 +2747,7 @@ cpdef global_sdp_clf_ptrees(double[:, :] X, long[:] fX,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef shap_values_acv_leaves_adap(const double[:, :] X,
     const double[:, :] data,
     const double[:, :, :] values,
@@ -2510,6 +2788,7 @@ cpdef shap_values_acv_leaves_adap(const double[:, :] X,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef single_shap_values_acv_leaves(const double[:] X,
     const double[:, :] data,
     const double[:, :, :] values,
@@ -2781,7 +3060,7 @@ cpdef single_shap_values_acv_leaves(const double[:] X,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-# @cython.cdivision(True)
+@cython.cdivision(True)
 cpdef single_shap_values(const double[:] X,
     const double[:, :] data,
     const double[:, :, :] values,
@@ -2997,7 +3276,7 @@ cpdef single_shap_values(const double[:] X,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-# @cython.cdivision(True)
+@cython.cdivision(True)
 cpdef shap_values_leaves_nopa(const double[:, :] X,
     const double[:, :] data,
     const double[:, :, :] values,
@@ -3200,6 +3479,7 @@ cpdef shap_values_leaves_nopa(const double[:, :] X,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
+@cython.cdivision(True)
 cpdef shap_values_acv_leaves_nopa(const double[:, :] X,
     const double[:, :] data,
     const double[:, :, :] values,
@@ -3441,3 +3721,745 @@ cpdef shap_values_acv_leaves_nopa(const double[:, :] X,
                                     phi[i, va_id[va][nv], i2] += (p_si-p_off)*values[b, leaf_idx_trees[b, leaf_numb], i2] + coef * (p_si - p_s) * values[b, leaf_idx_trees[b, leaf_numb], i2]
 
     return np.asarray(phi)/m
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef leaves_cache(
+    const double[:, :] data,
+    const double[:, :, :] values,
+    const double[:, :, :, :] partition_leaves_trees,
+    const long[:, :] leaf_idx_trees,
+    const long[::1] leaves_nb,
+    const long scaling,
+    const vector[vector[vector[long]]] node_idx_trees,
+    const vector[vector[long]] C, int num_threads):
+
+
+    cdef unsigned int d = values.shape[2]
+    cdef unsigned int m = data.shape[1]
+    cdef unsigned int n_trees = values.shape[0]
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
+
+    cdef long[:, :, :, ::1] S
+    S = np.zeros((m, 2**scaling, max_leaves, m), dtype=np.int)
+
+    cdef unsigned int a_it, nb_leaf, va,  counter, ci, cj, ite, pow_set_size, nv, ns, add
+    cdef unsigned int b, leaf_numb, i, s, j, i1, i2, l, na_bool, o_all, csi, cs
+    cdef double[:, :] lm
+    lm = np.zeros((n_trees, max_leaves))
+
+    cdef vector[vector[long]] C_buff, va_id, buff
+    cdef vector[long] coal_va, remove_va, node_id_b, buff_l
+    buff.resize(max_leaves)
+    for i in range(max_leaves):
+        buff[i].resize(1)
+
+    cdef vector[vector[vector[long]]] node_id_v2, C_b, Sm, node_id
+    node_id_v2.resize(max_leaves)
+    C_b.resize(max_leaves)
+    Sm.resize(max_leaves)
+    node_id.resize(max_leaves)
+
+    cdef vector[vector[vector[vector[long]]]] node_id_va
+    node_id_va.resize(m)
+    for i in range(m):
+        node_id_va[i].resize(max_leaves)
+
+    cdef int S_size, va_size,  b_it, nv_bool
+
+    cdef long set_size
+
+    if C[0].size() != 0:
+        C_buff = C
+        for ci in range(C.size()):
+            for cj in range(C[ci].size()):
+                coal_va.push_back(C[ci][cj])
+
+        for i in range(m):
+            if not std_find[vector[long].iterator, long](coal_va.begin(), coal_va.end(), i) != coal_va.end():
+                remove_va.push_back(i)
+                buff[0][0] = i
+                va_id.push_back(buff[0])
+            else:
+                for ci in range(C_buff.size()):
+                    if (std_find[vector[long].iterator, long](C_buff[ci].begin(), C_buff[ci].end(), i) != C_buff[ci].end()):
+                        va_id.push_back(C_buff[ci])
+                        std_remove[vector[vector[long]].iterator, vector[long]](C_buff.begin(), C_buff.end(), C_buff[ci])
+                        C_buff.pop_back()
+                        break
+
+    else:
+        for i in range(m):
+            buff[0][0] = i
+            va_id.push_back(buff[0])
+
+    cdef double p_s, p_si, coef, coef_0
+    cdef double[:, :, :, :] lm_s, lm_si
+    lm_s = np.zeros((n_trees, va_id.size(), max_leaves, 2**scaling))
+    lm_si = np.zeros((n_trees, va_id.size(), max_leaves, 2**scaling))
+
+    for b in range(n_trees):
+        nb_leaf = leaves_nb[b]
+        for leaf_numb in prange(nb_leaf, nogil=True, schedule='dynamic'):
+            node_id_v2[leaf_numb].clear()
+            lm[b, leaf_numb] = 0
+            for i in range(data.shape[0]):
+                a_it = 0
+                for s in range(data.shape[1]):
+                    if (data[i, s] <= partition_leaves_trees[b, leaf_numb, s, 1]) and (data[i, s] > partition_leaves_trees[b, leaf_numb, s, 0]):
+                        a_it = a_it + 1
+                if a_it == data.shape[1]:
+                    lm[b, leaf_numb] = lm[b, leaf_numb] + 1
+
+            if C[0].size() != 0:
+                C_b[leaf_numb] = C
+                for nv in range(node_idx_trees[b][leaf_numb].size()):
+                    add = 0
+                    for ns in range(remove_va.size()):
+                        if node_idx_trees[b][leaf_numb][nv] == remove_va[ns]:
+                            add = 1
+                            buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][nv]
+                            node_id_v2[leaf_numb].push_back(buff[leaf_numb])
+                            break
+                    if add == 0:
+                        for ci in range(C_b[leaf_numb].size()):
+                            for cj in range(C_b[leaf_numb][ci].size()):
+                                if C_b[leaf_numb][ci][cj] == node_idx_trees[b][leaf_numb][nv]:
+                                    add = 1
+                                    node_id_v2[leaf_numb].push_back(C_b[leaf_numb][ci])
+                                    break
+                            if add == 1:
+                                std_remove[vector[vector[long]].iterator, vector[long]](C_b[leaf_numb].begin(), C_b[leaf_numb].end(), C_b[leaf_numb][ci])
+                                C_b[leaf_numb].pop_back()
+                                break
+                node_id[leaf_numb] = node_id_v2[leaf_numb]
+            else:
+                node_id[leaf_numb].clear()
+                for i in range(node_idx_trees[b][leaf_numb].size()):
+                    buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][i]
+                    node_id[leaf_numb].push_back(buff[leaf_numb])
+
+
+            for va in range(va_id.size()):
+                node_id_va[va][leaf_numb] = node_id[leaf_numb]
+                if not std_find[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va]) != node_id_va[va][leaf_numb].end():
+                    continue
+
+                std_remove[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va])
+                node_id_va[va][leaf_numb].pop_back()
+
+                set_size = node_id_va[va][leaf_numb].size()
+                pow_set_size = 2**set_size
+
+                for counter in range(0, pow_set_size):
+                    va_size = 0
+                    S_size = 0
+                    for ci in range(set_size):
+                        if((counter & (1 << ci)) > 0):
+                            for cj in range(node_id_va[va][leaf_numb][ci].size()):
+                                S[va, counter, leaf_numb, S_size] = node_id_va[va][leaf_numb][ci][cj]
+                                S_size = S_size + 1
+                            va_size = va_size + 1
+
+                    for i in range(data.shape[0]):
+                        b_it = 0
+                        for s in range(S_size):
+                            if ((data[i, S[va, counter, leaf_numb, s]] <= partition_leaves_trees[b, leaf_numb, S[va, counter, leaf_numb, s], 1]) * (data[i, S[va, counter, leaf_numb, s]] > partition_leaves_trees[b, leaf_numb, S[va, counter, leaf_numb, s], 0])):
+                                b_it = b_it + 1
+
+                        if b_it == S_size:
+                            lm_s[b, va, leaf_numb, counter] = lm_s[b, va, leaf_numb, counter] + 1
+
+                            nv_bool = 0
+                            for nv in range(va_id[va].size()):
+                                if ((data[i, va_id[va][nv]] > partition_leaves_trees[b, leaf_numb, va_id[va][nv], 1]) or (data[i, va_id[va][nv]] <= partition_leaves_trees[b, leaf_numb, va_id[va][nv], 0])):
+                                    nv_bool = nv_bool + 1
+                                    continue
+
+                            if nv_bool == 0:
+                                lm_si[b, va, leaf_numb, counter] = lm_si[b, va, leaf_numb, counter] + 1
+
+    return np.asarray(lm), np.asarray(lm_s), np.asarray(lm_si)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef shap_values_leaves_cache(const double[:, :] X,
+    const double[:, :] data,
+    const double[:, :, :] values,
+    const double[:, :, :, :] partition_leaves_trees,
+    const long[:, :] leaf_idx_trees,
+    const long[::1] leaves_nb,
+    const double [:, :] lm,
+    const double[:, :, :, :] lm_s,
+    const double[:, :, :, :] lm_si,
+    const long scaling,
+    const vector[vector[vector[long]]] node_idx_trees,
+    const vector[vector[long]] C, int num_threads):
+
+
+    cdef unsigned int d = values.shape[2]
+    cdef unsigned int N = X.shape[0]
+    cdef unsigned int m = X.shape[1]
+    cdef unsigned int n_trees = values.shape[0]
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
+
+    cdef double[:, :, :] phi
+    phi = np.zeros((N, m, d))
+
+    cdef double[ :, :, :,  :, :] phi_b
+    phi_b = np.zeros((max_leaves, 2**scaling, N, m, d))
+
+    cdef long[:, :, :, ::1] S
+    S = np.zeros((m, 2**scaling, max_leaves, m), dtype=np.int)
+
+    cdef unsigned int a_it, nb_leaf, va,  counter, ci, cj, ite, pow_set_size, nv, ns, add
+    cdef unsigned int b, leaf_numb, i, s, j, i1, i2, l, na_bool, o_all, csi, cs
+
+    cdef vector[vector[long]] C_buff, va_id, buff
+    cdef vector[long] coal_va, remove_va, node_id_b, buff_l
+    buff.resize(max_leaves)
+    for i in range(max_leaves):
+        buff[i].resize(1)
+
+    cdef vector[vector[vector[long]]] node_id_v2, C_b, Sm, node_id
+    node_id_v2.resize(max_leaves)
+    C_b.resize(max_leaves)
+    Sm.resize(max_leaves)
+    node_id.resize(max_leaves)
+
+    cdef vector[vector[vector[vector[long]]]] node_id_va
+    node_id_va.resize(m)
+    for i in range(m):
+        node_id_va[i].resize(max_leaves)
+
+    cdef int S_size, va_size,  b_it, nv_bool
+
+    cdef long set_size
+
+    if C[0].size() != 0:
+        C_buff = C
+        for ci in range(C.size()):
+            for cj in range(C[ci].size()):
+                coal_va.push_back(C[ci][cj])
+
+        for i in range(m):
+            if not std_find[vector[long].iterator, long](coal_va.begin(), coal_va.end(), i) != coal_va.end():
+                remove_va.push_back(i)
+                buff[0][0] = i
+                va_id.push_back(buff[0])
+            else:
+                for ci in range(C_buff.size()):
+                    if (std_find[vector[long].iterator, long](C_buff[ci].begin(), C_buff[ci].end(), i) != C_buff[ci].end()):
+                        va_id.push_back(C_buff[ci])
+                        std_remove[vector[vector[long]].iterator, vector[long]](C_buff.begin(), C_buff.end(), C_buff[ci])
+                        C_buff.pop_back()
+                        break
+
+    else:
+        for i in range(m):
+            buff[0][0] = i
+            va_id.push_back(buff[0])
+
+    cdef double p_s, p_si, coef, coef_0
+
+    for b in range(n_trees):
+        for leaf_numb in range(phi_b.shape[0]):
+            for counter in range(phi_b.shape[1]):
+                for i in range(N):
+                    for j in range(m):
+                        for i2 in range(d):
+                            phi_b[leaf_numb, counter, i, j, i2] = 0
+        nb_leaf = leaves_nb[b]
+        for leaf_numb in prange(nb_leaf, nogil=True):
+            node_id_v2[leaf_numb].clear()
+
+            if C[0].size() != 0:
+                C_b[leaf_numb] = C
+                for nv in range(node_idx_trees[b][leaf_numb].size()):
+                    add = 0
+                    for ns in range(remove_va.size()):
+                        if node_idx_trees[b][leaf_numb][nv] == remove_va[ns]:
+                            add = 1
+                            buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][nv]
+                            node_id_v2[leaf_numb].push_back(buff[leaf_numb])
+                            break
+                    if add == 0:
+                        for ci in range(C_b[leaf_numb].size()):
+                            for cj in range(C_b[leaf_numb][ci].size()):
+                                if C_b[leaf_numb][ci][cj] == node_idx_trees[b][leaf_numb][nv]:
+                                    add = 1
+                                    node_id_v2[leaf_numb].push_back(C_b[leaf_numb][ci])
+                                    break
+                            if add == 1:
+                                std_remove[vector[vector[long]].iterator, vector[long]](C_b[leaf_numb].begin(), C_b[leaf_numb].end(), C_b[leaf_numb][ci])
+                                C_b[leaf_numb].pop_back()
+                                break
+                node_id[leaf_numb] = node_id_v2[leaf_numb]
+            else:
+                node_id[leaf_numb].clear()
+                for i in range(node_idx_trees[b][leaf_numb].size()):
+                    buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][i]
+                    node_id[leaf_numb].push_back(buff[leaf_numb])
+
+
+            for va in range(va_id.size()):
+                node_id_va[va][leaf_numb] = node_id[leaf_numb]
+                if not std_find[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va]) != node_id_va[va][leaf_numb].end():
+                    continue
+
+                std_remove[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va])
+                node_id_va[va][leaf_numb].pop_back()
+
+                set_size = node_id_va[va][leaf_numb].size()
+                pow_set_size = 2**set_size
+
+                for counter in range(0, pow_set_size):
+                    va_size = 0
+                    S_size = 0
+                    for ci in range(set_size):
+                        if((counter & (1 << ci)) > 0):
+                            for cj in range(node_id_va[va][leaf_numb][ci].size()):
+                                S[va, counter, leaf_numb, S_size] = node_id_va[va][leaf_numb][ci][cj]
+                                S_size = S_size + 1
+                            va_size = va_size + 1
+
+                    for i in range(N):
+
+                        csi = 0
+                        cs = 0
+
+                        o_all = 0
+                        for s in range(S_size):
+                            if ((X[i, S[va, counter, leaf_numb, s]] <= partition_leaves_trees[b, leaf_numb, S[va, counter, leaf_numb, s], 1]) * (X[i, S[va, counter, leaf_numb, s]] > partition_leaves_trees[b, leaf_numb, S[va, counter, leaf_numb, s], 0])):
+                                o_all = o_all + 1
+
+                        if o_all == S_size:
+                            cs = 1
+                            nv_bool = 0
+                            for nv in range(va_id[va].size()):
+                                if ((X[i, va_id[va][nv]] > partition_leaves_trees[b, leaf_numb, va_id[va][nv], 1]) or (X[i, va_id[va][nv]] <= partition_leaves_trees[b, leaf_numb, va_id[va][nv], 0])):
+                                    nv_bool = nv_bool + 1
+                                    continue
+
+                            if nv_bool == 0:
+                                csi = 1
+                        coef = 0
+                        for l in range(1, m - set_size):
+                            coef = coef + (1.*binomialC(m - set_size - 1, l))/binomialC(m - 1, l + va_size) if binomialC(m - 1, l + va_size) !=0 else 0
+
+                        coef_0 = 1./binomialC(m-1, va_size) if binomialC(m-1, va_size) !=0 else 0
+
+                        if S_size == 0:
+                            p_s = lm[b, leaf_numb]/data.shape[0]
+                        else:
+                            p_s = (cs * lm[b, leaf_numb])/lm_s[b, va, leaf_numb, counter] if lm_s[b, va, leaf_numb, counter] !=0 else 0
+                        p_si = (csi * lm[b, leaf_numb])/lm_si[b, va, leaf_numb, counter] if lm_si[b, va, leaf_numb, counter] !=0 else 0
+
+                        for nv in range(va_id[va].size()):
+                            for i2 in range(d):
+                                phi_b[leaf_numb, counter, i, va_id[va][nv], i2] += (coef_0 + coef) * (p_si - p_s) * values[b, leaf_idx_trees[b, leaf_numb], i2]
+
+        for i in range(N):
+            for j in range(m):
+                for i2 in range(d):
+                    for leaf_numb in range(phi_b.shape[0]):
+                        for counter in range(phi_b.shape[1]):
+                            phi[i, j, i2] += phi_b[leaf_numb, counter, i, j, i2]
+
+    return np.asarray(phi)/m
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef shap_values_leaves_normalized_cache(const double[:, :] X,
+    const double[:, :] data,
+    const double[:, :, :] values,
+    const double[:, :, :, :] partition_leaves_trees,
+    const long[:, :] leaf_idx_trees,
+    const long[::1] leaves_nb,
+    const double[:, :, :, :, :] lm,
+    const double[:, :, :, :, :] lm_s,
+    const double[:, :, :, :, :] lm_si,
+    const long scaling,
+    const vector[vector[vector[long]]] node_idx_trees,
+    const vector[vector[long]] C, int num_threads):
+
+
+    cdef unsigned int d = values.shape[2]
+    cdef unsigned int N = X.shape[0]
+    cdef unsigned int m = X.shape[1]
+    cdef unsigned int n_trees = values.shape[0]
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
+
+    cdef double[:, :, :] phi
+    phi = np.zeros((N, m, d))
+
+    cdef double[ :, :, :,  :, :] phi_b
+    phi_b = np.zeros((max_leaves, 2**scaling, N, m, d))
+
+    cdef long[:, :, :, ::1] S
+    S = np.zeros((m, 2**scaling, max_leaves, m), dtype=np.int)
+
+    cdef unsigned int a_it, nb_leaf, va,  counter, ci, cj, ite, pow_set_size, nv, ns, add
+    cdef unsigned int b, leaf_numb, i, s, j, i1, i2, l, na_bool, o_all, leaf_n
+
+    cdef vector[vector[long]] C_buff, va_id, buff
+    cdef vector[long] coal_va, remove_va, node_id_b, buff_l
+    buff.resize(max_leaves)
+    for i in range(max_leaves):
+        buff[i].resize(1)
+
+    cdef vector[vector[vector[long]]] node_id_v2, C_b, Sm, node_id
+    node_id_v2.resize(max_leaves)
+    C_b.resize(max_leaves)
+    Sm.resize(max_leaves)
+    node_id.resize(max_leaves)
+
+    cdef vector[vector[vector[vector[long]]]] node_id_va
+    node_id_va.resize(m)
+    for i in range(m):
+        node_id_va[i].resize(max_leaves)
+
+    cdef int S_size, va_size,  b_it, nv_bool
+
+    cdef long set_size
+
+    if C[0].size() != 0:
+        C_buff = C
+        for ci in range(C.size()):
+            for cj in range(C[ci].size()):
+                coal_va.push_back(C[ci][cj])
+
+        for i in range(m):
+            if not std_find[vector[long].iterator, long](coal_va.begin(), coal_va.end(), i) != coal_va.end():
+                remove_va.push_back(i)
+                buff[0][0] = i
+                va_id.push_back(buff[0])
+            else:
+                for ci in range(C_buff.size()):
+                    if (std_find[vector[long].iterator, long](C_buff[ci].begin(), C_buff[ci].end(), i) != C_buff[ci].end()):
+                        va_id.push_back(C_buff[ci])
+                        std_remove[vector[vector[long]].iterator, vector[long]](C_buff.begin(), C_buff.end(), C_buff[ci])
+                        C_buff.pop_back()
+                        break
+
+    else:
+        for i in range(m):
+            buff[0][0] = i
+            va_id.push_back(buff[0])
+
+    cdef double p_s, p_si, coef, coef_0, n_s, n_si, csi, cs, csi_n, cs_n
+
+    for b in range(n_trees):
+        for leaf_numb in range(phi_b.shape[0]):
+            for counter in range(phi_b.shape[1]):
+                for i in range(N):
+                    for j in range(m):
+                        for i2 in range(d):
+                            phi_b[leaf_numb, counter, i, j, i2] = 0
+        nb_leaf = leaves_nb[b]
+        for leaf_numb in prange(nb_leaf, nogil=True):
+            node_id_v2[leaf_numb].clear()
+
+            if C[0].size() != 0:
+                C_b[leaf_numb] = C
+                for nv in range(node_idx_trees[b][leaf_numb].size()):
+                    add = 0
+                    for ns in range(remove_va.size()):
+                        if node_idx_trees[b][leaf_numb][nv] == remove_va[ns]:
+                            add = 1
+                            buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][nv]
+                            node_id_v2[leaf_numb].push_back(buff[leaf_numb])
+                            break
+                    if add == 0:
+                        for ci in range(C_b[leaf_numb].size()):
+                            for cj in range(C_b[leaf_numb][ci].size()):
+                                if C_b[leaf_numb][ci][cj] == node_idx_trees[b][leaf_numb][nv]:
+                                    add = 1
+                                    node_id_v2[leaf_numb].push_back(C_b[leaf_numb][ci])
+                                    break
+                            if add == 1:
+                                std_remove[vector[vector[long]].iterator, vector[long]](C_b[leaf_numb].begin(), C_b[leaf_numb].end(), C_b[leaf_numb][ci])
+                                C_b[leaf_numb].pop_back()
+                                break
+                node_id[leaf_numb] = node_id_v2[leaf_numb]
+            else:
+                node_id[leaf_numb].clear()
+                for i in range(node_idx_trees[b][leaf_numb].size()):
+                    buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][i]
+                    node_id[leaf_numb].push_back(buff[leaf_numb])
+
+
+            for va in range(va_id.size()):
+                node_id_va[va][leaf_numb] = node_id[leaf_numb]
+                if not std_find[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va]) != node_id_va[va][leaf_numb].end():
+                    continue
+
+                std_remove[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va])
+                node_id_va[va][leaf_numb].pop_back()
+
+                set_size = node_id_va[va][leaf_numb].size()
+                pow_set_size = 2**set_size
+
+                for counter in range(0, pow_set_size):
+                    va_size = 0
+                    S_size = 0
+                    for ci in range(set_size):
+                        if((counter & (1 << ci)) > 0):
+                            for cj in range(node_id_va[va][leaf_numb][ci].size()):
+                                S[va, counter, leaf_numb, S_size] = node_id_va[va][leaf_numb][ci][cj]
+                                S_size = S_size + 1
+                            va_size = va_size + 1
+
+                    for i in range(N):
+
+                        coef = 0
+                        for l in range(1, m - set_size):
+                            coef = coef + (1.*binomialC(m - set_size - 1, l))/binomialC(m - 1, l + va_size) if binomialC(m - 1, l + va_size) !=0 else 0
+
+                        coef_0 = 1./binomialC(m-1, va_size) if binomialC(m-1, va_size) !=0 else 0
+
+                        n_s = 0
+                        n_si = 0
+                        csi = 0
+                        cs = 0
+
+                        if S_size == 0:
+                            p_s = lm[b, va, leaf_numb, leaf_numb, counter]/data.shape[0]
+                            for leaf_n in range(nb_leaf):
+                                csi_n = 0
+                                cs_n = 0
+                                o_all = 0
+
+                                for s in range(S_size):
+                                    if ((X[i, S[va, counter, leaf_numb, s]] < partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 1]) * (X[i, S[va, counter, leaf_numb, s]] >= partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 0])):
+                                        o_all = o_all + 1
+
+                                if o_all == S_size:
+                                    cs_n = 1
+                                    nv_bool = 0
+                                    for nv in range(va_id[va].size()):
+                                        if ((X[i, va_id[va][nv]] >= partition_leaves_trees[b, leaf_n, va_id[va][nv], 1]) or (X[i, va_id[va][nv]] < partition_leaves_trees[b, leaf_n, va_id[va][nv], 0])):
+                                            nv_bool = nv_bool + 1
+                                            continue
+
+                                    if nv_bool == 0:
+                                        csi_n = 1
+
+                                n_si = n_si + (csi_n * lm[b, va, leaf_numb, leaf_n, counter])/lm_si[b, va, leaf_numb, leaf_n, counter] if lm_si[b, va, leaf_numb, leaf_n, counter] !=0 else 0
+
+                                if leaf_n == leaf_numb:
+                                    csi = csi_n
+                                    cs = cs_n
+
+                            p_si = (csi * lm[b, va, leaf_numb, leaf_numb, counter])/(lm_si[b, va, leaf_numb, leaf_numb, counter] * n_si) if n_si*lm_si[b, va, leaf_numb, leaf_numb, counter] !=0 else 0
+                        else:
+
+                            for leaf_n in range(nb_leaf):
+                                csi_n = 0
+                                cs_n = 0
+                                o_all = 0
+
+                                for s in range(S_size):
+                                    if ((X[i, S[va, counter, leaf_numb, s]] < partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 1]) * (X[i, S[va, counter, leaf_numb, s]] >= partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 0])):
+                                        o_all = o_all + 1
+
+                                if o_all == S_size:
+                                    cs_n = 1
+                                    nv_bool = 0
+                                    for nv in range(va_id[va].size()):
+                                        if ((X[i, va_id[va][nv]] >= partition_leaves_trees[b, leaf_n, va_id[va][nv], 1]) or (X[i, va_id[va][nv]] < partition_leaves_trees[b, leaf_n, va_id[va][nv], 0])):
+                                            nv_bool = nv_bool + 1
+                                            continue
+
+                                    if nv_bool == 0:
+                                        csi_n = 1
+
+                                n_s = n_s + (cs_n * lm[b, va, leaf_numb, leaf_n, counter])/lm_s[b, va, leaf_numb, leaf_n, counter] if lm_s[b, va, leaf_numb, leaf_n, counter] !=0 else 0
+                                n_si = n_si + (csi_n * lm[b, va, leaf_numb, leaf_n, counter])/lm_si[b, va, leaf_numb, leaf_n, counter] if lm_si[b, va, leaf_numb, leaf_n, counter] !=0 else 0
+                                if leaf_n == leaf_numb:
+                                    csi = csi_n
+                                    cs = cs_n
+
+                            p_s = (cs * lm[b, va, leaf_numb, leaf_numb, counter])/(lm_s[b, va, leaf_numb, leaf_numb, counter] * n_s) if n_s*lm_s[b, va, leaf_numb, leaf_numb, counter] !=0 else 0
+                            p_si = (csi * lm[b, va, leaf_numb, leaf_numb, counter])/(lm_si[b, va, leaf_numb, leaf_numb, counter] * n_si) if n_si*lm_si[b, va, leaf_numb, leaf_numb, counter] !=0 else 0
+
+                        for nv in range(va_id[va].size()):
+                            for i2 in range(d):
+                                phi_b[leaf_numb, counter, i, va_id[va][nv], i2] += (coef_0 + coef) * (p_si - p_s) * values[b, leaf_idx_trees[b, leaf_numb], i2]
+
+        for i in range(N):
+            for j in range(m):
+                for i2 in range(d):
+                    for leaf_numb in range(phi_b.shape[0]):
+                        for counter in range(phi_b.shape[1]):
+                            phi[i, j, i2] += phi_b[leaf_numb, counter, i, j, i2]
+
+    return np.asarray(phi)/m
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef leaves_cache_normalized(
+    const double[:, :] data,
+    const double[:, :, :] values,
+    const double[:, :, :, :] partition_leaves_trees,
+    const long[:, :] leaf_idx_trees,
+    const long[::1] leaves_nb,
+    const long scaling,
+    const vector[vector[vector[long]]] node_idx_trees,
+    const vector[vector[long]] C, int num_threads):
+
+
+    cdef unsigned int d = values.shape[2]
+    cdef unsigned int m = data.shape[1]
+    cdef unsigned int n_trees = values.shape[0]
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
+
+    cdef long[:, :, :, ::1] S
+    S = np.zeros((m, 2**scaling, max_leaves, m), dtype=np.int)
+
+    cdef unsigned int a_it, nb_leaf, va,  counter, ci, cj, ite, pow_set_size, nv, ns, add
+    cdef unsigned int b, leaf_numb, i, s, j, i1, i2, l, na_bool, o_all, leaf_n
+
+    cdef vector[vector[long]] C_buff, va_id, buff
+    cdef vector[long] coal_va, remove_va, node_id_b, buff_l
+    buff.resize(max_leaves)
+    for i in range(max_leaves):
+        buff[i].resize(1)
+
+    cdef vector[vector[vector[long]]] node_id_v2, C_b, Sm, node_id
+    node_id_v2.resize(max_leaves)
+    C_b.resize(max_leaves)
+    Sm.resize(max_leaves)
+    node_id.resize(max_leaves)
+
+    cdef vector[vector[vector[vector[long]]]] node_id_va
+    node_id_va.resize(m)
+    for i in range(m):
+        node_id_va[i].resize(max_leaves)
+
+    cdef int S_size, va_size,  b_it, nv_bool
+
+    cdef long set_size
+
+    if C[0].size() != 0:
+        C_buff = C
+        for ci in range(C.size()):
+            for cj in range(C[ci].size()):
+                coal_va.push_back(C[ci][cj])
+
+        for i in range(m):
+            if not std_find[vector[long].iterator, long](coal_va.begin(), coal_va.end(), i) != coal_va.end():
+                remove_va.push_back(i)
+                buff[0][0] = i
+                va_id.push_back(buff[0])
+            else:
+                for ci in range(C_buff.size()):
+                    if (std_find[vector[long].iterator, long](C_buff[ci].begin(), C_buff[ci].end(), i) != C_buff[ci].end()):
+                        va_id.push_back(C_buff[ci])
+                        std_remove[vector[vector[long]].iterator, vector[long]](C_buff.begin(), C_buff.end(), C_buff[ci])
+                        C_buff.pop_back()
+                        break
+
+    else:
+        for i in range(m):
+            buff[0][0] = i
+            va_id.push_back(buff[0])
+
+    cdef double p_s, p_si, coef, coef_0, n_s, n_si
+    cdef double[:, :, :, :, :] lm_s, lm_si, lm_n, csi, cs
+    lm_n = np.zeros((n_trees, va_id.size(), max_leaves, max_leaves, 2**scaling))
+    lm_s = np.zeros((n_trees, va_id.size(), max_leaves, max_leaves, 2**scaling))
+    lm_si = np.zeros((n_trees, va_id.size(), max_leaves, max_leaves, 2**scaling))
+
+    for b in range(n_trees):
+        nb_leaf = leaves_nb[b]
+        for leaf_numb in prange(nb_leaf, nogil=True, schedule='dynamic'):
+            node_id_v2[leaf_numb].clear()
+
+            if C[0].size() != 0:
+                C_b[leaf_numb] = C
+                for nv in range(node_idx_trees[b][leaf_numb].size()):
+                    add = 0
+                    for ns in range(remove_va.size()):
+                        if node_idx_trees[b][leaf_numb][nv] == remove_va[ns]:
+                            add = 1
+                            buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][nv]
+                            node_id_v2[leaf_numb].push_back(buff[leaf_numb])
+                            break
+                    if add == 0:
+                        for ci in range(C_b[leaf_numb].size()):
+                            for cj in range(C_b[leaf_numb][ci].size()):
+                                if C_b[leaf_numb][ci][cj] == node_idx_trees[b][leaf_numb][nv]:
+                                    add = 1
+                                    node_id_v2[leaf_numb].push_back(C_b[leaf_numb][ci])
+                                    break
+                            if add == 1:
+                                std_remove[vector[vector[long]].iterator, vector[long]](C_b[leaf_numb].begin(), C_b[leaf_numb].end(), C_b[leaf_numb][ci])
+                                C_b[leaf_numb].pop_back()
+                                break
+                node_id[leaf_numb] = node_id_v2[leaf_numb]
+            else:
+                node_id[leaf_numb].clear()
+                for i in range(node_idx_trees[b][leaf_numb].size()):
+                    buff[leaf_numb][0] = node_idx_trees[b][leaf_numb][i]
+                    node_id[leaf_numb].push_back(buff[leaf_numb])
+
+
+            for va in range(va_id.size()):
+                node_id_va[va][leaf_numb] = node_id[leaf_numb]
+                if not std_find[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va]) != node_id_va[va][leaf_numb].end():
+                    continue
+
+                std_remove[vector[vector[long]].iterator, vector[long]](node_id_va[va][leaf_numb].begin(), node_id_va[va][leaf_numb].end(), va_id[va])
+                node_id_va[va][leaf_numb].pop_back()
+
+                set_size = node_id_va[va][leaf_numb].size()
+                pow_set_size = 2**set_size
+
+                for counter in range(0, pow_set_size):
+                    va_size = 0
+                    S_size = 0
+                    for ci in range(set_size):
+                        if((counter & (1 << ci)) > 0):
+                            for cj in range(node_id_va[va][leaf_numb][ci].size()):
+                                S[va, counter, leaf_numb, S_size] = node_id_va[va][leaf_numb][ci][cj]
+                                S_size = S_size + 1
+                            va_size = va_size + 1
+
+                    for leaf_n in range(nb_leaf):
+                        for i in range(data.shape[0]):
+                            a_it = 0
+                            for s in range(data.shape[1]):
+                                if (data[i, s] <= partition_leaves_trees[b, leaf_n, s, 1]) and (data[i, s] > partition_leaves_trees[b, leaf_n, s, 0]):
+                                    a_it = a_it + 1
+                            if a_it == data.shape[1]:
+                                lm_n[b, va, leaf_numb, leaf_n, counter] = lm_n[b, va, leaf_numb, leaf_n, counter] + 1
+
+                            b_it = 0
+                            for s in range(S_size):
+                                if ((data[i, S[va, counter, leaf_numb, s]] <= partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 1]) * (data[i, S[va, counter, leaf_numb, s]] > partition_leaves_trees[b, leaf_n, S[va, counter, leaf_numb, s], 0])):
+                                    b_it = b_it + 1
+
+                            if b_it == S_size:
+                                lm_s[b, va, leaf_numb, leaf_n, counter] = lm_s[b, va, leaf_numb, leaf_n, counter] + 1
+
+                                nv_bool = 0
+                                for nv in range(va_id[va].size()):
+                                    if ((data[i, va_id[va][nv]] > partition_leaves_trees[b, leaf_n, va_id[va][nv], 1]) or (data[i, va_id[va][nv]] <= partition_leaves_trees[b, leaf_n, va_id[va][nv], 0])):
+                                        nv_bool = nv_bool + 1
+                                        continue
+
+                                if nv_bool == 0:
+                                    lm_si[b, va, leaf_numb, leaf_n, counter] = lm_si[b, va, leaf_numb, leaf_n, counter] + 1
+
+
+    return lm_n, lm_s, lm_si

@@ -272,21 +272,12 @@ class ExperimentsLinear:
         elif algo == 'monte_carlo':
             if len(S) != len(index):
                 S_bar = [i for i in index if i not in S]
-
+                rg_data = np.zeros(shape=(N, len(index)))
+                rg_data[:, S] = x[S]
                 rg = sampleMVN(N, self.mean, self.cov, S_bar, S, x[S])
+                rg_data[:, S_bar] = rg
 
-                rg_data = pd.DataFrame(rg, columns=[str(i) for i in S_bar])
-
-                def get_given_data(idx):
-                    val = np.array([x[idx]])
-                    val = np.tile(val, N)
-                    return val
-
-                for val_id in S:
-                    rg_data[str(val_id)] = get_given_data(val_id)
-
-                rg_data = rg_data[sorted(rg_data.columns)]
-                y_pred = tree.predict(np.array(rg_data.values, dtype=np.float32))
+                y_pred = tree.predict(np.array(rg_data, dtype=np.float32))
 
             else:
                 y_pred = tree.predict(np.expand_dims(np.array(x, dtype=np.float32), axis=0))
