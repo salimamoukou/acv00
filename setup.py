@@ -7,6 +7,9 @@ c_ext = Extension('cext_acv', sources=['acv_explainers/cext_acv/_cext.cc'])
 cy_ext = Extension('cyext_acv', ['acv_explainers/cyext_acv/cyext_acv.pyx'], extra_compile_args=['-fopenmp'],
                     extra_link_args=['-fopenmp'])
 
+cy_extba = Extension('cyext_acv_ba', ['acv_explainers/cyext_acv/cyext_acv_ba.pyx'], extra_compile_args=['-fopenmp'],
+                    extra_link_args=['-fopenmp'])
+
 setup(name='acv',
       author='Salim I.Amoukou',
       author_email='salim.ibrahim-amoukou@universite-paris-saclay.fr',
@@ -14,7 +17,7 @@ setup(name='acv',
       description='ACV function optimized in C',
       include_dirs=[numpy.get_include()],
       cmdclass={'build_ext': build_ext},
-      ext_modules=cythonize([c_ext, cy_ext]),
+      ext_modules=cythonize([c_ext, cy_ext, cy_extba]),
       # cmdclass={'build_ext': build_ext},
       # setup_requires=['numpy'],
       # install_requires=['numpy', 'scipy', 'scikit-learn', 'matplotlib', 'pandas', 'tqdm', 'ipython'],

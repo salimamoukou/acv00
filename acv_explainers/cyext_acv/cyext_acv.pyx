@@ -33,12 +33,6 @@ cpdef compute_exp(double[:, :] X, long[:] S, double[:, :] data, double[:, :, :] 
     cdef unsigned int S_size = S.shape[0]
     cdef unsigned int d = values.shape[2]
     cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
-
-    if S_size == m:
-        return np.ones(shape=(N, values.shape[2]))
-    elif S_size == 0:
-        return np.zeros(shape=(N, values.shape[2]))
-
     cdef int n_trees = values.shape[0]
     cdef double[:, :, :] leaves_tree
     cdef double[:, :] leaf_part
@@ -103,12 +97,6 @@ cpdef compute_exp_normalized(double[:, :] X, long[:] S, double[:, :] data, doubl
     cdef unsigned int S_size = S.shape[0]
     cdef unsigned int d = values.shape[2]
     cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
-
-    if S_size == m:
-        return np.ones(shape=(N, values.shape[2]))
-    elif S_size == 0:
-        return np.zeros(shape=(N, values.shape[2]))
-
     cdef int n_trees = values.shape[0]
     cdef double[:, :, :] leaves_tree
     cdef double[:, :] leaf_part
@@ -185,12 +173,6 @@ cpdef compute_exp_cat(double[:, :] X, long[:] S, double[:, :] data, double[:, :,
     cdef unsigned int S_size = S.shape[0]
     cdef unsigned int d = values.shape[2]
     cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
-
-    if S_size == m:
-        return np.ones(shape=(N, values.shape[2]))
-    elif S_size == 0:
-        return np.zeros(shape=(N, values.shape[2]))
-
     cdef int n_trees = values.shape[0]
     cdef double[:, :, :] leaves_tree
     cdef double[:, :] leaf_part
@@ -1839,6 +1821,7 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
+    cdef unsigned int max_leaves = partition_leaves_trees.shape[1]
     cdef double[:] out
 
     cdef int n_trees = values.shape[0]
@@ -1846,19 +1829,32 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
     cdef double[:, :] leaf_part
     cdef double[:] value
 
-    cdef double[:, :] mean_forest
-    mean_forest = np.zeros((N, 3))
+    cdef double[:, :, :, :] mean_forest
+    mean_forest = np.zeros((n_trees, max_leaves, N, 3))
 
-    cdef double[:, :] mean_forest_m
-    mean_forest_m = np.zeros((N, 3))
+    cdef double[:, :, :, :] mean_forest_m
+    mean_forest_m = np.zeros((n_trees, max_leaves, N, 3))
 
     cdef double[:] sdp
     sdp = np.zeros((N))
 
     cdef long[:] lm_u, lm_d
     cdef unsigned int it, it_s, a_it, b_it, p, p_s, p_u, p_d, p_su, p_sd, nb_leaf, o_all, down, up, nv, csm
-    cdef double ss, ss_m
     cdef unsigned int b, leaf_numb, i, s, j, lm, lm_m, lm_s, lm_s_m,  p_m, p_s_m, p_u_m, p_d_m, p_su_m, p_sd_m, nv_bool
+
+    cdef double[:, :, :] p_n, p_u_n, p_d_n
+    p_n = np.zeros((n_trees, max_leaves, N))
+    p_u_n = np.zeros((n_trees, max_leaves, N))
+    p_d_n = np.zeros((n_trees, max_leaves, N))
+    cdef double n, n_u, n_d
+    cdef double ss, ss_u, ss_a, ss_d
+
+    cdef double[:, :, :] p_n_m, p_u_n_m, p_d_n_m
+    p_n_m = np.zeros((n_trees, max_leaves, N))
+    p_u_n_m = np.zeros((n_trees, max_leaves, N))
+    p_d_n_m = np.zeros((n_trees, max_leaves, N))
+    cdef double n_m, n_u_m, n_d_m
+    cdef double ss_m, ss_u_m, ss_a_m, ss_d_m
 
     for b in range(n_trees):
         for leaf_numb in range(leaves_nb[b]):
@@ -1879,11 +1875,14 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
 
                     if nv_bool == 0:
                         csm = 1
+                    else:
+                        continue
 
 
                 p = 0
                 p_u = 0
                 p_d = 0
+
                 p_s = 0
                 p_su = 0
                 p_sd = 0
@@ -1938,19 +1937,59 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
                         p_sd += lm_s
                         p_sd_m += lm_s_m
 
-                mean_forest[i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_s) if p_s != 0 else 0
-                mean_forest[i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_su) if p_su != 0 else 0
-                mean_forest[i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_sd) if p_sd != 0 else 0
+                mean_forest[b, leaf_numb, i, 0] += (p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_s) if p_s != 0 else 0
+                mean_forest[b, leaf_numb, i, 1] += (p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_su) if p_su != 0 else 0
+                mean_forest[b, leaf_numb, i, 2] += (p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_sd) if p_sd != 0 else 0
 
-                mean_forest_m[i, 0] += csm*(p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_s_m) if p_s_m != 0 else 0
-                mean_forest_m[i, 1] += csm*(p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_su_m) if p_su_m != 0 else 0
-                mean_forest_m[i, 2] += csm*(p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_sd_m) if p_sd_m != 0 else 0
+                p_n[b, leaf_numb, i] += (1.*p)/p_s if p_s != 0 else 0
+                p_u_n[b, leaf_numb, i] += (1.*p_u)/p_su if p_su != 0 else 0
+                p_d_n[b, leaf_numb, i] += (1.*p_d)/p_sd if p_sd != 0 else 0
+
+                mean_forest_m[b, leaf_numb, i, 0] += csm*(p * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_s_m) if p_s_m != 0 else 0
+                mean_forest_m[b, leaf_numb, i, 1] += csm*(p_u * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_su_m) if p_su_m != 0 else 0
+                mean_forest_m[b, leaf_numb, i, 2] += csm*(p_d * values[b, leaf_idx_trees[b, leaf_numb], fX[i]]) / (p_sd_m) if p_sd_m != 0 else 0
+
+                p_n_m[b, leaf_numb, i] += csm*(1.*p)/p_s_m if p_s_m != 0 else 0
+                p_u_n_m[b, leaf_numb, i] += csm*(1.*p_u)/p_su_m if p_su_m != 0 else 0
+                p_d_n_m[b, leaf_numb, i] += csm*(1.*p_d)/p_sd_m if p_sd_m != 0 else 0
 
 
     if S_size !=0 and S_size + len_va_id[va] != m:
-        for i in prange(N, nogil=True, num_threads=num_threads):
-            ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
-            ss_m = (mean_forest_m[i, 0] - mean_forest_m[i, 2])/(mean_forest_m[i, 1] - mean_forest_m[i, 2]) if mean_forest_m[i, 1] - mean_forest_m[i, 2] !=0 else 0
+        for i in range(N):
+            ss_u = 0
+            ss_d = 0
+            ss_a = 0
+            ss_u_m = 0
+            ss_d_m = 0
+            ss_a_m = 0
+            for b in range(n_trees):
+                nb_leaf = leaves_nb[b]
+                n = 0
+                n_u = 0
+                n_d = 0
+                n_m = 0
+                n_u_m = 0
+                n_d_m = 0
+                for leaf_numb in range(nb_leaf):
+                    n += p_n[b, leaf_numb, i]
+                    n_u += p_u_n[b, leaf_numb, i]
+                    n_d += p_d_n[b, leaf_numb, i]
+
+                    n_m += p_n_m[b, leaf_numb, i]
+                    n_u_m += p_u_n_m[b, leaf_numb, i]
+                    n_d_m += p_d_n_m[b, leaf_numb, i]
+
+                for leaf_numb in range(nb_leaf):
+                    ss_a += mean_forest[b, leaf_numb, i, 0]/n if n !=0 else 0
+                    ss_u += mean_forest[b, leaf_numb, i, 1]/n_u if n_u !=0 else 0
+                    ss_d += mean_forest[b, leaf_numb, i, 2]/n_d if n_d !=0 else 0
+
+                    ss_a_m += mean_forest_m[b, leaf_numb, i, 0]/n_m if n !=0 else 0
+                    ss_u_m += mean_forest_m[b, leaf_numb, i, 1]/n_u_m if n_u !=0 else 0
+                    ss_d_m += mean_forest_m[b, leaf_numb, i, 2]/n_d_m if n_d !=0 else 0
+
+            ss_m = (ss_a_m - ss_d_m)/(ss_u_m - ss_d_m) if ss_u_m - ss_d_m !=0 else 0
+            ss = (ss_a - ss_d)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
 
 
             if (ss < thresholds and ss_m < thresholds):
@@ -1963,8 +2002,25 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
                 sdp[i] = -1
     elif S_size == 0:
         ss = 0
-        for i in prange(N, nogil=True, num_threads=num_threads):
-            ss_m = (mean_forest_m[i, 0] - mean_forest_m[i, 2])/(mean_forest_m[i, 1] - mean_forest_m[i, 2]) if mean_forest_m[i, 1] - mean_forest_m[i, 2] !=0 else 0
+        for i in range(N):
+            ss_u_m = 0
+            ss_d_m = 0
+            ss_a_m = 0
+            for b in range(n_trees):
+                nb_leaf = leaves_nb[b]
+                n_m = 0
+                n_u_m = 0
+                n_d_m = 0
+                for leaf_numb in range(nb_leaf):
+                    n_m += p_n_m[b, leaf_numb, i]
+                    n_u_m += p_u_n_m[b, leaf_numb, i]
+                    n_d_m += p_d_n_m[b, leaf_numb, i]
+
+                for leaf_numb in range(max_leaves):
+                    ss_a_m += mean_forest_m[b, leaf_numb, i, 0]/n_m if n !=0 else 0
+                    ss_u_m += mean_forest_m[b, leaf_numb, i, 1]/n_u_m if n_u !=0 else 0
+                    ss_d_m += mean_forest_m[b, leaf_numb, i, 2]/n_d_m if n_d !=0 else 0
+            ss_m = (ss_a_m - ss_d_m)/(ss_u_m - ss_d_m) if ss_u_m - ss_d_m !=0 else 0
 
             if (ss < thresholds and ss_m < thresholds):
                 sdp[i] = 0
@@ -1977,8 +2033,26 @@ cdef compute_sdp_swing_diff(const double[:, :] X, const long[:] fX,
 
     elif S_size + len_va_id[va] == m:
         ss_m = 1
-        for i in prange(N, nogil=True, num_threads=num_threads):
-            ss = (mean_forest[i, 0] - mean_forest[i, 2])/(mean_forest[i, 1] - mean_forest[i, 2]) if mean_forest[i, 1] - mean_forest[i, 2] !=0 else 0
+        for i in range(N):
+            ss_u = 0
+            ss_d = 0
+            ss_a = 0
+            for b in range(n_trees):
+                nb_leaf = leaves_nb[b]
+                n = 0
+                n_u = 0
+                n_d = 0
+                for leaf_numb in range(nb_leaf):
+                    n += p_n[b, leaf_numb, i]
+                    n_u += p_u_n[b, leaf_numb, i]
+                    n_d += p_d_n[b, leaf_numb, i]
+
+                for leaf_numb in range(max_leaves):
+                    ss_a += mean_forest[b, leaf_numb, i, 0]/n if n !=0 else 0
+                    ss_u += mean_forest[b, leaf_numb, i, 1]/n_u if n_u !=0 else 0
+                    ss_d += mean_forest[b, leaf_numb, i, 2]/n_d if n_d !=0 else 0
+            ss = (ss_a - ss_d)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
+
             if (ss < thresholds and ss_m < thresholds):
                 sdp[i] = 0
             elif (ss < thresholds and ss_m >= thresholds):
@@ -2528,7 +2602,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
                         ss_d += mean_forest_b[b, leaf_numb, R_buf[i], 2]/n_d if n_d !=0 else 0
 
                 ss = (ss_a - ss_d)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
-                if ss >= global_proba and ss >= sdp[R_buf[i]]:
+                if ss >= sdp[R_buf[i]]:
                     sdp[R_buf[i]] = ss
                     len_s_star[R_buf[i]] = S_size
                     for s in range(S_size):
@@ -2539,12 +2613,12 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
                     len_s_star[R_buf[i]] = S_size
                     for s in range(S_size):
                         s_star[R_buf[i], s] = S[s]
+                    for s in range(len_s_star[R_buf[i]], X.shape[1]): # to filter (important for coalition)
+                        s_star[R_buf[i], s] = -1
 
         for i in range(N):
             if sdp[R_buf[i]] >= global_proba:
                 r.push_back(R[i])
-                for s in range(len_s_star[R_buf[i]], X.shape[1]): # to filter (important for coalition)
-                    s_star[R_buf[i], s] = -1
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
 
