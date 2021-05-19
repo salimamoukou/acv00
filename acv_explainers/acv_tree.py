@@ -63,6 +63,8 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_reg(self, X, tX,  S, data, num_threads=10):
+        if self.partition_leaves_trees.shape[0] > 1:
+            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv.compute_sdp_reg(np.array(X, dtype=np.float), fX, tX, y_pred, S, data, self.values, self.partition_leaves_trees,
@@ -102,19 +104,21 @@ class ACVTree(BaseTree):
         return cyext_acv.compute_exp_normalized(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings,
                                   num_threads)
-    def importance_sdp_clf_p2(self, X, data, C=[[]], global_proba=0.9, num_threads=10):
-        fX = np.argmax(self.model.predict_proba(X), axis=1)
-        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
-        return cyext_acv.global_sdp_clf_cpp_pa_coal(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
-                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, num_threads)
 
-    def importance_sdp_reg(self, X, tX, data, C=[[]], global_proba=0.9, num_threads=10):
+    def importance_sdp_reg_cat(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
         fX = self.predict(X)
         y_pred = self.predict(data)
-        return cyext_acv.global_sdp_reg_cpp_pa_coal(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
+        return cyext_acv.global_sdp_reg_cat(np.array(X, dtype=np.float), fX, tX,  y_pred, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, minimal)
+
+    def importance_sdp_reg(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
+        if self.partition_leaves_trees.shape[0] > 1:
+            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
+        fX = self.predict(X)
+        y_pred = self.predict(data)
+        return cyext_acv.global_sdp_reg(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, num_threads)
+                                                    self.scalings, C, global_proba, minimal)
 
     def shap_values_normalized(self, X, C=[[]], num_threads=10):
         if not self.cache_normalized:

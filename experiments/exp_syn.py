@@ -46,13 +46,14 @@ class ExperimentsLinear:
         # data generation
         self.data_gen = st.multivariate_normal(self.mean, self.cov)
         self.data = self.data_gen.rvs(self.n)
+        self.data_test = self.data_gen.rvs(self.n)
         if self.data_type =='linear_reg':
             self.y_train = linear_regression(self.coefs, self.data)
+            self.y_test = linear_regression(self.coefs, self.data_test)
         else:
             self.y_train = generate_y(self.data, data_type=self.data_type)
+            self.y_test = generate_y(self.data_test, data_type=self.data_type)
 
-        self.data_test = self.data_gen.rvs(self.n)
-        self.y_test = linear_regression(self.coefs, self.data_test)
 
     def cond_exp_tree(self, x, tree, S, algo="shap", N=50000, data=None):
         """

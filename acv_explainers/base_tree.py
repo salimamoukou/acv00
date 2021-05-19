@@ -526,7 +526,7 @@ class BaseTree:
             self.leaf_idx_trees = []
             self.leaves_nb = []
             self.scalings = []
-            for i in range(num_trees):
+            for i in tqdm(range(num_trees)):
                 self.scalings.append(self.trees[i].scaling)
                 self.children_left[i, :len(self.trees[i].children_left)] = self.trees[i].children_left
                 self.children_right[i, :len(self.trees[i].children_right)] = self.trees[i].children_right

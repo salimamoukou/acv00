@@ -351,10 +351,6 @@ def cond_sdp_forest(x, fx, tx, forest, S, data):
         Returns:
             float: SDP_S(x, treeBased models)
         """
-    if len(S) == len(x):
-        return 1
-    elif S == []:
-        return 0
     n_trees = len(forest)
     names = ['all', 'up', 'down']
     part_forest = [get_tree_partition(x, fx, tx, forest[i], S, data=data) for i in
