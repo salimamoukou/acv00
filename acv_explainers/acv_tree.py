@@ -3,8 +3,7 @@ from .py_acv import *
 from .utils_exp import *
 from .utils_sdp import *
 import numpy as np
-import cyext_acv
-import cyext_acv_ba
+import cyext_acv, cyext_acv_nopa, cyext_acv_cache
 
 
 class ACVTree(BaseTree):
@@ -42,8 +41,7 @@ class ACVTree(BaseTree):
 
     def compute_exp(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
-                                     self.leaf_idx_trees, self.leaves_nb, self.scalings,
-                                  num_threads)
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_exp_cat(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp_cat(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
@@ -71,6 +69,8 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_reg_cat(self, X, tX, S, data, num_threads=10):
+        raise Warning('The current implementation may take a long time if n_trees and depth are large. The number of '
+                      'operation is 2**(depth*n_trees)')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv.compute_sdp_reg_cat(np.array(X, dtype=np.float), fX, tX,  y_pred, S, data, self.values, self.partition_leaves_trees,
@@ -82,6 +82,12 @@ class ACVTree(BaseTree):
         return cyext_acv.swing_sv_clf_direct(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, thresholds, num_threads)
 
+    def swing_sv_clf_nopa(self, X, data, C=[[]], thresholds=0.9, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv_nopa.swing_sv_clf_direct_nopa(np.array(X, dtype=np.float), fX, y_pred, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, thresholds, num_threads)
+
     def swing_sv_clf_slow(self, X, data, C=[[]], thresholds=0.9, num_threads=5):
         fX = np.argmax(self.model.predict_proba(X), axis=1)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1)
@@ -90,20 +96,20 @@ class ACVTree(BaseTree):
                                       C, thresholds, num_threads)
 
     def shap_values_nopa(self, X, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_leaves_nopa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+        return cyext_acv_nopa.shap_values_leaves_nopa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, C, num_threads)
 
     def shap_values_acv_nopa(self, X, S_star, N_star, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_acv_leaves_nopa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+        return cyext_acv_nopa.shap_values_acv_leaves_nopa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, S_star, N_star, C, num_threads)
 
+    def shap_values_acv_adap_nopa(self, X, S_star, N_star, size, C=[[]], num_threads=10):
+        return cyext_acv_nopa.shap_values_acv_leaves_adap_nopa(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
+                                       self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                       self.node_idx_trees, S_star, N_star, size, C, num_threads)
 
-    def compute_exp_normalized(self, X, S, data, num_threads=10):
-        return cyext_acv.compute_exp_normalized(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
-                                     self.leaf_idx_trees, self.leaves_nb, self.scalings,
-                                  num_threads)
 
     def importance_sdp_reg_cat(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
         fX = self.predict(X)
@@ -120,6 +126,32 @@ class ACVTree(BaseTree):
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, minimal)
 
+    def importance_sdp_reg_cat_nopa(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
+        fX = self.predict(X)
+        y_pred = self.predict(data)
+        return cyext_acv_nopa.global_sdp_reg_cat_nopa(np.array(X, dtype=np.float), fX, tX,  y_pred, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, minimal)
+
+    def importance_sdp_reg_nopa(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
+        if self.partition_leaves_trees.shape[0] > 1:
+            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
+        fX = self.predict(X)
+        y_pred = self.predict(data)
+        return cyext_acv_nopa.global_sdp_reg_nopa(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, minimal)
+
+
+    def compute_exp_normalized(self, X, S, data, num_threads=10):
+        return cyext_acv.compute_exp_normalized(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings,
+                                  num_threads)
+
+    def compute_exp_normalized_nopa(self, X, S, data, num_threads=10):
+        return cyext_acv.compute_exp_normalized_nopa(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings,
+                                  num_threads)
+
     def shap_values_normalized(self, X, C=[[]], num_threads=10):
         if not self.cache_normalized:
             return cyext_acv.shap_values_leaves_normalized(np.array(X, dtype=np.float), self.data, self.values, self.partition_leaves_trees,
@@ -128,28 +160,100 @@ class ACVTree(BaseTree):
         return self.shap_values_normalized_cache(X, C)
 
     def shap_values_cache(self, X, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_leaves_cache(np.array(X, dtype=np.float), self.data, self.values,
+        return cyext_acv_cache.shap_values_leaves_cache(np.array(X, dtype=np.float), self.data, self.values,
                                                   self.partition_leaves_trees,
                                                   self.leaf_idx_trees, self.leaves_nb, self.lm, self.lm_s, self.lm_si,
                                                   self.max_var,
                                                   self.node_idx_trees, C, num_threads)
 
     def shap_values_normalized_cache(self, X, C=[[]], num_threads=10):
-        return cyext_acv.shap_values_leaves_normalized_cache(np.array(X, dtype=np.float), self.data, self.values,
+        return cyext_acv_cache.shap_values_leaves_normalized_cache(np.array(X, dtype=np.float), self.data, self.values,
+                                                  self.partition_leaves_trees,
+                                                  self.leaf_idx_trees, self.leaves_nb, self.lm_n, self.lm_s_n, self.lm_si_n,
+                                                  self.max_var,
+                                                  self.node_idx_trees, C, num_threads)
+
+    def shap_values_cache_nopa(self, X, C=[[]], num_threads=10):
+        return cyext_acv_nopa.shap_values_leaves_cache_nopa(np.array(X, dtype=np.float), self.data, self.values,
+                                                  self.partition_leaves_trees,
+                                                  self.leaf_idx_trees, self.leaves_nb, self.lm, self.lm_s, self.lm_si,
+                                                  self.max_var,
+                                                  self.node_idx_trees, C, num_threads)
+
+    def shap_values_normalized_cache_nopa(self, X, C=[[]], num_threads=10):
+        return cyext_acv_nopa.shap_values_leaves_normalized_cache_nopa(np.array(X, dtype=np.float), self.data, self.values,
                                                   self.partition_leaves_trees,
                                                   self.leaf_idx_trees, self.leaves_nb, self.lm_n, self.lm_s_n, self.lm_si_n,
                                                   self.max_var,
                                                   self.node_idx_trees, C, num_threads)
 
     def leaves_cache(self, C=[[]], num_threads=10):
-        return cyext_acv.leaves_cache(self.data, self.values, self.partition_leaves_trees,
+        return cyext_acv_cache.leaves_cache(self.data, self.values, self.partition_leaves_trees,
                                       self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                       self.node_idx_trees, C, num_threads)
 
     def leaves_cache_normalized(self, C=[[]], num_threads=10):
-        return cyext_acv.leaves_cache_normalized(self.data, self.values, self.partition_leaves_trees,
+        return cyext_acv_cache.leaves_cache_normalized(self.data, self.values, self.partition_leaves_trees,
                                       self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                       self.node_idx_trees, C, num_threads)
+
+    def leaves_cache_nopa(self, C=[[]], num_threads=10):
+        return cyext_acv_nopa.leaves_cache_nopa(self.data, self.values, self.partition_leaves_trees,
+                                      self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                      self.node_idx_trees, C, num_threads)
+
+    def leaves_cache_normalized_nopa(self, C=[[]], num_threads=10):
+        return cyext_acv_nopa.leaves_cache_normalized_nopa(self.data, self.values, self.partition_leaves_trees,
+                                      self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                      self.node_idx_trees, C, num_threads)
+
+    def importance_sdp_clf_nopa(self, X, data, C=[[]], global_proba=0.9, minimal=0):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv_nopa.global_sdp_clf_nopa(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, minimal)
+
+    def compute_exp_nopa(self, X, S, data, num_threads=10):
+        return cyext_acv_nopa.compute_exp_nopa(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
+
+    def compute_exp_cat_nopa(self, X, S, data, num_threads=10):
+        return cyext_acv_nopa.compute_exp_cat_nopa(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings,
+                                      num_threads)
+
+    def compute_sdp_clf_nopa(self, X, S, data, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv_nopa.compute_sdp_clf_nopa(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
+
+    def compute_sdp_clf_cat_nopa(self, X, S, data, num_threads=10):
+        fX = np.argmax(self.model.predict_proba(X), axis=1)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1)
+        return cyext_acv_nopa.compute_sdp_clf_cat_nopa(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
+
+    def compute_sdp_reg_nopa(self, X, tX,  S, data, num_threads=10):
+        if self.partition_leaves_trees.shape[0] > 1:
+            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
+        fX = self.predict(X)
+        y_pred = self.predict(data)
+        return cyext_acv_nopa.compute_sdp_reg_nopa(np.array(X, dtype=np.float), fX, tX, y_pred, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
+
+    def compute_sdp_reg_cat_nopa(self, X, tX, S, data, num_threads=10):
+        raise Warning('The current implementation may take a long time if n_trees > 10 and depth > 6')
+        fX = self.predict(X)
+        y_pred = self.predict(data)
+        return cyext_acv_nopa.compute_sdp_reg_cat_nopa(np.array(X, dtype=np.float), fX, tX,  y_pred, S, data, self.values, self.partition_leaves_trees,
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
+
+
+
+
+
 
     def py_shap_values(self, x, C=[[]]):
         out = np.zeros((x.shape[0], x.shape[1], self.num_outputs))

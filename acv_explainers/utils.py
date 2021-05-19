@@ -233,6 +233,27 @@ def rebuild_tree(parent_id, tree, data, y):
         rebuild_tree(left, tree, data_left, y_left)
         rebuild_tree(right, tree, data_right, y_right)
 
+def rebuild_acvtree(parent_id, tree, data, y):
+    tree.node_sample_weight[parent_id] = data.shape[0]
+    tree.values[parent_id] = np.mean(y, axis=0)
+
+    if tree.children_right[parent_id] < 0:
+        return 0
+    else:
+        right = tree.children_right[parent_id]
+        left = tree.children_left[parent_id]
+
+        left_cond = data[:, tree.features[parent_id]] <= tree.thresholds[parent_id]
+        data_left = data[left_cond]
+        y_left = y[left_cond]
+
+        right_cond = data[:, tree.features[parent_id]] > tree.thresholds[parent_id]
+        data_right = data[right_cond]
+        y_right = y[right_cond]
+
+        rebuild_acvtree(left, tree, data_left, y_left)
+        rebuild_acvtree(right, tree, data_right, y_right)
+
 
 def condMVN(mean, cov, set_bar, set, x):
     if set == []:

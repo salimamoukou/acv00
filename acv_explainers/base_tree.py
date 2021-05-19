@@ -5,6 +5,7 @@ import struct
 import cext_acv
 import warnings
 from .py_acv import *
+from .utils import rebuild_tree
 from distutils.version import LooseVersion
 
 
@@ -15,7 +16,7 @@ class BaseTree:
     This object provides a common interface to many different types of models.
     """
 
-    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, C=[[]]):
+    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, multi_threads=True, C=[[]]):
         self.model_type = "internal"
         self.trees = None
         self.base_offset = 0
@@ -34,6 +35,7 @@ class BaseTree:
         self.cache = cache
         self.cache_normalized = cache_normalized
         self.C = C
+        self.multi_threads = multi_threads
         # we use names like keras
         objective_name_map = {
             "mse": "squared_error",
@@ -510,6 +512,16 @@ class BaseTree:
             else:
                 self.num_outputs = self.trees[0].values.shape[1]
 
+            # if safe_isinstance(model, ["xgboost.sklearn.XGBClassifier",
+            #                            "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
+            #         self.num_outputs == 1:
+            #     for i in range(num_trees):
+            #         self.num_outputs = 2
+            #         y = self.model.predict(self.data)
+            #         self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
+            #         rebuild_acvtree(0, self.trees[i], self.data, y)
+            #         self.trees[i].values = self.trees[i].scaling * self.trees[i].values
+
             # important to be -1 in unused sections!! This way we can tell which entries are valid.
             self.children_left = -np.ones((num_trees, max_nodes), dtype=np.int32)
             self.children_right = -np.ones((num_trees, max_nodes), dtype=np.int32)
@@ -596,15 +608,23 @@ class BaseTree:
             self.max_depth = np.max([t.max_depth for t in self.trees])
 
             if self.cache:
-                self.lm, self.lm_s, self.lm_si = self.leaves_cache(C=self.C)
+                if self.multi_threads:
+                    self.lm, self.lm_s, self.lm_si = self.leaves_cache(C=self.C)
+                else:
+                    self.lm, self.lm_s, self.lm_si = self.leaves_cache_nopa(C=self.C)
+
                 if self.cache_normalized:
-                    self.lm_n, self.lm_s_n, self.lm_si_n = self.leaves_cache_normalized(C=self.C)
+                    if self.multi_threads:
+                        self.lm_n, self.lm_s_n, self.lm_si_n = self.leaves_cache_normalized(C=self.C)
+                    else:
+                        self.lm_n, self.lm_s_n, self.lm_si_n = self.leaves_cache_normalized_nopa(C=self.C)
 
             # make sure the base offset is a 1D array
             if not hasattr(self.base_offset, "__len__") or len(self.base_offset) == 0:
                 self.base_offset = (np.ones(self.num_outputs) * self.base_offset).astype(self.internal_dtype)
             self.base_offset = self.base_offset.flatten()
             assert len(self.base_offset) == self.num_outputs
+
 
     @abstractmethod
     def compute_cond_exp(self, X, S, data):
