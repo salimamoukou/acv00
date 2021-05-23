@@ -861,7 +861,7 @@ cpdef global_sdp_reg_cat_nopa(double[:, :] X, double[:] fX, double tX,
     cdef double[:, :, :, :] mean_forest_b
     mean_forest_b = np.zeros((n_trees, leaf_idx_trees.shape[1], N, 3))
 
-    cdef double[:] sdp
+    cdef double[:] sdp, sdp_b
     cdef double[:] sdp_global
     sdp = np.zeros((N))
     sdp_global = np.zeros((m))
@@ -922,157 +922,11 @@ cpdef global_sdp_reg_cat_nopa(double[:, :] X, double[:] fX, double tX,
             for i in range(N):
                 R_buf[i] = R[i]
 
-            for b in range(n_trees):
-                nb_leaf = leaves_nb[b]
-                for leaf_numb in range(nb_leaf):
-                    for i in range(N):
-                        for j in range(3):
-                            mean_forest_b[b, leaf_numb, R_buf[i], j] = 0
-            for b in range(n_trees):
-                for l in range(n_trees):
-                    if b == l:
-                        leaves_tree = partition_leaves_trees[b]
-                        nb_leaf = leaves_nb[b]
-
-                        for leaf_numb in range(nb_leaf):
-                            leaf_part = leaves_tree[leaf_numb]
-                            value = values[b, leaf_idx_trees[b, leaf_numb], 0]
-
-                            lm = np.zeros(data.shape[0], dtype=np.int)
-
-                            for i in range(data.shape[0]):
-                                a_it = 0
-                                b_it = 0
-                                for s in range(m):
-                                    if ((data[i, s] <= leaf_part[s, 1]) and (data[i, s] >= leaf_part[s, 0])):
-                                        a_it = a_it + 1
-                                for s in range(S_size):
-                                    if ((data[i, S[s]] <= leaf_part[S[s], 1]) and (data[i, S[s]] >= leaf_part[S[s], 0])):
-                                        b_it = b_it + 1
-
-                                if a_it == m:
-                                    lm[i] = 1
-
-                            for i in range(N):
-                                o_all = 0
-                                for s in range(S_size):
-                                    if ((X[R_buf[i], S[s]] > leaf_part[S[s], 1]) or (X[R_buf[i], S[s]] < leaf_part[S[s], 0])):
-                                        o_all = o_all + 1
-                                if o_all > 0:
-                                    continue
-
-                                p = 0
-                                p_u = 0
-                                p_d = 0
-                                p_s = 0
-                                p_su = 0
-                                p_sd = 0
-
-                                for j in range(data.shape[0]):
-                                        up = 0
-                                        down = 0
-                                        b_it = 0
-                                        for s in range(S_size):
-                                            if data[j, S[s]] == X[R_buf[i], S[s]]:
-                                                b_it = b_it + 1
-
-                                        if b_it == S_size:
-                                            if (fX[R_buf[i]] - y_pred[j]) * (fX[R_buf[i]] - y_pred[j]) > tX:
-                                                up = 1
-                                            else:
-                                                down = 1
-
-                                            p += lm[j]
-                                            p_u += lm[j] * up
-                                            p_d += lm[j] * down
-                                            p_s += 1
-                                            p_su += up
-                                            p_sd += down
-
-                                mean_forest_b[b, leaf_numb, R_buf[i], 0] += (p * value*value) / (p_s) - (2 * fX[R_buf[i]] * p * value)/(p_s) if p_s != 0 else 0
-                                mean_forest_b[b, leaf_numb, R_buf[i], 1] += (p_u * value*value) / (p_su) - (2 * fX[R_buf[i]] * p_u * value)/(p_su) if p_su != 0 else 0
-                                mean_forest_b[b, leaf_numb, R_buf[i], 2] += (p_d * value*value) / (p_sd) - (2 * fX[R_buf[i]] * p_d * value)/(p_sd) if p_sd != 0 else 0
-                    else:
-                        leaves_tree = partition_leaves_trees[b]
-                        nb_leaf = leaves_nb[b]
-                        leaves_tree_l = partition_leaves_trees[l]
-                        nb_leaf_l = leaves_nb[l]
-
-                        for leaf_numb in range(nb_leaf):
-                            for leaf_numb_l in range(nb_leaf_l):
-
-                                leaf_part = leaves_tree[leaf_numb]
-                                leaf_part_l = leaves_tree_l[leaf_numb_l]
-                                value = values[b, leaf_idx_trees[b, leaf_numb], 0]
-                                value_l = values[l, leaf_idx_trees[l, leaf_numb_l], 0]
-
-                                lm = np.zeros(data.shape[0], dtype=np.int)
-                                lm_s = np.zeros(data.shape[0], dtype=np.int)
-
-                                for i in range(data.shape[0]):
-                                    a_it = 0
-                                    b_it = 0
-                                    for s in range(m):
-                                        if ((data[i, s] <= leaf_part[s, 1]) and (data[i, s] >= leaf_part[s, 0]) and (data[i, s] <= leaf_part_l[s, 1]) and (data[i, s] >= leaf_part_l[s, 0])):
-                                            a_it = a_it + 1
-
-                                    if a_it == m:
-                                        lm[i] = 1
-
-                                for i in range(N):
-                                    o_all = 0
-                                    for s in range(S_size):
-                                        if ((X[R_buf[i], S[s]] > leaf_part[S[s], 1]) or (X[R_buf[i], S[s]] < leaf_part[S[s], 0]) or (X[R_buf[i], S[s]] > leaf_part_l[S[s], 1]) or (X[R_buf[i], S[s]] < leaf_part_l[S[s], 0])):
-                                            o_all = o_all + 1
-                                    if o_all > 0:
-                                        continue
-
-                                    p = 0
-                                    p_u = 0
-                                    p_d = 0
-                                    p_s = 0
-                                    p_su = 0
-                                    p_sd = 0
-
-                                    for j in range(data.shape[0]):
-                                        up = 0
-                                        down = 0
-                                        b_it = 0
-                                        for s in range(S_size):
-                                            if data[j, S[s]] == X[R_buf[i], S[s]]:
-                                                b_it = b_it + 1
-
-                                        if b_it == S_size:
-                                            if (fX[R_buf[i]] - y_pred[j]) * (fX[R_buf[i]] - y_pred[j]) > tX:
-                                                up = 1
-                                            else:
-                                                down = 1
-
-                                            p += lm[j]
-                                            p_u += lm[j] * up
-                                            p_d += lm[j] * down
-                                            p_s += 1
-                                            p_su += up
-                                            p_sd += down
-
-                                    mean_forest_b[b, leaf_numb, R_buf[i], 0] += (p * value*value_l) / (p_s)  if p_s != 0 else 0
-                                    mean_forest_b[b, leaf_numb, R_buf[i], 1] += (p_u * value*value_l) / (p_su)  if p_su != 0 else 0
-                                    mean_forest_b[b, leaf_numb, R_buf[i], 2] += (p_d * value*value_l) / (p_sd) if p_sd != 0 else 0
-
+            sdp_b = compute_sdp_reg_cat_nopa(X, fX, tX, y_pred, S[:S_size], data, values, partition_leaves_trees, leaf_idx_trees,
+                        leaves_nb, scaling, 0)
             for i in range(N):
-                ss_u = 0
-                ss_d = 0
-                ss_a = 0
-                for b in range(n_trees):
-                    nb_leaf = leaves_nb[b]
-                    for leaf_numb in range(nb_leaf):
-                        ss_a += mean_forest_b[b, leaf_numb, R_buf[i], 0]
-                        ss_u += mean_forest_b[b, leaf_numb, R_buf[i], 1]
-                        ss_d += mean_forest_b[b, leaf_numb, R_buf[i], 2]
-
-                ss = (ss_u - ss_a)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
-                if ss >= sdp[R_buf[i]]:
-                    sdp[R_buf[i]] = ss
+                if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
+                    sdp[R_buf[i]] = sdp_b[R_buf[i]]
                     len_s_star[R_buf[i]] = S_size
                     for s in range(S_size):
                         s_star[R_buf[i], s] = S[s]
@@ -1200,14 +1054,14 @@ cpdef global_sdp_reg_nopa(double[:, :] X, double[:] fX, double tX,
                 R_buf[i] = R[i]
 
             for b in range(n_trees):
-                for l in range(n_trees):
-                    nb_leaf = leaves_nb[b]
-                    nb_leaf_l = leaves_nb[l]
-                    for leaf_numb in range(nb_leaf):
-                        for leaf_numb_l in range(nb_leaf_l):
-                            for i in range(N):
-                                for j in range(3):
-                                    mean_forest_b[b, leaf_numb, leaf_numb_l, R_buf[i], j] = 0
+                for leaf_numb in range(max_leaves):
+                    for leaf_numb_l in range(max_leaves):
+                        for i in range(N):
+                            p_n[b, leaf_numb, leaf_numb_l, R_buf[i]] = 0
+                            p_u_n[b, leaf_numb, leaf_numb_l, R_buf[i]] = 0
+                            p_d_n[b, leaf_numb, leaf_numb_l, R_buf[i]] = 0
+                            for j in range(3):
+                                mean_forest_b[b, leaf_numb, leaf_numb_l, R_buf[i], j] = 0
             for b in range(n_trees):
                 for l in range(n_trees):
                     if b == l:

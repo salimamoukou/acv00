@@ -512,15 +512,19 @@ class BaseTree:
             else:
                 self.num_outputs = self.trees[0].values.shape[1]
 
-            # if safe_isinstance(model, ["xgboost.sklearn.XGBClassifier",
-            #                            "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
-            #         self.num_outputs == 1:
-            #     for i in range(num_trees):
-            #         self.num_outputs = 2
-            #         y = self.model.predict(self.data)
-            #         self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
-            #         rebuild_acvtree(0, self.trees[i], self.data, y)
-            #         self.trees[i].values = self.trees[i].scaling * self.trees[i].values
+            if safe_isinstance(model, ["xgboost.sklearn.XGBClassifier",
+                                       "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
+                    self.num_outputs == 1:
+
+                self.num_outputs = 2
+                for i in range(num_trees):
+
+                    # y = self.model.predict(self.data)
+                    # self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
+                    # rebuild_acvtree(0, self.trees[i], self.data, y)
+                    # self.trees[i].values = self.trees[i].scaling * self.trees[i].values
+                    p = np.exp(self.trees[i].values)/(1+np.exp(self.trees[i].values))
+                    self.trees[i].values =  np.concatenate([1-p, p], axis=1)/num_trees
 
             # important to be -1 in unused sections!! This way we can tell which entries are valid.
             self.children_left = -np.ones((num_trees, max_nodes), dtype=np.int32)
@@ -600,6 +604,16 @@ class BaseTree:
             self.data = np.array(self.data, dtype=np.float)
             self.max_var = np.max(self.max_var)
             # self.data_leaves_trees = data_leaves_trees
+
+
+            # if safe_isinstance(model, ["xgboost.sklearn.XGBClassifier",
+            #                            "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
+            #         self.num_outputs == 1:
+            #     p = np.exp(self.values)/(1 + np.exp(self.values))
+            #     print(np.max(p), np.min(1-p))
+            #     self.values = np.concatenate([1-p, p], axis=2)
+            #     self.num_outputs = 2
+
 
 
 

@@ -61,16 +61,16 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_reg(self, X, tX,  S, data, num_threads=10):
-        if self.partition_leaves_trees.shape[0] > 1:
-            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
+        # if self.partition_leaves_trees.shape[0] > 1:
+        #     raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv.compute_sdp_reg(np.array(X, dtype=np.float), fX, tX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_reg_cat(self, X, tX, S, data, num_threads=10):
-        raise Warning('The current implementation may take a long time if n_trees and depth are large. The number of '
-                      'operation is 2**(depth*n_trees)')
+        # raise Warning('The current implementation may take a long time if n_trees and depth are large. The number of '
+        #               'operation is 2**(depth*n_trees)')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv.compute_sdp_reg_cat(np.array(X, dtype=np.float), fX, tX,  y_pred, S, data, self.values, self.partition_leaves_trees,
@@ -118,8 +118,8 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, minimal)
 
     def importance_sdp_reg(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
-        if self.partition_leaves_trees.shape[0] > 1:
-            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
+        # if self.partition_leaves_trees.shape[0] > 1:
+        #     raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv.global_sdp_reg(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
@@ -133,8 +133,8 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, minimal)
 
     def importance_sdp_reg_nopa(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
-        if self.partition_leaves_trees.shape[0] > 1:
-            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
+        # if self.partition_leaves_trees.shape[0] > 1:
+        #     raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv_nopa.global_sdp_reg_nopa(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
@@ -236,23 +236,19 @@ class ACVTree(BaseTree):
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_reg_nopa(self, X, tX,  S, data, num_threads=10):
-        if self.partition_leaves_trees.shape[0] > 1:
-            raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
+        # if self.partition_leaves_trees.shape[0] > 1:
+        #     raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv_nopa.compute_sdp_reg_nopa(np.array(X, dtype=np.float), fX, tX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_reg_cat_nopa(self, X, tX, S, data, num_threads=10):
-        raise Warning('The current implementation may take a long time if n_trees > 10 and depth > 6')
+        # raise Warning('The current implementation may take a long time if n_trees > 10 and depth > 6')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv_nopa.compute_sdp_reg_cat_nopa(np.array(X, dtype=np.float), fX, tX,  y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
-
-
-
-
 
 
     def py_shap_values(self, x, C=[[]]):
