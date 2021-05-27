@@ -329,6 +329,11 @@ class ACVTree(BaseTree):
         return global_sdp_importance(data, data_bground, columns_names, global_proba, decay, threshold,
                           proba, C, verbose, self.compute_sdp_reg)
 
+    def py_shap_values_notoptimized(self, X, data, C=[[]]):
+        return shap_values_leaves_notoptimized(X, data, C, self)
+
+    def py_shap_values_discrete_notoptimized(self, X, data, C=[[]]):
+        return shap_values_discrete_notoptimized(X, data, C, self)
 
 
 

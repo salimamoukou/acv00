@@ -594,3 +594,81 @@ def global_sdp_importance(data, data_bground, columns_names, global_proba, decay
     sdp_coal_proba = {key: np.mean(sdp_coal_proba[key]) for key in sdp_coal_proba.keys()}
 
     return sdp_importance_m, sdp_importance, sdp_coal_proba, sdp_importance_coal_count, sdp_importance_variable_count
+
+
+def shap_values_leaves_notoptimized(X, data, C, tree):
+    N = X.shape[0]
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1], tree.values.shape[2]))
+
+    for i in tqdm(va_id):
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in powerset(Sm):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = tree.compute_exp_normalized(X=X, S=np.array(chain_l(S) + convert_list(i)).astype(int), data=data)
+            v_minus = tree.compute_exp_normalized(X=X, S=np.array(chain_l(S)).astype(int), data=data)
+
+            for a in convert_list(i):
+                phi[:, a] += weight * (v_plus - v_minus)
+
+    return phi / m
+
+
+def shap_values_discrete_notoptimized(X, data, C, tree):
+    N = X.shape[0]
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1], tree.values.shape[2]))
+
+    for i in tqdm(va_id):
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in powerset(Sm):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = tree.compute_exp_cat(X=X, S=np.array(chain_l(S) + convert_list(i)).astype(int), data=data)
+            v_minus = tree.compute_exp_cat(X=X, S=np.array(chain_l(S)).astype(int), data=data)
+
+            for a in convert_list(i):
+                phi[:, a] += weight * (v_plus - v_minus)
+
+    return phi / m

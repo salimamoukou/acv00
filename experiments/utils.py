@@ -49,6 +49,7 @@ from sklearn.model_selection import train_test_split
 # from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import OrdinalEncoder
+from scipy.special import comb
 
 
 def plot_feature_importance(importance, names, model_type, xlabel='SHAP values', title=' '):
@@ -925,7 +926,7 @@ def safe_isinstance(obj, class_path_str):
     return False
 
 
-def generate_y(x, data_type):
+def generate_y(x, data_type, coefs=0):
     """Generate corresponding label (y) given feature (x).
 
     Args:
@@ -942,12 +943,16 @@ def generate_y(x, data_type):
         logit = np.exp(x[:, 0] * x[:, 1])
     elif data_type == 'syn2':
         logit = np.exp(np.sum(x[:, 2:6] ** 2, axis=1) - 4.0)
+    elif data_type == 'synamk':
+        logit = np.exp(np.sum(coefs*x, axis=1) - 4.0)
     elif data_type == 'syn3':
         logit = np.exp(-10 * np.sin(0.2 * x[:, 6]) + abs(x[:, 7]) + \
                        x[:, 8] + np.exp(-x[:, 9]) - 2.4)
     elif data_type == 'syn4':
         logit1 = np.exp(x[:, 0] * x[:, 1])
-        logit2 = np.exp(np.sum(x[:, 2:6] ** 2, axis=1) - 4.0)
+        # logit2 = np.exp(np.sum(x[:, 2:6] ** 2, axis=1) - 4.0)
+        # logit2 = np.exp(np.sum(coefs * x, axis=1) - 4.0
+        logit2 = np.exp(x[:, 2] * x[:, 3])
     elif data_type == 'syn5':
         logit1 = np.exp(x[:, 0] * x[:, 1])
         logit2 = np.exp(-10 * np.sin(0.2 * x[:, 6]) + abs(x[:, 7]) + \
@@ -956,12 +961,18 @@ def generate_y(x, data_type):
         logit1 = np.exp(np.sum(x[:, 2:6] ** 2, axis=1) - 4.0)
         logit2 = np.exp(-10 * np.sin(0.2 * x[:, 6]) + abs(x[:, 7]) + \
                         x[:, 8] + np.exp(-x[:, 9]) - 2.4)
+    elif data_type == 'syn7':
+        logit1 = np.exp(np.sum(coefs[0:2] * x[:, 0:2], axis=1))
+        # logit2 = np.exp(np.sum(x[:, 2:6] ** 2, axis=1) - 4.0)
+        logit2 = np.exp(np.sum(coefs[2:4] * x[:, 2:4], axis=1))
+        # logit2 = np.exp(x[:, 2] * x[:, 3])
+
 
         # For syn4, syn5 and syn6 only
-    if data_type in ['syn4', 'syn5', 'syn6']:
+    if data_type in ['syn4', 'syn5', 'syn6', 'syn7']:
         # Based on X[:,10], combine two logits
-        idx1 = (x[:, 10] < 0) * 1
-        idx2 = (x[:, 10] >= 0) * 1
+        idx1 = (x[:, 4] < 0) * 1
+        idx2 = (x[:, 4] >= 0) * 1
         logit = logit1 * idx1 + logit2 * idx2
 
         # Compute P(Y=0|X)
@@ -1055,3 +1066,483 @@ def feature_performance_metric(ground_truth, importance_score):
     std_fdr = np.std(fdr)
 
     return mean_tpr, std_tpr, mean_fdr, std_fdr
+
+
+def quantile_discretizer(df, num, cat_cols):
+    quantiles = np.round(np.linspace(0, 1, num=num), 2)
+    columns_names = list(df.columns)
+    q_cols = {}
+    q_values = {'{}'.format(col): [] for col in columns_names if col not in cat_cols}
+
+    for col in columns_names:
+        if col not in cat_cols:
+            it = 0
+            for q_low, q_high in zip(quantiles[:-1], quantiles[1:]):
+                it = it + 1
+                q_low_v = np.quantile(df[col].values, q_low)
+                q_high_v = np.quantile(df[col].values, q_high)
+                q_values['{}'.format(col)].append([q_low_v, q_high_v])
+                if it == num - 1:
+                    q_cols['{}: q{}-q{}'.format(col, q_low, q_high)] = 1 * (q_low_v <= df[col].values) * (
+                                df[col].values <= q_high_v)
+                else:
+                    q_cols['{}: q{}-q{}'.format(col, q_low, q_high)] = 1 * (q_low_v <= df[col].values) * (
+                                df[col].values < q_high_v)
+        else:
+            q_cols[col] = df[col]
+    return pd.DataFrame.from_dict(q_cols), q_values
+
+
+def quantile_discretizer_byq(df, cat_cols, q_values):
+    columns_names = list(df.columns)
+    num = len(list(q_values.values())[0]) + 1
+    q_cols = {}
+    for col in columns_names:
+        if col not in cat_cols:
+            it = 0
+            for q_val in q_values[col]:
+                it = it + 1
+                q_low_v = q_val[0]
+                q_high_v = q_val[1]
+
+                if it == num - 1:
+                    q_cols['{}: I{}'.format(col, it)] = 1 * (q_low_v <= df[col].values) * (df[col].values <= q_high_v)
+                else:
+                    q_cols['{}: I{}'.format(col, it)] = 1 * (q_low_v <= df[col].values) * (df[col].values < q_high_v)
+        else:
+            q_cols[col] = df[col]
+    return pd.DataFrame.from_dict(q_cols)
+
+def cond_exp_tree(x, tree, S, mean, cov, N=10000):
+    d = x.shape[0]
+    index = list(range(d))
+    rg_data = np.zeros(shape=(N, d))
+    rg_data[:, S] = x[S]
+
+    if len(S) != d:
+        S_bar = [i for i in index if i not in S]
+        rg = sampleMVN(N, mean, cov, S_bar, S, x[S])
+        rg_data[:, S_bar] = rg
+
+        y_pred = tree.predict(rg_data)
+
+    else:
+        y_pred = tree.predict(np.expand_dims(np.array(x, dtype=np.float32), axis=0))
+
+    return np.mean(y_pred, axis=0)
+
+def cond_exp_tree_true(x, yx, tree, S, mean, cov,  N=10000):
+    d = x.shape[0]
+    index = list(range(d))
+    rg_data = np.zeros(shape=(N, d))
+    rg_data[:, S] = x[S]
+
+    if len(S) != d:
+        S_bar = [i for i in index if i not in S]
+        rg = sampleMVN(N, mean, cov, S_bar, S, x[S])
+        rg_data[:, S_bar] = rg
+
+        logit1 = np.exp(rg_data[:, 0] * rg_data[:, 1])
+        logit2 = np.exp(rg_data[:, 2] * rg_data[:, 3])
+        idx1 = (rg_data[:, 4] < 0) * 1
+        idx2 = (rg_data[:, 4] >= 0) * 1
+        logit = logit1 * idx1 + logit2 * idx2
+
+        # Compute P(Y=0|X)
+        prob_0 = np.reshape((logit / (1 + logit)), [N, 1])
+
+        # Sampling process
+        y = np.zeros([N, 2])
+        y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [N, ])
+        y[:, 1] = 1 - y[:, 0]
+
+        y_pred = y[:, 1]
+        # print(prob_0)
+    else:
+        # x = np.expand_dims(x, axis=0)
+        # logit1 = np.exp(x[:, 0] * x[:, 1])
+        # logit2 = np.exp(x[:, 2] * x[:, 3])
+        # idx1 = (x[:, 4] < 0) * 1
+        # idx2 = (x[:, 4] >= 0) * 1
+        # logit = logit1 * idx1 + logit2 * idx2
+        #
+        # # Compute P(Y=0|X)
+        # prob_0 = np.reshape((logit / (1 + logit)), [1, 1])
+        #
+        # # Sampling process
+        # y = np.zeros([N, 2])
+        # y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [1, ])
+        # y[:, 1] = 1 - y[:, 0]
+
+        y_pred = np.expand_dims(yx, axis=0)
+
+    return np.mean(y_pred, axis=0)
+
+def shap_exp(tree, S, x):
+    tree_ind = 0
+
+    def R(node_ind):
+
+        f = tree.features[tree_ind, node_ind]
+        lc = tree.children_left[tree_ind, node_ind]
+        rc = tree.children_right[tree_ind, node_ind]
+        if lc < 0:
+            return tree.values[tree_ind, node_ind]
+        if f in S:
+            if x[f] <= tree.thresholds[tree_ind, node_ind]:
+                return R(lc)
+            return R(rc)
+        lw = tree.node_sample_weight[tree_ind, lc]
+        rw = tree.node_sample_weight[tree_ind, rc]
+        return (R(lc) * lw + R(rc) * rw) / (lw + rw)
+
+    out = 0.0
+    l = tree.values.shape[0] if tree.tree_limit is None else tree.tree_limit
+    for i in range(l):
+        tree_ind = i
+        out += R(0)
+    return out
+
+def shap_cond_exp(X, S, tree):
+    cond = np.zeros((X.shape[0], tree.values.shape[2]))
+    for i in range(X.shape[0]):
+        cond[i] = shap_exp(x=X[i], S=S, tree=tree)
+    return cond
+
+def mc_cond_exp(X, S, tree, mean, cov, N):
+    cond = np.zeros((X.shape[0], tree.values.shape[2]))
+    for i in range(X.shape[0]):
+        cond[i] = cond_exp_tree(x=X[i], S=S, tree=tree, mean=mean, cov=cov, N=N)
+    return cond
+
+def mc_cond_exp_true(X, yX, S, tree, mean, cov, N):
+    cond = np.zeros((X.shape[0], tree.values.shape[2]))
+    for i in range(X.shape[0]):
+        cond[i] = cond_exp_tree_true(x=X[i], yx=yX[i], S=S, tree=tree, mean=mean, cov=cov, N=N)
+    return cond
+
+def tree_sv_exact(X, C, tree, mean, cov, N):
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1], tree.values.shape[2]))
+
+    for i in tqdm(va_id):
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in powerset(Sm):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = mc_cond_exp(X=X, S=np.array(chain_l(S) + convert_list(i)).astype(int), tree=tree, mean=mean, cov=cov, N=N)
+            v_minus = mc_cond_exp(X=X, S=np.array(chain_l(S)).astype(int), tree=tree, mean=mean, cov=cov, N=N)
+
+            for j in convert_list(i):
+                phi[:, j] += weight * (v_plus - v_minus)
+
+    return phi / m
+
+
+def tree_sv_exact_true(X, yX, C, tree, mean, cov, N):
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1], tree.values.shape[2]))
+
+    for i in tqdm(va_id):
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in powerset(Sm):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = mc_cond_exp_true(X=X, yX=yX, S=np.array(chain_l(S) + convert_list(i)).astype(int), tree=tree, mean=mean, cov=cov, N=N)
+            v_minus = mc_cond_exp_true(X=X, yX=yX, S=np.array(chain_l(S)).astype(int), tree=tree, mean=mean, cov=cov, N=N)
+
+            for j in convert_list(i):
+                phi[:, j] += weight * (v_plus - v_minus)
+
+    return phi / m
+
+def pytree_shap_plugin(X, data, C, tree):
+    N = X.shape[0]
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1], tree.values.shape[2]))
+
+    for i in tqdm(va_id):
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in powerset(Sm):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = tree.compute_exp_normalized(X=X, S=np.array(chain_l(S) + convert_list(i)).astype(int), data=data)
+            v_minus = tree.compute_exp_normalized(X=X, S=np.array(chain_l(S)).astype(int), data=data)
+
+            for a in convert_list(i):
+                phi[:, a] += weight * (v_plus - v_minus)
+
+    return phi / m
+
+def marMVNDiscrete(mean, cov, set):
+    if set == []:
+        return mean, cov
+    else:
+        mean_cond = mean[set]
+        cov_cond = cov[set][:, set]
+        return mean_cond, cov_cond
+
+
+def sampleMarMVNDiscrete(n, mean, cov, set):
+    mean_cond, cov_cond = marMVNDiscrete(mean, cov, set)
+    sample = st.multivariate_normal(mean_cond, cov_cond).rvs(n)
+    if len(set) != 0:
+        sample = np.reshape(sample, (sample.shape[0], len(set)))
+    return sample
+
+def mc_exp_tree_discretized(X, tree, S, q_arr, q_values, C, mean, cov, N):
+    d = len(C)
+    if len(S) != X.shape[1]:
+        part = np.zeros((len(S), X.shape[0], 2))
+        for i in range(len(S)):
+            q_idx = np.argmax(X[:, C[S[i]]], axis=1)
+            for j in range(X.shape[0]):
+                part[i, j, 0] = q_arr[S[i], q_idx[j], 0]
+                part[i, j, 1] = q_arr[S[i], q_idx[j], 1]
+
+        joint_samples = sampleMarMVNDiscrete(N, mean, cov, [])
+        mar_samples = sampleMarMVNDiscrete(N, mean, cov, S)
+
+        columns_name = ['X{}'.format(i) for i in range(d)]
+        joint_samples_cat = pd.DataFrame(joint_samples, columns=columns_name)
+        joint_samples_cat = quantile_discretizer_byq(joint_samples_cat, [], q_values).values
+
+        y_pred = tree.predict(joint_samples_cat)
+        cond_mean = np.zeros(X.shape[0])
+
+        for j in range(X.shape[0]):
+            joint_ind = np.prod([(joint_samples[:, S[i]] < part[i, j, 1]) * \
+                                 (joint_samples[:, S[i]] >= part[i, j, 0]) for i in range(len(S))], axis=0)
+
+            mar_ind = np.prod([(mar_samples[:, i] < part[i, j, 1]) * \
+                               (mar_samples[:, i] >= part[i, j, 0]) for i in range(len(S))], axis=0)
+
+            num = np.mean(y_pred * joint_ind)
+            den = np.mean(mar_ind)
+            cond_mean[j] = num / den
+
+        return cond_mean
+    else:
+        y_pred = tree.predict(np.array(X, dtype=np.float32))
+
+    return np.mean(y_pred, axis=0)
+
+
+def tree_sv_exact_discretized(X, tree, q_arr, q_values, C, mean, cov, N=10000):
+    m = len(C)
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+
+    phi = np.zeros(shape=(X.shape[0], m, tree.values.shape[2]))
+
+    for i in tqdm(va_id):
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        for S in powerset(Sm):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = mc_exp_tree_discretized(X=X, S=chain_l(S) + convert_list(i), tree=tree, q_arr=q_arr, q_values=q_values, C=C, mean=mean, cov=cov, N=N)
+            v_minus = mc_exp_tree_discretized(X=X, S=chain_l(S), tree=tree, q_arr=q_arr, q_values=q_values, C=C, mean=mean, cov=cov, N=N)
+
+            phi[:, i, 0] += weight * (v_plus - v_minus)
+
+    return phi / m
+
+
+def single_tree_sv_acv(X, tree, S_star=[], N_star=[], mean=0, cov=0, N=10000):
+    va_id = S_star.copy()
+    m = len(va_id)
+
+    va_buffer = va_id.copy()
+    phi = np.zeros((X.shape[1], tree.values.shape[2]))
+
+    for i in va_id:
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        for S in powerset(Sm):
+            if len(S) == 0:
+                s_acv = []
+                weight = comb(m - 1, len(chain_l(S))) ** (-1)
+                v_plus = mc_cond_exp(X=X, S=np.array(s_acv + convert_list(i) + N_star).astype(int),
+                                        tree=tree, mean=mean, cov=cov, N=N).squeeze()
+                v_minus = mc_cond_exp(X=X, S=np.array(s_acv).astype(int), tree=tree,
+                                      mean=mean, cov=cov, N=N).squeeze()
+            else:
+                s_acv = chain_l(S) + N_star
+
+                weight = comb(m - 1, len(chain_l(S))) ** (-1)
+                v_plus = mc_cond_exp(X=X, S=np.array(s_acv + convert_list(i)).astype(int), tree=tree,
+                                     mean=mean, cov=cov, N=N).squeeze()
+                v_minus = mc_cond_exp(X=X, S=np.array(s_acv).astype(int), tree=tree, mean=mean, cov=cov, N=N).squeeze()
+
+            for j in convert_list(i):
+                phi[j, :] += weight * (v_plus - v_minus)
+
+    return phi / m
+
+
+def tree_sv_acv(X, tree, S_star=[], N_star=[], mean=0, cov=0, N=10000):
+    phi = np.zeros(shape=(X.shape[0], X.shape[1], tree.values.shape[2]))
+
+    for i in tqdm(range(X.shape[0])):
+        phi[i] = single_tree_sv_acv(X[i:i + 1], tree, S_star[i], N_star[i], mean, cov, N)
+    return phi
+
+
+def sdp_true(X, S, tree, mean, cov, N):
+    sdp = np.zeros((X.shape[0]))
+    for i in range(X.shape[0]):
+        sdp[i] = single_sdp_true(X[i], S, tree, mean, cov, N)
+    return sdp
+
+
+def single_sdp_true(x, S, tree, mean, cov, N):
+    fx = np.argmax(tree.predict(x), axis=1)
+    d = x.shape[0]
+    index = list(range(d))
+    rg_data = np.zeros(shape=(N, d))
+    rg_data[:, S] = x[S]
+
+    if len(S) != d:
+        S_bar = [i for i in index if i not in S]
+        rg = sampleMVN(N, mean, cov, S_bar, S, x[S])
+        rg_data[:, S_bar] = rg
+        y_pred = np.argmax(tree.predict(rg_data), axis=1)
+        sdp = np.mean(y_pred == fx)
+        return sdp
+    return 1
+
+
+def importance_sdp_clf_true(X, tree, mean, cov, N_samples, C=[[]], minimal=1, global_proba=0.9):
+    N = X.shape[0]
+    m = X.shape[1]
+
+    sdp = np.zeros((N))
+    sdp_global = np.zeros((m))
+    len_s_star = np.zeros((N), dtype=np.int)
+
+    R, r = [], []
+    for i in range(N):
+        R.append(i)
+
+    R_buf = np.zeros((N), dtype=np.int)
+
+    va_id = [[i] for i in range(m)]
+
+    m = len(va_id)
+    power = []
+    max_size = 0
+    for size in range(m + 1):
+        power_b = []
+        for co in itertools.combinations(va_id, size):
+            power_b.append(np.array(sum(list(co), [])))
+            max_size += 1
+        power.append(power_b)
+        if max_size >= 2 ** 15:
+            break
+
+    power_cpp = power
+    s_star = -1 * np.ones((N, X.shape[1]), dtype=np.int)
+    S = np.zeros((X.shape[1]), dtype=np.int)
+
+    for s_0 in tqdm(range(minimal, m + 1)):
+        for s_1 in range(0, len(power_cpp[s_0])):
+            for i in range(len(power_cpp[s_0][s_1])):
+                S[i] = power_cpp[s_0][s_1][i]
+
+            S_size = len(power_cpp[s_0][s_1])
+            r = []
+            N = len(R)
+            for i in range(N):
+                R_buf[i] = R[i]
+
+            sdp_b = sdp_true(X, S[:S_size], tree, mean, cov, N_samples)
+
+            for i in range(N):
+                if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
+                    sdp[R_buf[i]] = sdp_b[R_buf[i]]
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+
+                if S_size == X.shape[1]:
+                    sdp[R_buf[i]] = 1
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+                    for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
+                        s_star[R_buf[i], s] = -1
+
+        for i in range(N):
+            if sdp[R_buf[i]] >= global_proba:
+                r.append(R[i])
+                for s in range(len_s_star[R_buf[i]]):
+                    sdp_global[s_star[R_buf[i], s]] += 1
+
+        for i in range(len(r)):
+            R.remove(r[i])
+
+        if len(R) == 0 or S_size >= X.shape[1] / 2:
+            break
+
+    return np.asarray(sdp_global) / X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star,
+                                                                                          dtype=np.long), np.array(sdp)

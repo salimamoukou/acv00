@@ -50,6 +50,12 @@ class ExperimentsLinear:
         if self.data_type =='linear_reg':
             self.y_train = linear_regression(self.coefs, self.data)
             self.y_test = linear_regression(self.coefs, self.data_test)
+        elif self.data_type == 'synamk':
+            self.y_train = generate_y(self.data, data_type=self.data_type, coefs=self.coefs)
+            self.y_test = generate_y(self.data_test, data_type=self.data_type, coefs=self.coefs)
+        elif self.data_type == 'syn7':
+            self.y_train = generate_y(self.data, data_type=self.data_type, coefs=self.coefs)
+            self.y_test = generate_y(self.data_test, data_type=self.data_type, coefs=self.coefs)
         else:
             self.y_train = generate_y(self.data, data_type=self.data_type)
             self.y_test = generate_y(self.data_test, data_type=self.data_type)
