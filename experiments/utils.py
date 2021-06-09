@@ -1178,6 +1178,41 @@ def cond_exp_tree_true(x, yx, tree, S, mean, cov,  N=10000):
 
     return np.mean(y_pred, axis=0)
 
+
+def single_sdp_true_v(x, yx, tree, S, mean, cov,  N=10000):
+    d = x.shape[0]
+    index = list(range(d))
+    rg_data = np.zeros(shape=(N, d))
+    rg_data[:, S] = x[S]
+
+    if len(S) != d:
+        S_bar = [i for i in index if i not in S]
+        rg = sampleMVN(N, mean, cov, S_bar, S, x[S])
+        rg_data[:, S_bar] = rg
+
+        logit1 = np.exp(rg_data[:, 0] * rg_data[:, 1])
+        logit2 = np.exp(rg_data[:, 2] * rg_data[:, 3])
+        idx1 = (rg_data[:, 4] < 0) * 1
+        idx2 = (rg_data[:, 4] >= 0) * 1
+        logit = logit1 * idx1 + logit2 * idx2
+
+        # Compute P(Y=0|X)
+        prob_0 = np.reshape((logit / (1 + logit)), [N, 1])
+
+        # Sampling process
+        y = np.zeros([N, 2])
+        y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [N, ])
+        y[:, 1] = 1 - y[:, 0]
+
+        y_pred = y[:, 1]
+        # print(prob_0)
+    else:
+
+        y_pred = np.expand_dims(yx, axis=0)
+
+    return np.mean(y_pred == yx, axis=0)
+
+
 def shap_exp(tree, S, x):
     tree_ind = 0
 
@@ -1219,6 +1254,12 @@ def mc_cond_exp_true(X, yX, S, tree, mean, cov, N):
     cond = np.zeros((X.shape[0], tree.values.shape[2]))
     for i in range(X.shape[0]):
         cond[i] = cond_exp_tree_true(x=X[i], yx=yX[i], S=S, tree=tree, mean=mean, cov=cov, N=N)
+    return cond
+
+def sdp_true_v(X, yX, S, tree, mean, cov, N):
+    cond = np.zeros((X.shape[0]))
+    for i in range(X.shape[0]):
+        cond[i] = single_sdp_true_v(x=X[i], yx=yX[i], S=S, tree=tree, mean=mean, cov=cov, N=N)
     return cond
 
 def tree_sv_exact(X, C, tree, mean, cov, N):
@@ -1546,3 +1587,108 @@ def importance_sdp_clf_true(X, tree, mean, cov, N_samples, C=[[]], minimal=1, gl
 
     return np.asarray(sdp_global) / X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star,
                                                                                           dtype=np.long), np.array(sdp)
+
+def swing_tree_shap_clf_true(X, C,  tree, mean, cov, N_samples, threshold=0.9):
+    N = X.shape[0]
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1]))
+
+    swings = np.zeros((N, X.shape[1], 2))
+    swings_prop = np.zeros((N, X.shape[1], 3))
+
+    for i in va_id:
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in tqdm(powerset(Sm)):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = 1.*(sdp_true(X, np.array(chain_l(S) + convert_list(i)).astype(np.long), tree, mean, cov, N_samples) >= threshold)
+            v_minus = 1.*(sdp_true(X, np.array(chain_l(S)).astype(np.long), tree, mean, cov, N_samples) >= threshold)
+
+            dif_pos = (v_plus - v_minus) > 0
+            dif_neg = (v_plus - v_minus) < 0
+            dif_null = (v_plus - v_minus) == 0
+            value = ((v_plus - v_minus) * weight) / m
+
+            for a in convert_list(i):
+                phi[:, a] += weight * (v_plus - v_minus)
+
+                swings[:, a, 0] += dif_pos * value
+                swings[:, a, 1] += dif_neg * value
+
+                swings_prop[:, a, 0] += dif_pos
+                swings_prop[:, a, 1] += dif_neg
+                swings_prop[:, a, 2] += dif_null
+
+    return phi / m, swings, swings_prop
+
+
+def swing_tree_shap_clf_true_v(X, yX,  C,  tree, mean, cov, N_samples, threshold=0.9):
+    N = X.shape[0]
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1]))
+
+    swings = np.zeros((N, X.shape[1], 2))
+    swings_prop = np.zeros((N, X.shape[1], 3))
+
+    for i in va_id:
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in tqdm(powerset(Sm)):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = 1.*(sdp_true_v(X, yX, np.array(chain_l(S) + convert_list(i)).astype(np.long), tree, mean, cov, N_samples) >= threshold)
+            v_minus = 1.*(sdp_true_v(X, yX, np.array(chain_l(S)).astype(np.long), tree, mean, cov, N_samples) >= threshold)
+
+            dif_pos = (v_plus - v_minus) > 0
+            dif_neg = (v_plus - v_minus) < 0
+            dif_null = (v_plus - v_minus) == 0
+            value = ((v_plus - v_minus) * weight) / m
+
+            for a in convert_list(i):
+                phi[:, a] += weight * (v_plus - v_minus)
+
+                swings[:, a, 0] += dif_pos * value
+                swings[:, a, 1] += dif_neg * value
+
+                swings_prop[:, a, 0] += dif_pos
+                swings_prop[:, a, 1] += dif_neg
+                swings_prop[:, a, 2] += dif_null
+
+    return phi / m, swings, swings_prop

@@ -447,6 +447,59 @@ def swing_tree_shap(X, tX, threshold, data, C, value_function):
     return phi / m, swings, swings_prop
 
 
+def swing_tree_shap_clf(X, data, C, value_function, threshold=0.9):
+    N = X.shape[0]
+    m = X.shape[1]
+    va_id = list(range(m))
+    va_buffer = va_id.copy()
+    if C[0] != []:
+        for c in C:
+            m -= len(c)
+            va_id = list(set(va_id) - set(c))
+        m += len(C)
+        for c in C:
+            va_id += [c]
+
+    phi = np.zeros(shape=(X.shape[0], X.shape[1]))
+
+    swings = np.zeros((N, X.shape[1], 2))
+    swings_prop = np.zeros((N, X.shape[1], 3))
+
+    for i in va_id:
+        Sm = list(set(va_buffer) - set(convert_list(i)))
+
+        if C[0] != []:
+            buffer_Sm = Sm.copy()
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm = list(set(Sm) - set(c))
+            for c in C:
+                if set(c).issubset(buffer_Sm):
+                    Sm += [c]
+
+        for S in tqdm(powerset(Sm)):
+            weight = comb(m - 1, len(S)) ** (-1)
+            v_plus = 1.*(value_function(X=X, data=data, S=np.array(chain_l(S) + convert_list(i)).astype(np.long)) >= threshold)
+            v_minus = 1.*(value_function(X=X, data=data, S=np.array(chain_l(S)).astype(np.long)) >= threshold)
+
+            dif_pos = (v_plus - v_minus) > 0
+            dif_neg = (v_plus - v_minus) < 0
+            dif_null = (v_plus - v_minus) == 0
+            value = ((v_plus - v_minus) * weight) / m
+
+            for a in convert_list(i):
+                phi[:, a] += weight * (v_plus - v_minus)
+
+                swings[:, a, 0] += dif_pos * value
+                swings[:, a, 1] += dif_neg * value
+
+                swings_prop[:, a, 0] += dif_pos
+                swings_prop[:, a, 1] += dif_neg
+                swings_prop[:, a, 2] += dif_null
+
+    return phi / m, swings, swings_prop
+
+
 def local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose, cond_func):
     """
     Find the Sufficient coalition S* at level "proba", then recompute recursively S* by decreasing the "proba" with
