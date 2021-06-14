@@ -887,7 +887,7 @@ cpdef global_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
     R_buf = np.zeros((N), dtype=np.int)
 
     if C[0] != []:
-        remove_va = [C[ci][cj] for cj in range(len(C[ci])) for ci in range(len(C))]
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
         va_id = [[i] for i in range(m) if i not in remove_va] + C
     else:
         va_id = [[i] for i in range(m)]
@@ -1018,7 +1018,7 @@ cpdef global_sdp_reg(double[:, :] X, double[:] fX, double tX,
     norm_d = np.zeros((n_trees))
 
     if C[0] != []:
-        remove_va = [C[ci][cj] for cj in range(len(C[ci])) for ci in range(len(C))]
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
         va_id = [[i] for i in range(m) if i not in remove_va] + C
     else:
         va_id = [[i] for i in range(m)]
@@ -2943,7 +2943,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
     R_buf = np.zeros((N), dtype=np.int)
 
     if C[0] != []:
-        remove_va = [C[ci][cj] for cj in range(len(C[ci])) for ci in range(len(C))]
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
         va_id = [[i] for i in range(m) if i not in remove_va] + C
     else:
         va_id = [[i] for i in range(m)]
@@ -3147,7 +3147,7 @@ cpdef global_sdp_clf_ptrees(double[:, :] X, long[:] fX,
     R_buf = np.zeros((N), dtype=np.int)
 
     if C[0] != []:
-        remove_va = [C[ci][cj] for cj in range(len(C[ci])) for ci in range(len(C))]
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
         va_id = [[i] for i in range(m) if i not in remove_va] + C
     else:
         va_id = [[i] for i in range(m)]
