@@ -371,7 +371,7 @@ cpdef compute_sdp_clf(double[:, :] X, long[:] fX,
     p_d_n = np.zeros((n_trees, max_leaves, N))
     cdef double n, n_u, n_d
 
-    for b in range(n_trees):
+    for b in tqdm(range(n_trees)):
         nb_leaf = leaves_nb[b]
         for leaf_numb in prange(nb_leaf, nogil=True, schedule='dynamic'):
             for i in range(N):
@@ -2951,7 +2951,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
     m = len(va_id)
     power = []
     max_size = 0
-    for size in range(m + 1):
+    for size in range(minimal, m + 1):
         power_b = []
         for co in itertools.combinations(va_id, size):
             power_b.append(np.array(sum(list(co),[])))
@@ -2973,7 +2973,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
     cdef long power_set_size = 2**m
     S = np.zeros((data.shape[1]), dtype=np.int)
 
-    for s_0 in tqdm(range(minimal, m + 1)):
+    for s_0 in tqdm(len(power)):
         for s_1 in range(0, power_cpp[s_0].size()):
             for i in range(power_cpp[s_0][s_1].size()):
                 S[i] = power_cpp[s_0][s_1][i]
