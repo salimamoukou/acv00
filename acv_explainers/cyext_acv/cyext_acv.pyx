@@ -2973,7 +2973,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
     cdef long power_set_size = 2**m
     S = np.zeros((data.shape[1]), dtype=np.int)
 
-    for s_0 in tqdm(len(power)):
+    for s_0 in tqdm(range(len(power))):
         for s_1 in range(0, power_cpp[s_0].size()):
             for i in range(power_cpp[s_0][s_1].size()):
                 S[i] = power_cpp[s_0][s_1][i]
