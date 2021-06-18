@@ -437,7 +437,7 @@ cpdef compute_sdp_clf_nopa(double[:, :] X, long[:] fX,
                 n_u += p_u_n[b, leaf_numb, i]
                 n_d += p_d_n[b, leaf_numb, i]
 
-            for leaf_numb in range(max_leaves):
+            for leaf_numb in range(nb_leaf):
                 ss_a += mean_forest_b[b, leaf_numb, i, 0]/n if n !=0 else 0
                 ss_u += mean_forest_b[b, leaf_numb, i, 1]/n_u if n_u !=0 else 0
                 ss_d += mean_forest_b[b, leaf_numb, i, 2]/n_d if n_d !=0 else 0

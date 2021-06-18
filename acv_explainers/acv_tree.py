@@ -25,12 +25,30 @@ class ACVTree(BaseTree):
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, S_star, N_star, size, C, num_threads)
 
-    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=0):
+    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=1):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
         return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, minimal)
+
+    def importance_sdp_clf_search(self, X, data, C=[[]], global_proba=0.9, minimal=1, search_space=[]):
+        fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
+        y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
+        return cyext_acv.global_sdp_clf_approx(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
+                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                    self.scalings, C, global_proba, minimal, search_space)
+
+    def importance_sdp_clf_approx(self, X, data, C=[[]], global_proba=0.9, minimal=1):
+        if X.shape[1] > 15:
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
+            order_va = ()
+            for v in (node_idx.value_counts().keys()):
+                order_va += v
+            return self.importance_sdp_clf_search(X, data, C, global_proba, minimal, list(order_va[:15]))
+        else:
+            return self.importance_sdp_clf(self, X, data, C, global_proba, minimal)
 
     def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, minimal=0):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
