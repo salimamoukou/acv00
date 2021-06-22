@@ -16,7 +16,7 @@ class BaseTree:
     This object provides a common interface to many different types of models.
     """
 
-    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, multi_threads=True, C=[[]]):
+    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, multi_threads=True, active_log=True, C=[[]]):
         self.model_type = "internal"
         self.trees = None
         self.base_offset = 0
@@ -36,6 +36,7 @@ class BaseTree:
         self.cache_normalized = cache_normalized
         self.C = C
         self.multi_threads = multi_threads
+        self.active_log = active_log
         # we use names like keras
         objective_name_map = {
             "mse": "squared_error",
@@ -516,15 +517,17 @@ class BaseTree:
                                        "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
                     self.num_outputs == 1:
 
-                self.num_outputs = 2
-                for i in range(num_trees):
+                if self.active_log == True:
 
-                    # y = self.model.predict(self.data)
-                    # self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
-                    # rebuild_acvtree(0, self.trees[i], self.data, y)
-                    # self.trees[i].values = self.trees[i].scaling * self.trees[i].values
-                    p = np.exp(self.trees[i].values)/(1+np.exp(self.trees[i].values))
-                    self.trees[i].values =  np.concatenate([1-p, p], axis=1)/num_trees
+                    self.num_outputs = 2
+                    for i in range(num_trees):
+
+                        # y = self.model.predict(self.data)
+                        # self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
+                        # rebuild_acvtree(0, self.trees[i], self.data, y)
+                        # self.trees[i].values = self.trees[i].scaling * self.trees[i].values
+                        p = np.exp(self.trees[i].values)/(1+np.exp(self.trees[i].values))
+                        self.trees[i].values =  np.concatenate([1-p, p], axis=1)/num_trees
 
             # important to be -1 in unused sections!! This way we can tell which entries are valid.
             self.children_left = -np.ones((num_trees, max_nodes), dtype=np.int32)
