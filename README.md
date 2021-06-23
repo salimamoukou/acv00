@@ -1,9 +1,9 @@
 # Active Coalition of Variables (ACV):
 
-ACV is a python library that aims to explain any machine learning model. It provides explanations based on two approaches:
+ACV is a python library that aims to explain any machine learning model. It provides **a better estimation of Shapley values for tree-based model** (>= dependent TreeSHAP) and explanations based on three approaches:
 * Same Decision Probability (SDP)
 * Active Shapley values (Local and Sparse by design)
-* Swing Shapley Values (The value are interpretable by design)
+* Swing Shapley Values (The Shapley values are interpretable by design)
 
 In addition, we use the coalitional version of SV to properly handle categorical variables in the computation of SV.
 
