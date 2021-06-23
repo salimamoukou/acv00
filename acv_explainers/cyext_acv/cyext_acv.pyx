@@ -1260,39 +1260,6 @@ cpdef global_sdp_reg(double[:, :] X, double[:] fX, double tX,
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
 
-
-
-cdef unsigned long binomialC(unsigned long N, unsigned long k) nogil:
-    cdef unsigned long r
-    r = _comb_int_long(N, k)
-    if r != 0:
-        return r
-
-cdef unsigned long _comb_int_long(unsigned long N, unsigned long k) nogil:
-    """
-    Compute binom(N, k) for integers.
-    Returns 0 if error/overflow encountered.
-    """
-    cdef unsigned long val, j, M, nterms
-
-    if k > N or N == ULONG_MAX:
-        return 0
-
-    M = N + 1
-    nterms = min(k, N - k)
-
-    val = 1
-
-    for j in range(1, nterms + 1):
-        # Overflow check
-        if val > ULONG_MAX // (M - j):
-            return 0
-
-        val *= M - j
-        val //= j
-
-    return val
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
@@ -4017,4 +3984,37 @@ cpdef global_sdp_clf_approx(double[:, :] X, long[:] fX,
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
 
+
+
+cpdef double binomialC(unsigned long N, unsigned long k) nogil:
+    cdef double r
+    r = _comb_int_long(N, k)
+    if r != 0:
+        return r
+
+cpdef double _comb_int_long(unsigned long N, unsigned long k) nogil:
+    """
+    Compute binom(N, k) for integers.
+    Returns 0 if error/overflow encountered.
+    """
+    cdef double val
+    cdef unsigned long long j, M, nterms
+
+    if k > N or N == ULONG_MAX:
+        return 0
+
+    M = N + 1
+    nterms = min(k, N - k)
+
+    val = 1
+
+    for j in range(1, nterms + 1):
+        # Overflow check
+        # if val > ULONG_MAX // (M - j):
+        #   return 0
+
+        val *= M - j
+        val //= j
+
+    return val
 

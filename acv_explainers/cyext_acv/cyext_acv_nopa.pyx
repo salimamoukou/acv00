@@ -1260,18 +1260,19 @@ cpdef global_sdp_reg_nopa(double[:, :] X, double[:] fX, double tX,
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
 
 
-cdef unsigned long binomialC(unsigned long N, unsigned long k) nogil:
-    cdef unsigned long r
+cpdef double binomialC(unsigned long N, unsigned long k) nogil:
+    cdef double r
     r = _comb_int_long(N, k)
     if r != 0:
         return r
 
-cdef unsigned long _comb_int_long(unsigned long N, unsigned long k) nogil:
+cpdef double _comb_int_long(unsigned long N, unsigned long k) nogil:
     """
     Compute binom(N, k) for integers.
     Returns 0 if error/overflow encountered.
     """
-    cdef unsigned long val, j, M, nterms
+    cdef double val
+    cdef unsigned long long j, M, nterms
 
     if k > N or N == ULONG_MAX:
         return 0
@@ -1283,8 +1284,8 @@ cdef unsigned long _comb_int_long(unsigned long N, unsigned long k) nogil:
 
     for j in range(1, nterms + 1):
         # Overflow check
-        if val > ULONG_MAX // (M - j):
-            return 0
+        # if val > ULONG_MAX // (M - j):
+        #   return 0
 
         val *= M - j
         val //= j
