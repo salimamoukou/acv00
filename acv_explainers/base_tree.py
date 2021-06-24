@@ -16,7 +16,7 @@ class BaseTree:
     This object provides a common interface to many different types of models.
     """
 
-    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, multi_threads=True, active_prob=False, C=[[]]):
+    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, multi_threads=True, C=[[]]):
         self.model_type = "internal"
         self.trees = None
         self.base_offset = 0
@@ -36,7 +36,6 @@ class BaseTree:
         self.cache_normalized = cache_normalized
         self.C = C
         self.multi_threads = multi_threads
-        self.active_prob = active_prob
         # we use names like keras
         objective_name_map = {
             "mse": "squared_error",
