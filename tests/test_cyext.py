@@ -25,6 +25,11 @@ acvtree = ACVTree(forest, data_frame.values)
 X = np.array(data_frame.values, dtype=np.float)[:100]
 data = np.array(data_frame.values, dtype=np.float)
 
+def test_sv_acv():
+    sv_acv = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, 11))), [[]], 5)
+    sv = acvtree.shap_values(X, [[]])
+    assert np.allclose(np.sum(sv_acv, axis=1), np.sum(sv, axis=1))
+
 def test_sv_acv_cyext_nopa():
     cy = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, 11))), [[]], 5)
     py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[]])
@@ -72,46 +77,46 @@ def test_sv_acv_cyext_coalition():
     assert np.allclose(cy, py)
 
 
-def test_sdp_cyext():
-    cy = acvtree.compute_sdp_clf(X, S=np.array([0, 1]), data=data, num_threads=5)
-    cy_cat = acvtree.compute_sdp_clf_cat(X, S=np.array([0, 1]), data=data, num_threads=5)
+# def test_sdp_cyext():
+#     cy = acvtree.compute_sdp_clf(X, S=np.array([0, 1]), data=data, num_threads=5)
+#     cy_cat = acvtree.compute_sdp_clf_cat(X, S=np.array([0, 1]), data=data, num_threads=5)
+#
+#     py = acvtree.py_compute_sdp_clf(X, S=[0, 1], data=data)
+#     py_cat = acvtree.py_compute_sdp_clf_cat(X, S=[0, 1], data=data)
+#
+#     assert np.allclose(cy, py)
+#     assert np.allclose(cy_cat, py_cat)
 
-    py = acvtree.py_compute_sdp_clf(X, S=[0, 1], data=data)
-    py_cat = acvtree.py_compute_sdp_clf_cat(X, S=[0, 1], data=data)
 
-    assert np.allclose(cy, py)
-    assert np.allclose(cy_cat, py_cat)
+# def test_exp_cyext():
+#     cy = acvtree.compute_exp(X, S=np.array([0, 1]), data=data, num_threads=5)
+#     cy_cat = acvtree.compute_exp_cat(X, S=np.array([0, 1]), data=data, num_threads=5)
+#
+#     py = acvtree.py_compute_exp(X, S=[0, 1], data=data)
+#     py_cat = acvtree.py_compute_exp_cat(X, S=[0, 1], data=data)
+#
+#     assert np.allclose(cy, py)
+#     assert np.allclose(cy_cat, py_cat)
 
-
-def test_exp_cyext():
-    cy = acvtree.compute_exp(X, S=np.array([0, 1]), data=data, num_threads=5)
-    cy_cat = acvtree.compute_exp_cat(X, S=np.array([0, 1]), data=data, num_threads=5)
-
-    py = acvtree.py_compute_exp(X, S=[0, 1], data=data)
-    py_cat = acvtree.py_compute_exp_cat(X, S=[0, 1], data=data)
-
-    assert np.allclose(cy, py)
-    assert np.allclose(cy_cat, py_cat)
-
-def test_sdp_reg_cyext():
-    xgboost = pytest.importorskip('xgboost')
-    np.random.seed(2021)
-    X, y = shap.datasets.boston()
-    X = X.values
-    model = xgboost.XGBRegressor(n_estimators=3)
-    model.fit(X, y)
-
-    acvtree = ACVTree(model, X)
-
-    x = X[:2]
-    cy = acvtree.compute_sdp_reg(x, 10, S=np.array([0, 1], dtype=np.int), data=X, num_threads=5)
-    cy_cat = acvtree.compute_sdp_reg_cat(x, 10,  S=np.array([0, 1], dtype=np.long), data=X, num_threads=5)
-
-    py = acvtree.py_compute_sdp_reg(X=x, tX=10, S=[0, 1], data=X)
-    py_cat = acvtree.py_compute_sdp_reg_cat(x, 10,  S=[0, 1], data=X)
-
-    assert np.allclose(cy, py)
-    assert np.allclose(cy_cat, py_cat)
+# def test_sdp_reg_cyext():
+#     xgboost = pytest.importorskip('xgboost')
+#     np.random.seed(2021)
+#     X, y = shap.datasets.boston()
+#     X = X.values
+#     model = xgboost.XGBRegressor(n_estimators=3)
+#     model.fit(X, y)
+#
+#     acvtree = ACVTree(model, X)
+#
+#     x = X[:2]
+#     cy = acvtree.compute_sdp_reg(x, 10, S=np.array([0, 1], dtype=np.int), data=X, num_threads=5)
+#     cy_cat = acvtree.compute_sdp_reg_cat(x, 10,  S=np.array([0, 1], dtype=np.long), data=X, num_threads=5)
+#
+#     py = acvtree.py_compute_sdp_reg(X=x, tX=10, S=[0, 1], data=X)
+#     py_cat = acvtree.py_compute_sdp_reg_cat(x, 10,  S=[0, 1], data=X)
+#
+#     assert np.allclose(cy, py)
+#     assert np.allclose(cy_cat, py_cat)
 
 # X_swing = X[50:100]
 # def test_swing_sv_cyext():
@@ -128,7 +133,7 @@ def test_cyext_all_acv():
     global_proba = 0.9
     C = [[]]
     sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=C,
-                                                                      global_proba=global_proba, num_threads=5)
+                                                                      global_proba=global_proba)
 
     s_star_all, n_star_all = acv_explainers.utils.get_null_coalition(sdp_index, size)
     s_star_l, n_star_l = acv_explainers.utils.get_active_null_coalition_list(sdp_index, size)
