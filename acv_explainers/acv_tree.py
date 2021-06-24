@@ -28,6 +28,12 @@ class ACVTree(BaseTree):
     def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=1):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
+        if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
+                self.num_outputs == 1:
+            return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values_binary,
+                                            self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                            self.scalings, C, global_proba, minimal)
+
         return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, minimal)
@@ -35,6 +41,13 @@ class ACVTree(BaseTree):
     def importance_sdp_clf_search(self, X, data, C=[[]], global_proba=0.9, minimal=1, search_space=[]):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
+        if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier",
+                                        "lightgbm.sklearn.LGBMClassifier"]) and \
+                self.num_outputs == 1:
+            return cyext_acv.global_sdp_clf_approx(np.array(X, dtype=np.float), fX, y_pred, data, self.values_binary,
+                                                   self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                   self.scalings, C, global_proba, minimal, search_space)
+
         return cyext_acv.global_sdp_clf_approx(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, minimal, search_space)
@@ -53,6 +66,13 @@ class ACVTree(BaseTree):
     def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, minimal=0):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
+        if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier",
+                                        "lightgbm.sklearn.LGBMClassifier"]) and \
+                self.num_outputs == 1:
+            return cyext_acv.global_sdp_clf_ptrees(np.array(X, dtype=np.float), fX, y_pred, data, self.values_binary,
+                                                   self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
+                                                   self.scalings, C, global_proba, minimal)
+
         return cyext_acv.global_sdp_clf_ptrees(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, minimal)
@@ -69,12 +89,26 @@ class ACVTree(BaseTree):
     def compute_sdp_clf(self, X, S, data, num_threads=10):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
+        if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier",
+                                        "lightgbm.sklearn.LGBMClassifier"]) and \
+                self.num_outputs == 1:
+            return cyext_acv.compute_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values_binary,
+                                             self.partition_leaves_trees,
+                                             self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
+
         return cyext_acv.compute_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 
     def compute_sdp_clf_cat(self, X, S, data, num_threads=10):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
+        if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier",
+                                        "lightgbm.sklearn.LGBMClassifier"]) and \
+                self.num_outputs == 1:
+            return cyext_acv.compute_sdp_clf_cat(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values_binary,
+                                                 self.partition_leaves_trees,
+                                                 self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
+
         return cyext_acv.compute_sdp_clf_cat(np.array(X, dtype=np.float), fX, y_pred, S, data, self.values, self.partition_leaves_trees,
                                      self.leaf_idx_trees, self.leaves_nb, self.scalings, num_threads)
 

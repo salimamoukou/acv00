@@ -516,19 +516,17 @@ class BaseTree:
             if safe_isinstance(model, ["xgboost.sklearn.XGBClassifier",
                                        "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
                     self.num_outputs == 1:
+                self.values_binary = np.zeros((num_trees, max_nodes, 2), dtype=self.internal_dtype)
 
-                if self.active_prob == True:
+                for i in range(num_trees):
 
-                    self.num_outputs = 2
-                    for i in range(num_trees):
-
-                        # y = self.model.predict(self.data)
-                        # self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
-                        # rebuild_acvtree(0, self.trees[i], self.data, y)
-                        # self.trees[i].values = self.trees[i].scaling * self.trees[i].values
-                        # p = np.exp(self.trees[i].values)/(1+np.exp(self.trees[i].values))
-                        p = 1/(1+np.exp(-self.trees[i].values))
-                        self.trees[i].values = np.concatenate([1-p, p], axis=1)/num_trees
+                    # y = self.model.predict(self.data)
+                    # self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
+                    # rebuild_acvtree(0, self.trees[i], self.data, y)
+                    # self.trees[i].values = self.trees[i].scaling * self.trees[i].values
+                    # p = np.exp(self.trees[i].values)/(1+np.exp(self.trees[i].values))
+                    p = 1/(1+np.exp(-self.trees[i].values))
+                    self.values_binary[i, :len(self.trees[i].values)] = np.concatenate([1-p, p], axis=1)/num_trees
 
             # important to be -1 in unused sections!! This way we can tell which entries are valid.
             self.children_left = -np.ones((num_trees, max_nodes), dtype=np.int32)
