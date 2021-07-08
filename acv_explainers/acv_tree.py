@@ -25,7 +25,7 @@ class ACVTree(BaseTree):
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, S_star, N_star, size, C, num_threads)
 
-    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=1):
+    def importance_sdp_clf_greedy(self, X, data, C=[[]], global_proba=0.9, minimal=1):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
         if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
@@ -52,7 +52,7 @@ class ACVTree(BaseTree):
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
                                                     self.scalings, C, global_proba, minimal, search_space)
 
-    def importance_sdp_clf_approx(self, X, data, C=[[]], global_proba=0.9, minimal=1):
+    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=1):
         if X.shape[1] > 15:
             flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
             node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
@@ -61,7 +61,7 @@ class ACVTree(BaseTree):
                 order_va += v
             return self.importance_sdp_clf_search(X, data, C, global_proba, minimal, list(order_va[:15]))
         else:
-            return self.importance_sdp_clf(self, X, data, C, global_proba, minimal)
+            return self.importance_sdp_clf_greedy(X, data, C, global_proba, minimal)
 
     def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, minimal=0):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
@@ -392,6 +392,77 @@ class ACVTree(BaseTree):
 
     def py_shap_values_discrete_notoptimized(self, X, data, C=[[]]):
         return shap_values_discrete_notoptimized(X, data, C, self)
+
+    def compute_msdp_clf(self, X, S, data, model=None, N=10000):
+        """
+        Compute marginal SDP
+        """
+        # if data:
+        #     return msdp_true(X, S, self.model, self.data)
+
+        if model == None:
+            return msdp(X, S, self.model, data)
+        return msdp(X, S, model, data)
+
+    def importance_msdp_clf_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, r_search_space=None):
+        """
+        Compute marginal S^\star of model
+        """
+        # if data:
+        #     return importance_msdp_clf_true(X.values, self.model, self.data, C=C,
+        #                                          minimal=minimal,
+        #                                          global_proba=global_proba)
+        if model == None:
+            return importance_msdp_clf_search(X=X, rg_data=data, model=self.model, C=C, minimal=minimal, global_proba=global_proba, r_search_space=r_search_space)
+        return importance_msdp_clf_search(X=X, rg_data=data, model=model, C=C, minimal=minimal, global_proba=global_proba, r_search_space=r_search_space)
+
+    def importance_msdp_clf(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1):
+        if X.shape[1] > 15:
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
+            order_va = ()
+            for v in (node_idx.value_counts().keys()):
+                order_va += v
+            return self.importance_msdp_clf_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal,
+                                                   r_search_space=list(order_va[:15]))
+        else:
+            return self.importance_msdp_clf_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal)
+
+    def compute_msdp_reg(self, X, S, data, model=None, N=10000, threshold=0.2):
+        """
+        Compute marginal SDP of regression model
+        """
+        # if data:
+        #     return msdp_true(X, S, self.model, self.data)
+
+        if model == None:
+            return msdp_reg(X, S, self.model, data, threshold)
+        return msdp_reg(X, S, model, data, threshold)
+
+    def importance_msdp_reg_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, threshold=0.2, r_search_space=None):
+        """
+        Compute marginal S^\star of regression model
+        """
+        # if data:
+        #     return importance_msdp_clf_true(X.values, self.model, self.data, C=C,
+        #                                          minimal=minimal,
+        #                                          global_proba=global_proba)
+        if model == None:
+            return importance_msdp_reg_search(X, rg_data=data, model=self.model, C=C, minimal=minimal, global_proba=global_proba, threshold=threshold, r_search_space=r_search_space)
+        return importance_msdp_reg_search(X, rg_data=data, model=model,  C=C, minimal=minimal, global_proba=global_proba, threshold=threshold, r_search_space=r_search_space)
+
+    def importance_msdp_reg(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1):
+        if X.shape[1] > 15:
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
+            order_va = ()
+            for v in (node_idx.value_counts().keys()):
+                order_va += v
+            return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal,
+                                                   r_search_space=list(order_va[:15]))
+        else:
+            return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal)
+
 
 
 

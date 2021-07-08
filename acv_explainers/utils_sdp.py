@@ -1,5 +1,6 @@
 import numpy as np
-
+import itertools
+from tqdm import tqdm
 
 def compute_sdp_reg(X, tX, model, S, data):
     N = X.shape[0]
@@ -359,3 +360,229 @@ def compute_sdp_clf(X, tX, model, S, data):
     sdp = sdp * (0 <= sdp) * (sdp <= 1) + np.ones(N) * (sdp > 1) + np.zeros(N) * (sdp < 0)
 
     return sdp
+
+def single_msdp(x, S, model, rg_data):
+    # fx = np.argmax(model.predict(x), axis=1) # for acvtree
+    fx = model.predict(x.reshape(1, -1))
+    d = x.shape[0]
+    data = rg_data.copy()
+    data[:, S] = x[S]
+
+    if len(S) != d:
+        # y_pred = np.argmax(model.predict(data), axis=1) # for acvtree
+        y_pred = model.predict(data)
+        sdp = np.mean(y_pred == fx)
+        return sdp
+    return 1
+
+
+def msdp(X, S, model, rg_data):
+    sdp = np.zeros((X.shape[0]))
+    for i in range(X.shape[0]):
+        sdp[i] = single_msdp(X[i], S, model, rg_data)
+    return sdp
+
+
+def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, r_search_space=None):
+    N = X.shape[0]
+    m = X.shape[1]
+
+    sdp = np.zeros((N))
+    sdp_global = np.zeros((m))
+    len_s_star = np.zeros((N), dtype=np.int)
+
+    R, r = [], []
+    for i in range(N):
+        R.append(i)
+
+    R_buf = np.zeros((N), dtype=np.int)
+
+    if r_search_space == None:
+        search_space = [i for i in range(m)]
+    else:
+        search_space = r_search_space.copy()
+
+    if C[0] != []:
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
+        va_id = [[i] for i in search_space if i not in remove_va]
+        for ci in range(len(C)):
+            i = 0
+            for cj in range(len(C[ci])):
+                if C[ci][cj] in search_space:
+                    i += 1
+                    break
+            if i != 0:
+                va_id += [C[ci]]
+    else:
+        va_id = [[i] for i in search_space]
+
+    m = len(va_id)
+    power = []
+    max_size = 0
+    for size in range(m + 1):
+        power_b = []
+        for co in itertools.combinations(va_id, size):
+            power_b.append(np.array(sum(list(co), [])))
+            max_size += 1
+        power.append(power_b)
+        if max_size >= 2 ** 15:
+            break
+
+    power_cpp = power
+    s_star = -1 * np.ones((N, X.shape[1]), dtype=np.int)
+    S = np.zeros((X.shape[1]), dtype=np.int)
+
+    for s_0 in tqdm(range(minimal, m + 1)):
+        for s_1 in range(0, len(power_cpp[s_0])):
+            for i in range(len(power_cpp[s_0][s_1])):
+                S[i] = power_cpp[s_0][s_1][i]
+
+            S_size = len(power_cpp[s_0][s_1])
+            r = []
+            N = len(R)
+            for i in range(N):
+                R_buf[i] = R[i]
+
+            sdp_b = msdp(X, S[:S_size], model, rg_data)
+            for i in range(N):
+                if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
+                    sdp[R_buf[i]] = sdp_b[R_buf[i]]
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+
+                if S_size == X.shape[1]:
+                    sdp[R_buf[i]] = 1
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+                    for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
+                        s_star[R_buf[i], s] = -1
+
+        for i in range(N):
+            if sdp[R_buf[i]] >= global_proba:
+                r.append(R[i])
+                for s in range(len_s_star[R_buf[i]]):
+                    sdp_global[s_star[R_buf[i], s]] += 1
+
+        for i in range(len(r)):
+            R.remove(r[i])
+
+        if len(R) == 0 or S_size >= X.shape[1] / 2:
+            break
+
+    return np.asarray(sdp_global) / X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star,
+                                                                                          dtype=np.long), np.array(sdp)
+
+def single_msdp_reg(x, S, model, rg_data, threshold=0.2):
+    fx = model(x.reshape(1, -1))
+    d = x.shape[0]
+    data = rg_data.copy()
+    data[:, S] = x[S]
+
+    if len(S) != d:
+        y_pred = model(data)
+        sdp = np.mean(np.abs(y_pred - fx) <= threshold)
+        return sdp
+    return 1
+
+
+def msdp_reg(X, S, model, rg_data, threshold=0.2):
+    sdp = np.zeros((X.shape[0]))
+    for i in range(X.shape[0]):
+        sdp[i] = single_msdp_reg(X[i], S, model, rg_data, threshold)
+    return sdp
+
+
+def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, threshold=0.2, r_search_space=None):
+    N = X.shape[0]
+    m = X.shape[1]
+
+    sdp = np.zeros((N))
+    sdp_global = np.zeros((m))
+    len_s_star = np.zeros((N), dtype=np.int)
+
+    R, r = [], []
+    for i in range(N):
+        R.append(i)
+
+    R_buf = np.zeros((N), dtype=np.int)
+
+    if r_search_space == None:
+        search_space = [i for i in range(m)]
+    else:
+        search_space = r_search_space.copy()
+
+    if C[0] != []:
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
+        va_id = [[i] for i in search_space if i not in remove_va]
+        for ci in range(len(C)):
+            i = 0
+            for cj in range(len(C[ci])):
+                if C[ci][cj] in search_space:
+                    i += 1
+                    break
+            if i != 0:
+                va_id += [C[ci]]
+    else:
+        va_id = [[i] for i in search_space]
+
+    m = len(va_id)
+    power = []
+    max_size = 0
+    for size in range(m + 1):
+        power_b = []
+        for co in itertools.combinations(va_id, size):
+            power_b.append(np.array(sum(list(co), [])))
+            max_size += 1
+        power.append(power_b)
+        if max_size >= 2 ** 15:
+            break
+
+    power_cpp = power
+    s_star = -1 * np.ones((N, X.shape[1]), dtype=np.int)
+    S = np.zeros((X.shape[1]), dtype=np.int)
+
+    for s_0 in tqdm(range(minimal, m + 1)):
+        for s_1 in range(0, len(power_cpp[s_0])):
+            for i in range(len(power_cpp[s_0][s_1])):
+                S[i] = power_cpp[s_0][s_1][i]
+
+            S_size = len(power_cpp[s_0][s_1])
+            r = []
+            N = len(R)
+            for i in range(N):
+                R_buf[i] = R[i]
+
+            sdp_b = msdp_reg(X, S[:S_size], model, rg_data, threshold)
+
+            for i in range(N):
+                if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
+                    sdp[R_buf[i]] = sdp_b[R_buf[i]]
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+
+                if S_size == X.shape[1]:
+                    sdp[R_buf[i]] = 1
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+                    for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
+                        s_star[R_buf[i], s] = -1
+
+        for i in range(N):
+            if sdp[R_buf[i]] >= global_proba:
+                r.append(R[i])
+                for s in range(len_s_star[R_buf[i]]):
+                    sdp_global[s_star[R_buf[i], s]] += 1
+
+        for i in range(len(r)):
+            R.remove(r[i])
+
+        if len(R) == 0 or S_size >= X.shape[1] / 2:
+            break
+
+    return np.asarray(sdp_global) / X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star,
+                                                                                          dtype=np.long), np.array(sdp)
+

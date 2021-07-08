@@ -809,3 +809,25 @@ def get_active_null_coalition_list(s_star, len_s_star):
         s_star_all.append([s_star[i, j] for j in range(len_s_star[i])])
         n_star_all.append(list(set(index) - set(s_star_all[-1])))
     return s_star_all, n_star_all
+
+class ModelW:
+    def __init__(self, model, prediction='predict_proba'):
+        self.model = model
+        self.prediction = prediction
+
+    def __call__(self, x):
+        if self.prediction == 'predict_proba':
+            if len(x.shape) == 1:
+                return self.model.predict_proba(x.reshape(-1, 1))
+            return self.model.predict_proba(x)
+        elif self.prediction == 'predict_proba_one':
+            if len(x.shape) == 1:
+                return self.model.predict_proba(x.reshape(-1, 1))[:, 1]
+            return self.model.predict_proba(x)[:, 1]
+        else:
+            if len(x.shape) == 1:
+                return self.model.predict_proba(x.reshape(-1, 1))[:, 1]
+            return self.model.predict_proba(x)[:, 1]
+
+    def predict(self, x):
+        return self.__call__(x)
