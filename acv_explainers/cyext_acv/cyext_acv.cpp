@@ -2464,8 +2464,8 @@ static PyObject *__pyx_f_9cyext_acv_compute_sdp_clf_cat(__Pyx_memviewslice, __Py
 static PyObject *__pyx_f_9cyext_acv_compute_sdp_clf(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_compute_sdp_reg(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_compute_sdp_reg_cat(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cat(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_reg(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cat(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_9cyext_acv_global_sdp_reg(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_pa(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, long const , std::vector<std::vector<std::vector<long> > >  const , std::vector<std::vector<long> >  const , int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_shap_values_leaves_normalized(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, long const , std::vector<std::vector<std::vector<long> > >  const , std::vector<std::vector<long> >  const , int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, std::vector<std::vector<std::vector<long> > > , __Pyx_memviewslice, __Pyx_memviewslice, std::vector<std::vector<long> >  const , int, int __pyx_skip_dispatch); /*proto*/
@@ -2473,13 +2473,13 @@ static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing(__Pyx_memviewslice, __Pyx_
 static PyObject *__pyx_f_9cyext_acv_swing_sv_clf(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double const , int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_compute_sdp_swing_diff(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, long, __Pyx_memviewslice, unsigned long, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, double const , int); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_swing_sv_clf_direct(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double const , int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cpp_pa_coal(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cpp_pa_coal(__Pyx_memviewslice, __Pyx_memviewslice, double, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_shap_values_acv_leaves_adap(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int &, std::vector<std::vector<std::vector<long> > > , __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, std::vector<std::vector<long> >  const , int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_single_shap_values_acv_leaves(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, std::vector<std::vector<std::vector<long> > > , __Pyx_memviewslice, __Pyx_memviewslice, std::vector<std::vector<long> >  const , int, int __pyx_skip_dispatch); /*proto*/
 static PyObject *__pyx_f_9cyext_acv_single_shap_values(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, std::vector<std::vector<std::vector<long> > > , std::vector<std::vector<long> >  const , int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, PyObject *, double, int, PyObject *, int, int __pyx_skip_dispatch); /*proto*/
 static double __pyx_f_9cyext_acv_binomialC(unsigned long, unsigned long, int __pyx_skip_dispatch); /*proto*/
 static double __pyx_f_9cyext_acv__comb_int_long(unsigned long, unsigned long, int __pyx_skip_dispatch); /*proto*/
 static std::vector<long>  __pyx_convert_vector_from_py_long(PyObject *); /*proto*/
@@ -2832,20 +2832,20 @@ static PyObject *__pyx_pf_9cyext_acv_8powerset_genexpr(PyObject *__pyx_self); /*
 static PyObject *__pyx_pf_9cyext_acv_10powerset(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_iterable); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_12compute_sdp_reg(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_S, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, int __pyx_v_num_threads); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_14compute_sdp_reg_cat(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_S, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, int __pyx_v_num_threads); /* proto */
-static PyObject *__pyx_pf_9cyext_acv_16global_sdp_reg_cat(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal); /* proto */
-static PyObject *__pyx_pf_9cyext_acv_18global_sdp_reg(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal); /* proto */
+static PyObject *__pyx_pf_9cyext_acv_16global_sdp_reg_cat(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop); /* proto */
+static PyObject *__pyx_pf_9cyext_acv_18global_sdp_reg(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_20shap_values_leaves_pa(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, long __pyx_v_scaling, std::vector<std::vector<std::vector<long> > >  __pyx_v_node_idx_trees, std::vector<std::vector<long> >  __pyx_v_C, int __pyx_v_num_threads); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_22shap_values_leaves_normalized(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, long __pyx_v_scaling, std::vector<std::vector<std::vector<long> > >  __pyx_v_node_idx_trees, std::vector<std::vector<long> >  __pyx_v_C, int __pyx_v_num_threads); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_24shap_values_acv_leaves(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, int __pyx_v_scaling, std::vector<std::vector<std::vector<long> > >  __pyx_v_node_idx_trees, __Pyx_memviewslice __pyx_v_S_star, __Pyx_memviewslice __pyx_v_N_star, std::vector<std::vector<long> >  __pyx_v_C, int __pyx_v_num_threads); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_26swing_sv_clf(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_thresholds, int __pyx_v_num_threads); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_28swing_sv_clf_direct(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_thresholds, int __pyx_v_num_threads); /* proto */
-static PyObject *__pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_num_threads); /* proto */
-static PyObject *__pyx_pf_9cyext_acv_32global_sdp_clf(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal); /* proto */
-static PyObject *__pyx_pf_9cyext_acv_34global_sdp_clf_ptrees(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal); /* proto */
+static PyObject *__pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_num_threads, int __pyx_v_stop); /* proto */
+static PyObject *__pyx_pf_9cyext_acv_32global_sdp_clf(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop); /* proto */
+static PyObject *__pyx_pf_9cyext_acv_34global_sdp_clf_ptrees(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_36shap_values_acv_leaves_adap(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, int __pyx_v_scaling, std::vector<std::vector<std::vector<long> > >  __pyx_v_node_idx_trees, __Pyx_memviewslice __pyx_v_S_star, __Pyx_memviewslice __pyx_v_N_star, __Pyx_memviewslice __pyx_v_size, std::vector<std::vector<long> >  __pyx_v_C, int __pyx_v_num_threads); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_38single_shap_values_acv_leaves(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, int __pyx_v_scaling, std::vector<std::vector<std::vector<long> > >  __pyx_v_node_idx_trees, __Pyx_memviewslice __pyx_v_S_star, __Pyx_memviewslice __pyx_v_N_star, std::vector<std::vector<long> >  __pyx_v_C, int __pyx_v_num_threads); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_40single_shap_values(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, int __pyx_v_scaling, std::vector<std::vector<std::vector<long> > >  __pyx_v_node_idx_trees, std::vector<std::vector<long> >  __pyx_v_C, int __pyx_v_num_threads); /* proto */
-static PyObject *__pyx_pf_9cyext_acv_42global_sdp_clf_approx(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, PyObject *__pyx_v_search_space); /* proto */
+static PyObject *__pyx_pf_9cyext_acv_42global_sdp_clf_approx(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, PyObject *__pyx_v_search_space, int __pyx_v_stop); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_44binomialC(CYTHON_UNUSED PyObject *__pyx_self, unsigned long __pyx_v_N, unsigned long __pyx_v_k); /* proto */
 static PyObject *__pyx_pf_9cyext_acv_46_comb_int_long(CYTHON_UNUSED PyObject *__pyx_self, unsigned long __pyx_v_N, unsigned long __pyx_v_k); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -15385,7 +15385,7 @@ static PyObject *__pyx_pf_9cyext_acv_14compute_sdp_reg_cat(CYTHON_UNUSED PyObjec
  */
 
 static PyObject *__pyx_pw_9cyext_acv_17global_sdp_reg_cat(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cat(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cat(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   CYTHON_UNUSED unsigned int __pyx_v_max_leaves;
@@ -15466,7 +15466,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cat(__Pyx_memviewslice __pyx_
   __Pyx_RefNannySetupContext("global_sdp_reg_cat", 0);
 
   /* "cyext_acv.pyx":847
- *             int minimal):
+ *             int minimal, bint stop):
  * 
  *     cdef unsigned int N = X.shape[0]             # <<<<<<<<<<<<<<
  *     cdef unsigned int m = X.shape[1]
@@ -16815,7 +16815,7 @@ __pyx_t_2 = __pyx_f_9cyext_acv_compute_sdp_reg_cat(__pyx_v_X, __pyx_v_fX, __pyx_
  *             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
  *             R.pop_back()             # <<<<<<<<<<<<<<
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  */
       __pyx_v_R.pop_back();
     }
@@ -16823,24 +16823,30 @@ __pyx_t_2 = __pyx_f_9cyext_acv_compute_sdp_reg_cat(__pyx_v_X, __pyx_v_fX, __pyx_
     /* "cyext_acv.pyx":953
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
     __pyx_t_14 = ((__pyx_v_R.size() == 0) != 0);
     if (!__pyx_t_14) {
     } else {
+      goto __pyx_L47_next_and;
+    }
+    __pyx_t_14 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    if (__pyx_t_14) {
+    } else {
       __pyx_t_21 = __pyx_t_14;
       goto __pyx_L46_bool_binop_done;
     }
-    __pyx_t_14 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    __pyx_L47_next_and:;
+    __pyx_t_14 = (__pyx_v_stop != 0);
     __pyx_t_21 = __pyx_t_14;
     __pyx_L46_bool_binop_done:;
     if (__pyx_t_21) {
 
       /* "cyext_acv.pyx":954
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  *             break             # <<<<<<<<<<<<<<
  * 
  *     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -16850,7 +16856,7 @@ __pyx_t_2 = __pyx_f_9cyext_acv_compute_sdp_reg_cat(__pyx_v_X, __pyx_v_fX, __pyx_
       /* "cyext_acv.pyx":953
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
@@ -17057,6 +17063,7 @@ static PyObject *__pyx_pw_9cyext_acv_17global_sdp_reg_cat(PyObject *__pyx_self, 
   PyObject *__pyx_v_C = 0;
   double __pyx_v_global_proba;
   int __pyx_v_minimal;
+  int __pyx_v_stop;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -17064,12 +17071,14 @@ static PyObject *__pyx_pw_9cyext_acv_17global_sdp_reg_cat(PyObject *__pyx_self, 
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("global_sdp_reg_cat (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_tX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,0};
-    PyObject* values[13] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_tX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,&__pyx_n_s_stop,0};
+    PyObject* values[14] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 14: values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
+        CYTHON_FALLTHROUGH;
         case 13: values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
         CYTHON_FALLTHROUGH;
         case 12: values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
@@ -17108,79 +17117,85 @@ static PyObject *__pyx_pw_9cyext_acv_17global_sdp_reg_cat(PyObject *__pyx_self, 
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_fX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 1); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 1); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_tX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 2); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 2); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_y_pred)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 3); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 3); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 4); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 4); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_values)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 5); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 5); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_partition_leaves_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 6); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 6); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaf_idx_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 7); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 7); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaves_nb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 8); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 8); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_scaling)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 9); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 9); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 10:
         if (likely((values[10] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_C)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 10); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 10); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 11:
         if (likely((values[11] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_global_proba)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 11); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 11); __PYX_ERR(0, 841, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 12:
         if (likely((values[12] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_minimal)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, 12); __PYX_ERR(0, 841, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 12); __PYX_ERR(0, 841, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case 13:
+        if (likely((values[13] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_stop)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, 13); __PYX_ERR(0, 841, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "global_sdp_reg_cat") < 0)) __PYX_ERR(0, 841, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 13) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 14) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -17196,6 +17211,7 @@ static PyObject *__pyx_pw_9cyext_acv_17global_sdp_reg_cat(PyObject *__pyx_self, 
       values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
       values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
       values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
+      values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
     }
     __pyx_v_X = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_X.memview)) __PYX_ERR(0, 841, __pyx_L3_error)
     __pyx_v_fX = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_fX.memview)) __PYX_ERR(0, 841, __pyx_L3_error)
@@ -17210,17 +17226,18 @@ static PyObject *__pyx_pw_9cyext_acv_17global_sdp_reg_cat(PyObject *__pyx_self, 
     __pyx_v_C = ((PyObject*)values[10]);
     __pyx_v_global_proba = __pyx_PyFloat_AsDouble(values[11]); if (unlikely((__pyx_v_global_proba == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 844, __pyx_L3_error)
     __pyx_v_minimal = __Pyx_PyInt_As_int(values[12]); if (unlikely((__pyx_v_minimal == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 845, __pyx_L3_error)
+    __pyx_v_stop = __Pyx_PyObject_IsTrue(values[13]); if (unlikely((__pyx_v_stop == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 845, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 13, 13, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 841, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cat", 1, 14, 14, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 841, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cyext_acv.global_sdp_reg_cat", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_C), (&PyList_Type), 1, "C", 1))) __PYX_ERR(0, 844, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9cyext_acv_16global_sdp_reg_cat(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal);
+  __pyx_r = __pyx_pf_9cyext_acv_16global_sdp_reg_cat(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop);
 
   /* function exit code */
   goto __pyx_L0;
@@ -17231,7 +17248,7 @@ static PyObject *__pyx_pw_9cyext_acv_17global_sdp_reg_cat(PyObject *__pyx_self, 
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9cyext_acv_16global_sdp_reg_cat(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal) {
+static PyObject *__pyx_pf_9cyext_acv_16global_sdp_reg_cat(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -17249,7 +17266,7 @@ static PyObject *__pyx_pf_9cyext_acv_16global_sdp_reg_cat(CYTHON_UNUSED PyObject
   if (unlikely(!__pyx_v_leaf_idx_trees.memview)) { __Pyx_RaiseUnboundLocalError("leaf_idx_trees"); __PYX_ERR(0, 841, __pyx_L1_error) }
   if (unlikely(!__pyx_v_leaves_nb.memview)) { __Pyx_RaiseUnboundLocalError("leaves_nb"); __PYX_ERR(0, 841, __pyx_L1_error) }
   if (unlikely(!__pyx_v_scaling.memview)) { __Pyx_RaiseUnboundLocalError("scaling"); __PYX_ERR(0, 841, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_reg_cat(__pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 841, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_reg_cat(__pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 841, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -17284,7 +17301,7 @@ static PyObject *__pyx_pf_9cyext_acv_16global_sdp_reg_cat(CYTHON_UNUSED PyObject
  */
 
 static PyObject *__pyx_pw_9cyext_acv_19global_sdp_reg(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_reg(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_reg(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   unsigned int __pyx_v_max_leaves;
@@ -17423,7 +17440,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_reg(__Pyx_memviewslice __pyx_v_X,
   __Pyx_RefNannySetupContext("global_sdp_reg", 0);
 
   /* "cyext_acv.pyx":969
- *             int minimal):
+ *             int minimal, bint stop):
  * 
  *     cdef unsigned int N = X.shape[0]             # <<<<<<<<<<<<<<
  *     cdef unsigned int m = X.shape[1]
@@ -21647,7 +21664,7 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_leaf_part_l, 1);
  *             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
  *             R.pop_back()             # <<<<<<<<<<<<<<
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  */
       __pyx_v_R.pop_back();
     }
@@ -21655,24 +21672,30 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_leaf_part_l, 1);
     /* "cyext_acv.pyx":1258
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
     __pyx_t_16 = ((__pyx_v_R.size() == 0) != 0);
     if (!__pyx_t_16) {
     } else {
+      goto __pyx_L175_next_and;
+    }
+    __pyx_t_16 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    if (__pyx_t_16) {
+    } else {
       __pyx_t_23 = __pyx_t_16;
       goto __pyx_L174_bool_binop_done;
     }
-    __pyx_t_16 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    __pyx_L175_next_and:;
+    __pyx_t_16 = (__pyx_v_stop != 0);
     __pyx_t_23 = __pyx_t_16;
     __pyx_L174_bool_binop_done:;
     if (__pyx_t_23) {
 
       /* "cyext_acv.pyx":1259
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  *             break             # <<<<<<<<<<<<<<
  * 
  *     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -21682,7 +21705,7 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_leaf_part_l, 1);
       /* "cyext_acv.pyx":1258
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
@@ -21903,6 +21926,7 @@ static PyObject *__pyx_pw_9cyext_acv_19global_sdp_reg(PyObject *__pyx_self, PyOb
   PyObject *__pyx_v_C = 0;
   double __pyx_v_global_proba;
   int __pyx_v_minimal;
+  int __pyx_v_stop;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -21910,12 +21934,14 @@ static PyObject *__pyx_pw_9cyext_acv_19global_sdp_reg(PyObject *__pyx_self, PyOb
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("global_sdp_reg (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_tX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,0};
-    PyObject* values[13] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_tX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,&__pyx_n_s_stop,0};
+    PyObject* values[14] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 14: values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
+        CYTHON_FALLTHROUGH;
         case 13: values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
         CYTHON_FALLTHROUGH;
         case 12: values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
@@ -21954,79 +21980,85 @@ static PyObject *__pyx_pw_9cyext_acv_19global_sdp_reg(PyObject *__pyx_self, PyOb
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_fX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 1); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 1); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_tX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 2); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 2); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_y_pred)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 3); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 3); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 4); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 4); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_values)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 5); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 5); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_partition_leaves_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 6); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 6); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaf_idx_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 7); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 7); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaves_nb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 8); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 8); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_scaling)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 9); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 9); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 10:
         if (likely((values[10] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_C)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 10); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 10); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 11:
         if (likely((values[11] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_global_proba)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 11); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 11); __PYX_ERR(0, 963, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 12:
         if (likely((values[12] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_minimal)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, 12); __PYX_ERR(0, 963, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 12); __PYX_ERR(0, 963, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case 13:
+        if (likely((values[13] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_stop)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, 13); __PYX_ERR(0, 963, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "global_sdp_reg") < 0)) __PYX_ERR(0, 963, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 13) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 14) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -22042,6 +22074,7 @@ static PyObject *__pyx_pw_9cyext_acv_19global_sdp_reg(PyObject *__pyx_self, PyOb
       values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
       values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
       values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
+      values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
     }
     __pyx_v_X = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_X.memview)) __PYX_ERR(0, 963, __pyx_L3_error)
     __pyx_v_fX = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_fX.memview)) __PYX_ERR(0, 963, __pyx_L3_error)
@@ -22056,17 +22089,18 @@ static PyObject *__pyx_pw_9cyext_acv_19global_sdp_reg(PyObject *__pyx_self, PyOb
     __pyx_v_C = ((PyObject*)values[10]);
     __pyx_v_global_proba = __pyx_PyFloat_AsDouble(values[11]); if (unlikely((__pyx_v_global_proba == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 966, __pyx_L3_error)
     __pyx_v_minimal = __Pyx_PyInt_As_int(values[12]); if (unlikely((__pyx_v_minimal == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 967, __pyx_L3_error)
+    __pyx_v_stop = __Pyx_PyObject_IsTrue(values[13]); if (unlikely((__pyx_v_stop == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 967, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 13, 13, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 963, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("global_sdp_reg", 1, 14, 14, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 963, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cyext_acv.global_sdp_reg", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_C), (&PyList_Type), 1, "C", 1))) __PYX_ERR(0, 966, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9cyext_acv_18global_sdp_reg(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal);
+  __pyx_r = __pyx_pf_9cyext_acv_18global_sdp_reg(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop);
 
   /* function exit code */
   goto __pyx_L0;
@@ -22077,7 +22111,7 @@ static PyObject *__pyx_pw_9cyext_acv_19global_sdp_reg(PyObject *__pyx_self, PyOb
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9cyext_acv_18global_sdp_reg(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal) {
+static PyObject *__pyx_pf_9cyext_acv_18global_sdp_reg(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -22095,7 +22129,7 @@ static PyObject *__pyx_pf_9cyext_acv_18global_sdp_reg(CYTHON_UNUSED PyObject *__
   if (unlikely(!__pyx_v_leaf_idx_trees.memview)) { __Pyx_RaiseUnboundLocalError("leaf_idx_trees"); __PYX_ERR(0, 963, __pyx_L1_error) }
   if (unlikely(!__pyx_v_leaves_nb.memview)) { __Pyx_RaiseUnboundLocalError("leaves_nb"); __PYX_ERR(0, 963, __pyx_L1_error) }
   if (unlikely(!__pyx_v_scaling.memview)) { __Pyx_RaiseUnboundLocalError("scaling"); __PYX_ERR(0, 963, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_reg(__pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 963, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_reg(__pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 963, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -40190,7 +40224,7 @@ static PyObject *__pyx_pf_9cyext_acv_28swing_sv_clf_direct(CYTHON_UNUSED PyObjec
  */
 
 static PyObject *__pyx_pw_9cyext_acv_31global_sdp_reg_cpp_pa_coal(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cpp_pa_coal(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, CYTHON_UNUSED int __pyx_v_num_threads, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cpp_pa_coal(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, CYTHON_UNUSED int __pyx_v_num_threads, int __pyx_v_stop, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   int __pyx_v_n_trees;
@@ -40321,7 +40355,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_reg_cpp_pa_coal(__Pyx_memviewslic
   __Pyx_RefNannySetupContext("global_sdp_reg_cpp_pa_coal", 0);
 
   /* "cyext_acv.pyx":2638
- *             int num_threads):
+ *             int num_threads, bint stop):
  * 
  *     cdef unsigned int N = X.shape[0]             # <<<<<<<<<<<<<<
  *     cdef unsigned int m = X.shape[1]
@@ -43403,7 +43437,7 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_leaf_part_l, 1);
  *             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
  *             R.pop_back()             # <<<<<<<<<<<<<<
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  */
       __pyx_v_R.pop_back();
     }
@@ -43411,24 +43445,30 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_leaf_part_l, 1);
     /* "cyext_acv.pyx":2858
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
     __pyx_t_12 = ((__pyx_v_R.size() == 0) != 0);
     if (!__pyx_t_12) {
     } else {
+      goto __pyx_L151_next_and;
+    }
+    __pyx_t_12 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    if (__pyx_t_12) {
+    } else {
       __pyx_t_19 = __pyx_t_12;
       goto __pyx_L150_bool_binop_done;
     }
-    __pyx_t_12 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    __pyx_L151_next_and:;
+    __pyx_t_12 = (__pyx_v_stop != 0);
     __pyx_t_19 = __pyx_t_12;
     __pyx_L150_bool_binop_done:;
     if (__pyx_t_19) {
 
       /* "cyext_acv.pyx":2859
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  *             break             # <<<<<<<<<<<<<<
  * 
  *     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -43438,7 +43478,7 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_leaf_part_l, 1);
       /* "cyext_acv.pyx":2858
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
@@ -43640,6 +43680,7 @@ static PyObject *__pyx_pw_9cyext_acv_31global_sdp_reg_cpp_pa_coal(PyObject *__py
   PyObject *__pyx_v_C = 0;
   double __pyx_v_global_proba;
   int __pyx_v_num_threads;
+  int __pyx_v_stop;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -43647,12 +43688,14 @@ static PyObject *__pyx_pw_9cyext_acv_31global_sdp_reg_cpp_pa_coal(PyObject *__py
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("global_sdp_reg_cpp_pa_coal (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_tX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_num_threads,0};
-    PyObject* values[13] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_tX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_num_threads,&__pyx_n_s_stop,0};
+    PyObject* values[14] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 14: values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
+        CYTHON_FALLTHROUGH;
         case 13: values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
         CYTHON_FALLTHROUGH;
         case 12: values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
@@ -43691,79 +43734,85 @@ static PyObject *__pyx_pw_9cyext_acv_31global_sdp_reg_cpp_pa_coal(PyObject *__py
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_fX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 1); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 1); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_tX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 2); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 2); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_y_pred)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 3); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 3); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 4); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 4); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_values)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 5); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 5); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_partition_leaves_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 6); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 6); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaf_idx_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 7); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 7); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaves_nb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 8); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 8); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_scaling)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 9); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 9); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 10:
         if (likely((values[10] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_C)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 10); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 10); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 11:
         if (likely((values[11] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_global_proba)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 11); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 11); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 12:
         if (likely((values[12] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_num_threads)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, 12); __PYX_ERR(0, 2632, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 12); __PYX_ERR(0, 2632, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case 13:
+        if (likely((values[13] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_stop)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, 13); __PYX_ERR(0, 2632, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "global_sdp_reg_cpp_pa_coal") < 0)) __PYX_ERR(0, 2632, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 13) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 14) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -43779,6 +43828,7 @@ static PyObject *__pyx_pw_9cyext_acv_31global_sdp_reg_cpp_pa_coal(PyObject *__py
       values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
       values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
       values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
+      values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
     }
     __pyx_v_X = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_X.memview)) __PYX_ERR(0, 2632, __pyx_L3_error)
     __pyx_v_fX = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_fX.memview)) __PYX_ERR(0, 2632, __pyx_L3_error)
@@ -43793,17 +43843,18 @@ static PyObject *__pyx_pw_9cyext_acv_31global_sdp_reg_cpp_pa_coal(PyObject *__py
     __pyx_v_C = ((PyObject*)values[10]);
     __pyx_v_global_proba = __pyx_PyFloat_AsDouble(values[11]); if (unlikely((__pyx_v_global_proba == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 2635, __pyx_L3_error)
     __pyx_v_num_threads = __Pyx_PyInt_As_int(values[12]); if (unlikely((__pyx_v_num_threads == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2636, __pyx_L3_error)
+    __pyx_v_stop = __Pyx_PyObject_IsTrue(values[13]); if (unlikely((__pyx_v_stop == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2636, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 13, 13, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 2632, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("global_sdp_reg_cpp_pa_coal", 1, 14, 14, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 2632, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cyext_acv.global_sdp_reg_cpp_pa_coal", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_C), (&PyList_Type), 1, "C", 1))) __PYX_ERR(0, 2635, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_num_threads);
+  __pyx_r = __pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_num_threads, __pyx_v_stop);
 
   /* function exit code */
   goto __pyx_L0;
@@ -43814,7 +43865,7 @@ static PyObject *__pyx_pw_9cyext_acv_31global_sdp_reg_cpp_pa_coal(PyObject *__py
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_num_threads) {
+static PyObject *__pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, double __pyx_v_tX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_num_threads, int __pyx_v_stop) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -43832,7 +43883,7 @@ static PyObject *__pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(CYTHON_UNUSED 
   if (unlikely(!__pyx_v_leaf_idx_trees.memview)) { __Pyx_RaiseUnboundLocalError("leaf_idx_trees"); __PYX_ERR(0, 2632, __pyx_L1_error) }
   if (unlikely(!__pyx_v_leaves_nb.memview)) { __Pyx_RaiseUnboundLocalError("leaves_nb"); __PYX_ERR(0, 2632, __pyx_L1_error) }
   if (unlikely(!__pyx_v_scaling.memview)) { __Pyx_RaiseUnboundLocalError("scaling"); __PYX_ERR(0, 2632, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_reg_cpp_pa_coal(__pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_num_threads, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2632, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_reg_cpp_pa_coal(__pyx_v_X, __pyx_v_fX, __pyx_v_tX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_num_threads, __pyx_v_stop, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2632, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -43867,7 +43918,7 @@ static PyObject *__pyx_pf_9cyext_acv_30global_sdp_reg_cpp_pa_coal(CYTHON_UNUSED 
  */
 
 static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   unsigned int __pyx_v_max_leaves;
@@ -43985,7 +44036,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice __pyx_v_X,
   __Pyx_RefNannySetupContext("global_sdp_clf", 0);
 
   /* "cyext_acv.pyx":2873
- *             int minimal):
+ *             int minimal, bint stop):
  * 
  *     cdef unsigned int N = X.shape[0]             # <<<<<<<<<<<<<<
  *     cdef unsigned int m = X.shape[1]
@@ -46459,7 +46510,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice __pyx_v_X,
  *             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
  *             R.pop_back()             # <<<<<<<<<<<<<<
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  */
       __pyx_v_R.pop_back();
     }
@@ -46467,24 +46518,30 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice __pyx_v_X,
     /* "cyext_acv.pyx":3060
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
     __pyx_t_14 = ((__pyx_v_R.size() == 0) != 0);
     if (!__pyx_t_14) {
     } else {
+      goto __pyx_L97_next_and;
+    }
+    __pyx_t_14 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    if (__pyx_t_14) {
+    } else {
       __pyx_t_21 = __pyx_t_14;
       goto __pyx_L96_bool_binop_done;
     }
-    __pyx_t_14 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    __pyx_L97_next_and:;
+    __pyx_t_14 = (__pyx_v_stop != 0);
     __pyx_t_21 = __pyx_t_14;
     __pyx_L96_bool_binop_done:;
     if (__pyx_t_21) {
 
       /* "cyext_acv.pyx":3061
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  *             break             # <<<<<<<<<<<<<<
  * 
  *     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -46494,7 +46551,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf(__Pyx_memviewslice __pyx_v_X,
       /* "cyext_acv.pyx":3060
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
@@ -46703,6 +46760,7 @@ static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf(PyObject *__pyx_self, PyOb
   PyObject *__pyx_v_C = 0;
   double __pyx_v_global_proba;
   int __pyx_v_minimal;
+  int __pyx_v_stop;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -46710,12 +46768,14 @@ static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf(PyObject *__pyx_self, PyOb
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("global_sdp_clf (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,0};
-    PyObject* values[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,&__pyx_n_s_stop,0};
+    PyObject* values[13] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 13: values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
+        CYTHON_FALLTHROUGH;
         case 12: values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
         CYTHON_FALLTHROUGH;
         case 11: values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
@@ -46752,73 +46812,79 @@ static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf(PyObject *__pyx_self, PyOb
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_fX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 1); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 1); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_y_pred)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 2); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 2); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 3); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 3); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_values)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 4); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 4); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_partition_leaves_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 5); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 5); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaf_idx_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 6); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 6); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaves_nb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 7); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 7); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_scaling)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 8); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 8); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_C)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 9); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 9); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 10:
         if (likely((values[10] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_global_proba)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 10); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 10); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 11:
         if (likely((values[11] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_minimal)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, 11); __PYX_ERR(0, 2867, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 11); __PYX_ERR(0, 2867, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case 12:
+        if (likely((values[12] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_stop)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, 12); __PYX_ERR(0, 2867, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "global_sdp_clf") < 0)) __PYX_ERR(0, 2867, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 12) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 13) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -46833,6 +46899,7 @@ static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf(PyObject *__pyx_self, PyOb
       values[9] = PyTuple_GET_ITEM(__pyx_args, 9);
       values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
       values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
+      values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
     }
     __pyx_v_X = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_X.memview)) __PYX_ERR(0, 2867, __pyx_L3_error)
     __pyx_v_fX = __Pyx_PyObject_to_MemoryviewSlice_ds_long(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_fX.memview)) __PYX_ERR(0, 2867, __pyx_L3_error)
@@ -46846,17 +46913,18 @@ static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf(PyObject *__pyx_self, PyOb
     __pyx_v_C = ((PyObject*)values[9]);
     __pyx_v_global_proba = __pyx_PyFloat_AsDouble(values[10]); if (unlikely((__pyx_v_global_proba == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 2870, __pyx_L3_error)
     __pyx_v_minimal = __Pyx_PyInt_As_int(values[11]); if (unlikely((__pyx_v_minimal == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2871, __pyx_L3_error)
+    __pyx_v_stop = __Pyx_PyObject_IsTrue(values[12]); if (unlikely((__pyx_v_stop == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 2871, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 12, 12, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 2867, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("global_sdp_clf", 1, 13, 13, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 2867, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cyext_acv.global_sdp_clf", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_C), (&PyList_Type), 1, "C", 1))) __PYX_ERR(0, 2870, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9cyext_acv_32global_sdp_clf(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal);
+  __pyx_r = __pyx_pf_9cyext_acv_32global_sdp_clf(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop);
 
   /* function exit code */
   goto __pyx_L0;
@@ -46867,7 +46935,7 @@ static PyObject *__pyx_pw_9cyext_acv_33global_sdp_clf(PyObject *__pyx_self, PyOb
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9cyext_acv_32global_sdp_clf(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal) {
+static PyObject *__pyx_pf_9cyext_acv_32global_sdp_clf(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -46885,7 +46953,7 @@ static PyObject *__pyx_pf_9cyext_acv_32global_sdp_clf(CYTHON_UNUSED PyObject *__
   if (unlikely(!__pyx_v_leaf_idx_trees.memview)) { __Pyx_RaiseUnboundLocalError("leaf_idx_trees"); __PYX_ERR(0, 2867, __pyx_L1_error) }
   if (unlikely(!__pyx_v_leaves_nb.memview)) { __Pyx_RaiseUnboundLocalError("leaves_nb"); __PYX_ERR(0, 2867, __pyx_L1_error) }
   if (unlikely(!__pyx_v_scaling.memview)) { __Pyx_RaiseUnboundLocalError("scaling"); __PYX_ERR(0, 2867, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_clf(__pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2867, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_clf(__pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2867, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -46920,7 +46988,7 @@ static PyObject *__pyx_pf_9cyext_acv_32global_sdp_clf(CYTHON_UNUSED PyObject *__
  */
 
 static PyObject *__pyx_pw_9cyext_acv_35global_sdp_clf_ptrees(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   CYTHON_UNUSED unsigned int __pyx_v_N_b;
@@ -47031,7 +47099,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice __p
   __Pyx_RefNannySetupContext("global_sdp_clf_ptrees", 0);
 
   /* "cyext_acv.pyx":3076
- *             int minimal):
+ *             int minimal, bint stop):
  * 
  *     cdef unsigned int N = X.shape[0]             # <<<<<<<<<<<<<<
  *     cdef unsigned int m = X.shape[1]
@@ -49184,7 +49252,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice __p
  *             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
  *             R.pop_back()             # <<<<<<<<<<<<<<
  * 
- *         if R.size() == 0:
+ *         if R.size() == 0 and stop:
  */
       __pyx_v_R.pop_back();
     }
@@ -49192,16 +49260,24 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice __p
     /* "cyext_acv.pyx":3245
  *             R.pop_back()
  * 
- *         if R.size() == 0:             # <<<<<<<<<<<<<<
+ *         if R.size() == 0 and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
-    __pyx_t_21 = ((__pyx_v_R.size() == 0) != 0);
+    __pyx_t_14 = ((__pyx_v_R.size() == 0) != 0);
+    if (__pyx_t_14) {
+    } else {
+      __pyx_t_21 = __pyx_t_14;
+      goto __pyx_L96_bool_binop_done;
+    }
+    __pyx_t_14 = (__pyx_v_stop != 0);
+    __pyx_t_21 = __pyx_t_14;
+    __pyx_L96_bool_binop_done:;
     if (__pyx_t_21) {
 
       /* "cyext_acv.pyx":3246
  * 
- *         if R.size() == 0:
+ *         if R.size() == 0 and stop:
  *             break             # <<<<<<<<<<<<<<
  * 
  *     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -49211,7 +49287,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_ptrees(__Pyx_memviewslice __p
       /* "cyext_acv.pyx":3245
  *             R.pop_back()
  * 
- *         if R.size() == 0:             # <<<<<<<<<<<<<<
+ *         if R.size() == 0 and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
@@ -49416,6 +49492,7 @@ static PyObject *__pyx_pw_9cyext_acv_35global_sdp_clf_ptrees(PyObject *__pyx_sel
   PyObject *__pyx_v_C = 0;
   double __pyx_v_global_proba;
   int __pyx_v_minimal;
+  int __pyx_v_stop;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -49423,12 +49500,14 @@ static PyObject *__pyx_pw_9cyext_acv_35global_sdp_clf_ptrees(PyObject *__pyx_sel
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("global_sdp_clf_ptrees (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,0};
-    PyObject* values[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,&__pyx_n_s_stop,0};
+    PyObject* values[13] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 13: values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
+        CYTHON_FALLTHROUGH;
         case 12: values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
         CYTHON_FALLTHROUGH;
         case 11: values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
@@ -49465,73 +49544,79 @@ static PyObject *__pyx_pw_9cyext_acv_35global_sdp_clf_ptrees(PyObject *__pyx_sel
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_fX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 1); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 1); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_y_pred)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 2); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 2); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 3); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 3); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_values)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 4); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 4); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_partition_leaves_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 5); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 5); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaf_idx_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 6); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 6); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaves_nb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 7); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 7); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_scaling)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 8); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 8); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_C)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 9); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 9); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 10:
         if (likely((values[10] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_global_proba)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 10); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 10); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 11:
         if (likely((values[11] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_minimal)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, 11); __PYX_ERR(0, 3070, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 11); __PYX_ERR(0, 3070, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case 12:
+        if (likely((values[12] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_stop)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, 12); __PYX_ERR(0, 3070, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "global_sdp_clf_ptrees") < 0)) __PYX_ERR(0, 3070, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 12) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 13) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -49546,6 +49631,7 @@ static PyObject *__pyx_pw_9cyext_acv_35global_sdp_clf_ptrees(PyObject *__pyx_sel
       values[9] = PyTuple_GET_ITEM(__pyx_args, 9);
       values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
       values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
+      values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
     }
     __pyx_v_X = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_X.memview)) __PYX_ERR(0, 3070, __pyx_L3_error)
     __pyx_v_fX = __Pyx_PyObject_to_MemoryviewSlice_ds_long(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_fX.memview)) __PYX_ERR(0, 3070, __pyx_L3_error)
@@ -49559,17 +49645,18 @@ static PyObject *__pyx_pw_9cyext_acv_35global_sdp_clf_ptrees(PyObject *__pyx_sel
     __pyx_v_C = ((PyObject*)values[9]);
     __pyx_v_global_proba = __pyx_PyFloat_AsDouble(values[10]); if (unlikely((__pyx_v_global_proba == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 3073, __pyx_L3_error)
     __pyx_v_minimal = __Pyx_PyInt_As_int(values[11]); if (unlikely((__pyx_v_minimal == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 3074, __pyx_L3_error)
+    __pyx_v_stop = __Pyx_PyObject_IsTrue(values[12]); if (unlikely((__pyx_v_stop == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 3074, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 12, 12, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3070, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("global_sdp_clf_ptrees", 1, 13, 13, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3070, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cyext_acv.global_sdp_clf_ptrees", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_C), (&PyList_Type), 1, "C", 1))) __PYX_ERR(0, 3073, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9cyext_acv_34global_sdp_clf_ptrees(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal);
+  __pyx_r = __pyx_pf_9cyext_acv_34global_sdp_clf_ptrees(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop);
 
   /* function exit code */
   goto __pyx_L0;
@@ -49580,7 +49667,7 @@ static PyObject *__pyx_pw_9cyext_acv_35global_sdp_clf_ptrees(PyObject *__pyx_sel
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9cyext_acv_34global_sdp_clf_ptrees(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal) {
+static PyObject *__pyx_pf_9cyext_acv_34global_sdp_clf_ptrees(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, int __pyx_v_stop) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -49598,7 +49685,7 @@ static PyObject *__pyx_pf_9cyext_acv_34global_sdp_clf_ptrees(CYTHON_UNUSED PyObj
   if (unlikely(!__pyx_v_leaf_idx_trees.memview)) { __Pyx_RaiseUnboundLocalError("leaf_idx_trees"); __PYX_ERR(0, 3070, __pyx_L1_error) }
   if (unlikely(!__pyx_v_leaves_nb.memview)) { __Pyx_RaiseUnboundLocalError("leaves_nb"); __PYX_ERR(0, 3070, __pyx_L1_error) }
   if (unlikely(!__pyx_v_scaling.memview)) { __Pyx_RaiseUnboundLocalError("scaling"); __PYX_ERR(0, 3070, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_clf_ptrees(__pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3070, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_clf_ptrees(__pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_stop, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3070, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -56599,7 +56686,7 @@ static PyObject *__pyx_pf_9cyext_acv_40single_shap_values(CYTHON_UNUSED PyObject
  */
 
 static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, PyObject *__pyx_v_search_space, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, PyObject *__pyx_v_search_space, int __pyx_v_stop, CYTHON_UNUSED int __pyx_skip_dispatch) {
   unsigned int __pyx_v_N;
   unsigned int __pyx_v_m;
   unsigned int __pyx_v_max_leaves;
@@ -56717,7 +56804,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice __p
   __Pyx_RefNannySetupContext("global_sdp_clf_approx", 0);
 
   /* "cyext_acv.pyx":3788
- *             int minimal, list search_space):
+ *             int minimal, list search_space, bint stop):
  * 
  *     cdef unsigned int N = X.shape[0]             # <<<<<<<<<<<<<<
  *     cdef unsigned int m = X.shape[1]
@@ -59347,7 +59434,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice __p
  *             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
  *             R.pop_back()             # <<<<<<<<<<<<<<
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  */
       __pyx_v_R.pop_back();
     }
@@ -59355,24 +59442,30 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice __p
     /* "cyext_acv.pyx":3982
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
     __pyx_t_21 = ((__pyx_v_R.size() == 0) != 0);
     if (!__pyx_t_21) {
     } else {
+      goto __pyx_L103_next_and;
+    }
+    __pyx_t_21 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    if (__pyx_t_21) {
+    } else {
       __pyx_t_14 = __pyx_t_21;
       goto __pyx_L102_bool_binop_done;
     }
-    __pyx_t_21 = ((__pyx_v_S_size >= ((__pyx_v_X.shape[1]) / 2)) != 0);
+    __pyx_L103_next_and:;
+    __pyx_t_21 = (__pyx_v_stop != 0);
     __pyx_t_14 = __pyx_t_21;
     __pyx_L102_bool_binop_done:;
     if (__pyx_t_14) {
 
       /* "cyext_acv.pyx":3983
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
  *             break             # <<<<<<<<<<<<<<
  * 
  *     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -59382,7 +59475,7 @@ static PyObject *__pyx_f_9cyext_acv_global_sdp_clf_approx(__Pyx_memviewslice __p
       /* "cyext_acv.pyx":3982
  *             R.pop_back()
  * 
- *         if R.size() == 0 or S_size >= X.shape[1]/2:             # <<<<<<<<<<<<<<
+ *         if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:             # <<<<<<<<<<<<<<
  *             break
  * 
  */
@@ -59592,6 +59685,7 @@ static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_sel
   double __pyx_v_global_proba;
   int __pyx_v_minimal;
   PyObject *__pyx_v_search_space = 0;
+  int __pyx_v_stop;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -59599,12 +59693,14 @@ static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_sel
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("global_sdp_clf_approx (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,&__pyx_n_s_search_space,0};
-    PyObject* values[13] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_fX,&__pyx_n_s_y_pred,&__pyx_n_s_data,&__pyx_n_s_values,&__pyx_n_s_partition_leaves_trees,&__pyx_n_s_leaf_idx_trees,&__pyx_n_s_leaves_nb,&__pyx_n_s_scaling,&__pyx_n_s_C,&__pyx_n_s_global_proba,&__pyx_n_s_minimal,&__pyx_n_s_search_space,&__pyx_n_s_stop,0};
+    PyObject* values[14] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 14: values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
+        CYTHON_FALLTHROUGH;
         case 13: values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
         CYTHON_FALLTHROUGH;
         case 12: values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
@@ -59643,79 +59739,85 @@ static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_sel
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_fX)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 1); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 1); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_y_pred)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 2); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 2); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 3); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 3); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_values)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 4); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 4); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_partition_leaves_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 5); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 5); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaf_idx_trees)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 6); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 6); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_leaves_nb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 7); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 7); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_scaling)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 8); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 8); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_C)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 9); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 9); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 10:
         if (likely((values[10] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_global_proba)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 10); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 10); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 11:
         if (likely((values[11] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_minimal)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 11); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 11); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 12:
         if (likely((values[12] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_search_space)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, 12); __PYX_ERR(0, 3782, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 12); __PYX_ERR(0, 3782, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case 13:
+        if (likely((values[13] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_stop)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, 13); __PYX_ERR(0, 3782, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "global_sdp_clf_approx") < 0)) __PYX_ERR(0, 3782, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 13) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 14) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -59731,6 +59833,7 @@ static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_sel
       values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
       values[11] = PyTuple_GET_ITEM(__pyx_args, 11);
       values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
+      values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
     }
     __pyx_v_X = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_X.memview)) __PYX_ERR(0, 3782, __pyx_L3_error)
     __pyx_v_fX = __Pyx_PyObject_to_MemoryviewSlice_ds_long(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_fX.memview)) __PYX_ERR(0, 3782, __pyx_L3_error)
@@ -59745,10 +59848,11 @@ static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_sel
     __pyx_v_global_proba = __pyx_PyFloat_AsDouble(values[10]); if (unlikely((__pyx_v_global_proba == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 3785, __pyx_L3_error)
     __pyx_v_minimal = __Pyx_PyInt_As_int(values[11]); if (unlikely((__pyx_v_minimal == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 3786, __pyx_L3_error)
     __pyx_v_search_space = ((PyObject*)values[12]);
+    __pyx_v_stop = __Pyx_PyObject_IsTrue(values[13]); if (unlikely((__pyx_v_stop == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 3786, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 13, 13, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3782, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("global_sdp_clf_approx", 1, 14, 14, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3782, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cyext_acv.global_sdp_clf_approx", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -59756,7 +59860,7 @@ static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_sel
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_C), (&PyList_Type), 1, "C", 1))) __PYX_ERR(0, 3785, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_search_space), (&PyList_Type), 1, "search_space", 1))) __PYX_ERR(0, 3786, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9cyext_acv_42global_sdp_clf_approx(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_search_space);
+  __pyx_r = __pyx_pf_9cyext_acv_42global_sdp_clf_approx(__pyx_self, __pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_search_space, __pyx_v_stop);
 
   /* function exit code */
   goto __pyx_L0;
@@ -59767,7 +59871,7 @@ static PyObject *__pyx_pw_9cyext_acv_43global_sdp_clf_approx(PyObject *__pyx_sel
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9cyext_acv_42global_sdp_clf_approx(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, PyObject *__pyx_v_search_space) {
+static PyObject *__pyx_pf_9cyext_acv_42global_sdp_clf_approx(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_fX, __Pyx_memviewslice __pyx_v_y_pred, __Pyx_memviewslice __pyx_v_data, __Pyx_memviewslice __pyx_v_values, __Pyx_memviewslice __pyx_v_partition_leaves_trees, __Pyx_memviewslice __pyx_v_leaf_idx_trees, __Pyx_memviewslice __pyx_v_leaves_nb, __Pyx_memviewslice __pyx_v_scaling, PyObject *__pyx_v_C, double __pyx_v_global_proba, int __pyx_v_minimal, PyObject *__pyx_v_search_space, int __pyx_v_stop) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -59785,7 +59889,7 @@ static PyObject *__pyx_pf_9cyext_acv_42global_sdp_clf_approx(CYTHON_UNUSED PyObj
   if (unlikely(!__pyx_v_leaf_idx_trees.memview)) { __Pyx_RaiseUnboundLocalError("leaf_idx_trees"); __PYX_ERR(0, 3782, __pyx_L1_error) }
   if (unlikely(!__pyx_v_leaves_nb.memview)) { __Pyx_RaiseUnboundLocalError("leaves_nb"); __PYX_ERR(0, 3782, __pyx_L1_error) }
   if (unlikely(!__pyx_v_scaling.memview)) { __Pyx_RaiseUnboundLocalError("scaling"); __PYX_ERR(0, 3782, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_clf_approx(__pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_search_space, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3782, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9cyext_acv_global_sdp_clf_approx(__pyx_v_X, __pyx_v_fX, __pyx_v_y_pred, __pyx_v_data, __pyx_v_values, __pyx_v_partition_leaves_trees, __pyx_v_leaf_idx_trees, __pyx_v_leaves_nb, __pyx_v_scaling, __pyx_v_C, __pyx_v_global_proba, __pyx_v_minimal, __pyx_v_search_space, __pyx_v_stop, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3782, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;

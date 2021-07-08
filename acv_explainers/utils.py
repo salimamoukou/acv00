@@ -826,8 +826,8 @@ class ModelW:
             return self.model.predict_proba(x)[:, 1]
         else:
             if len(x.shape) == 1:
-                return self.model.predict_proba(x.reshape(-1, 1))[:, 1]
-            return self.model.predict_proba(x)[:, 1]
+                return self.model.predict(x.reshape(-1, 1))
+            return self.model.predict(x)
 
     def predict(self, x):
         return self.__call__(x)

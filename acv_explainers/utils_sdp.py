@@ -383,7 +383,7 @@ def msdp(X, S, model, rg_data):
     return sdp
 
 
-def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, r_search_space=None):
+def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, r_search_space=None, stop=True):
     N = X.shape[0]
     m = X.shape[1]
 
@@ -468,20 +468,20 @@ def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_prob
         for i in range(len(r)):
             R.remove(r[i])
 
-        if len(R) == 0 or S_size >= X.shape[1] / 2:
+        if (len(R) == 0 or S_size >= X.shape[1] / 2) and stop:
             break
 
     return np.asarray(sdp_global) / X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star,
                                                                                           dtype=np.long), np.array(sdp)
 
 def single_msdp_reg(x, S, model, rg_data, threshold=0.2):
-    fx = model(x.reshape(1, -1))
+    fx = model.predict(x.reshape(1, -1))
     d = x.shape[0]
     data = rg_data.copy()
     data[:, S] = x[S]
 
     if len(S) != d:
-        y_pred = model(data)
+        y_pred = model.predict(data)
         sdp = np.mean(np.abs(y_pred - fx) <= threshold)
         return sdp
     return 1
@@ -494,7 +494,7 @@ def msdp_reg(X, S, model, rg_data, threshold=0.2):
     return sdp
 
 
-def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, threshold=0.2, r_search_space=None):
+def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, threshold=0.2, r_search_space=None, stop=True):
     N = X.shape[0]
     m = X.shape[1]
 
@@ -580,7 +580,7 @@ def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_prob
         for i in range(len(r)):
             R.remove(r[i])
 
-        if len(R) == 0 or S_size >= X.shape[1] / 2:
+        if (len(R) == 0 or S_size >= X.shape[1] / 2) and stop:
             break
 
     return np.asarray(sdp_global) / X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star,

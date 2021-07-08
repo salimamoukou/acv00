@@ -842,7 +842,7 @@ cpdef global_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
             long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
-            int minimal):
+            int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -950,7 +950,7 @@ cpdef global_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0 or S_size >= X.shape[1]/2:
+        if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -964,7 +964,7 @@ cpdef global_sdp_reg(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
             long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
-            int minimal):
+            int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -1255,7 +1255,7 @@ cpdef global_sdp_reg(double[:, :] X, double[:] fX, double tX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0 or S_size >= X.shape[1]/2:
+        if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -2633,7 +2633,7 @@ cpdef global_sdp_reg_cpp_pa_coal(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
             long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
-            int num_threads):
+            int num_threads, bint stop):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -2855,7 +2855,7 @@ cpdef global_sdp_reg_cpp_pa_coal(double[:, :] X, double[:] fX, double tX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0 or S_size >= X.shape[1]/2:
+        if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -2868,7 +2868,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
             long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
-            int minimal):
+            int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -3057,7 +3057,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0 or S_size >= X.shape[1]/2:
+        if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -3071,7 +3071,7 @@ cpdef global_sdp_clf_ptrees(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
             long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
-            int minimal):
+            int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -3242,7 +3242,7 @@ cpdef global_sdp_clf_ptrees(double[:, :] X, long[:] fX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0:
+        if R.size() == 0 and stop:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
@@ -3783,7 +3783,7 @@ cpdef global_sdp_clf_approx(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
             long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
-            int minimal, list search_space):
+            int minimal, list search_space, bint stop):
 
     cdef unsigned int N = X.shape[0]
     cdef unsigned int m = X.shape[1]
@@ -3979,7 +3979,7 @@ cpdef global_sdp_clf_approx(double[:, :] X, long[:] fX,
             std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
             R.pop_back()
 
-        if R.size() == 0 or S_size >= X.shape[1]/2:
+        if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)

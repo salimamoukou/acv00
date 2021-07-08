@@ -25,20 +25,20 @@ class ACVTree(BaseTree):
                                        self.leaf_idx_trees, self.leaves_nb, self.max_var,
                                        self.node_idx_trees, S_star, N_star, size, C, num_threads)
 
-    def importance_sdp_clf_greedy(self, X, data, C=[[]], global_proba=0.9, minimal=1):
+    def importance_sdp_clf_greedy(self, X, data, C=[[]], global_proba=0.9, minimal=1, stop=True):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
         if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
                 self.num_outputs == 1:
             return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values_binary,
                                             self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                            self.scalings, C, global_proba, minimal)
+                                            self.scalings, C, global_proba, minimal, stop)
 
         return cyext_acv.global_sdp_clf(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, minimal)
+                                                    self.scalings, C, global_proba, minimal, stop)
 
-    def importance_sdp_clf_search(self, X, data, C=[[]], global_proba=0.9, minimal=1, search_space=[]):
+    def importance_sdp_clf_search(self, X, data, C=[[]], global_proba=0.9, minimal=1, search_space=[], stop=True):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
         if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier",
@@ -46,24 +46,24 @@ class ACVTree(BaseTree):
                 self.num_outputs == 1:
             return cyext_acv.global_sdp_clf_approx(np.array(X, dtype=np.float), fX, y_pred, data, self.values_binary,
                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                   self.scalings, C, global_proba, minimal, search_space)
+                                                   self.scalings, C, global_proba, minimal, search_space, stop)
 
         return cyext_acv.global_sdp_clf_approx(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, minimal, search_space)
+                                                    self.scalings, C, global_proba, minimal, search_space, stop)
 
-    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=1):
+    def importance_sdp_clf(self, X, data, C=[[]], global_proba=0.9, minimal=1, stop=True):
         if X.shape[1] > 15:
             flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
             node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
             order_va = ()
             for v in (node_idx.value_counts().keys()):
                 order_va += v
-            return self.importance_sdp_clf_search(X, data, C, global_proba, minimal, list(order_va[:15]))
+            return self.importance_sdp_clf_search(X, data, C, global_proba, minimal, list(order_va[:15]), stop)
         else:
-            return self.importance_sdp_clf_greedy(X, data, C, global_proba, minimal)
+            return self.importance_sdp_clf_greedy(X, data, C, global_proba, minimal, stop=stop)
 
-    def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, minimal=0):
+    def importance_sdp_clf_ptrees(self, X, data, C=[[]], global_proba=0.9, minimal=0, stop=True):
         fX = np.argmax(self.model.predict_proba(X), axis=1).astype(np.long)
         y_pred = np.argmax(self.model.predict_proba(data), axis=1).astype(np.long)
         if safe_isinstance(self.model, ["xgboost.sklearn.XGBClassifier", "catboost.core.CatBoostClassifier",
@@ -71,11 +71,11 @@ class ACVTree(BaseTree):
                 self.num_outputs == 1:
             return cyext_acv.global_sdp_clf_ptrees(np.array(X, dtype=np.float), fX, y_pred, data, self.values_binary,
                                                    self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                   self.scalings, C, global_proba, minimal)
+                                                   self.scalings, C, global_proba, minimal, stop)
 
         return cyext_acv.global_sdp_clf_ptrees(np.array(X, dtype=np.float), fX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, minimal)
+                                                    self.scalings, C, global_proba, minimal, stop)
 
     def compute_exp(self, X, S, data, num_threads=10):
         return cyext_acv.compute_exp(np.array(X, dtype=np.float), S, data, self.values, self.partition_leaves_trees,
@@ -169,20 +169,20 @@ class ACVTree(BaseTree):
                                        self.node_idx_trees, S_star, N_star, size, C, num_threads)
 
 
-    def importance_sdp_reg_cat(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
+    def importance_sdp_reg_cat(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0, stop=True):
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv.global_sdp_reg_cat(np.array(X, dtype=np.float), fX, tX,  y_pred, data, self.values, self.partition_leaves_trees,
-                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, minimal)
+                                     self.leaf_idx_trees, self.leaves_nb, self.scalings, C, global_proba, minimal, stop)
 
-    def importance_sdp_reg(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
+    def importance_sdp_reg(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0, stop=True):
         # if self.partition_leaves_trees.shape[0] > 1:
         #     raise NotImplementedError('Continuous SDP is currently available only for trees with n_trees=1')
         fX = self.predict(X)
         y_pred = self.predict(data)
         return cyext_acv.global_sdp_reg(np.array(X, dtype=np.float), fX, tX, y_pred, data, self.values,
                                                     self.partition_leaves_trees, self.leaf_idx_trees, self.leaves_nb,
-                                                    self.scalings, C, global_proba, minimal)
+                                                    self.scalings, C, global_proba, minimal, stop)
 
     def importance_sdp_reg_cat_nopa(self, X, tX, data, C=[[]], global_proba=0.9, minimal=0):
         fX = self.predict(X)
@@ -439,7 +439,7 @@ class ACVTree(BaseTree):
             return msdp_reg(X, S, self.model, data, threshold)
         return msdp_reg(X, S, model, data, threshold)
 
-    def importance_msdp_reg_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, threshold=0.2, r_search_space=None):
+    def importance_msdp_reg_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, threshold=0.2, r_search_space=None, stop=True):
         """
         Compute marginal S^\star of regression model
         """
@@ -448,10 +448,10 @@ class ACVTree(BaseTree):
         #                                          minimal=minimal,
         #                                          global_proba=global_proba)
         if model == None:
-            return importance_msdp_reg_search(X, rg_data=data, model=self.model, C=C, minimal=minimal, global_proba=global_proba, threshold=threshold, r_search_space=r_search_space)
-        return importance_msdp_reg_search(X, rg_data=data, model=model,  C=C, minimal=minimal, global_proba=global_proba, threshold=threshold, r_search_space=r_search_space)
+            return importance_msdp_reg_search(X, rg_data=data, model=self.model, C=C, minimal=minimal, global_proba=global_proba, threshold=threshold, r_search_space=r_search_space, stop=stop)
+        return importance_msdp_reg_search(X, rg_data=data, model=model,  C=C, minimal=minimal, global_proba=global_proba, threshold=threshold, r_search_space=r_search_space, stop=stop)
 
-    def importance_msdp_reg(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1):
+    def importance_msdp_reg(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1, threshold=0.2, stop=True):
         if X.shape[1] > 15:
             flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
             node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
@@ -459,9 +459,9 @@ class ACVTree(BaseTree):
             for v in (node_idx.value_counts().keys()):
                 order_va += v
             return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal,
-                                                   r_search_space=list(order_va[:15]))
+                                                   r_search_space=list(order_va[:15]), threshold=threshold, stop=stop)
         else:
-            return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal)
+            return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal, threshold=threshold, stop=stop)
 
 
 
