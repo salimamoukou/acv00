@@ -1,6 +1,8 @@
 import numpy as np
 import itertools
 from tqdm import tqdm
+from multiprocessing import Pool
+from functools import partial
 
 def compute_sdp_reg(X, tX, model, S, data):
     N = X.shape[0]
@@ -376,6 +378,13 @@ def single_msdp(x, S, model, rg_data):
     return 1
 
 
+def msdp_mthread(X, S, model, rg_data):
+    mthread = Pool()
+    sdp = np.array(mthread.map(partial(single_msdp, S=S, model=model, rg_data=rg_data), X))
+    mthread.close()
+    mthread.join()
+    return sdp
+
 def msdp(X, S, model, rg_data):
     sdp = np.zeros((X.shape[0]))
     for i in range(X.shape[0]):
@@ -443,7 +452,7 @@ def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_prob
             for i in range(N):
                 R_buf[i] = R[i]
 
-            sdp_b = msdp(X, S[:S_size], model, rg_data)
+            sdp_b = msdp_mthread(X, S[:S_size], model, rg_data)
             for i in range(N):
                 if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
                     sdp[R_buf[i]] = sdp_b[R_buf[i]]
@@ -485,6 +494,13 @@ def single_msdp_reg(x, S, model, rg_data, threshold=0.2):
         sdp = np.mean(np.abs(y_pred - fx) <= threshold)
         return sdp
     return 1
+
+def msdp_reg_mthread(X, S, model, rg_data, threshold=0.2):
+    mthread = Pool()
+    sdp = np.array(mthread.map(partial(single_msdp_reg, S=S, model=model, rg_data=rg_data, threshold=threshold), X))
+    mthread.close()
+    mthread.join()
+    return sdp
 
 
 def msdp_reg(X, S, model, rg_data, threshold=0.2):
@@ -554,7 +570,7 @@ def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_prob
             for i in range(N):
                 R_buf[i] = R[i]
 
-            sdp_b = msdp_reg(X, S[:S_size], model, rg_data, threshold)
+            sdp_b = msdp_reg_mthread(X, S[:S_size], model, rg_data, threshold)
 
             for i in range(N):
                 if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
