@@ -404,7 +404,8 @@ class ACVTree(BaseTree):
             return msdp(X, S, self.model, data)
         return msdp(X, S, model, data)
 
-    def importance_msdp_clf_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, r_search_space=None):
+    def importance_msdp_clf_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, r_search_space=None,
+                                   stop=True):
         """
         Compute marginal S^\star of model
         """
@@ -413,10 +414,10 @@ class ACVTree(BaseTree):
         #                                          minimal=minimal,
         #                                          global_proba=global_proba)
         if model == None:
-            return importance_msdp_clf_search(X=X, rg_data=data, model=self.model, C=C, minimal=minimal, global_proba=global_proba, r_search_space=r_search_space)
-        return importance_msdp_clf_search(X=X, rg_data=data, model=model, C=C, minimal=minimal, global_proba=global_proba, r_search_space=r_search_space)
+            return importance_msdp_clf_search(X=X, rg_data=data, model=self.model, C=C, minimal=minimal, global_proba=global_proba, r_search_space=r_search_space, stop=stop)
+        return importance_msdp_clf_search(X=X, rg_data=data, model=model, C=C, minimal=minimal, global_proba=global_proba, r_search_space=r_search_space, stop=stop)
 
-    def importance_msdp_clf(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1):
+    def importance_msdp_clf(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1, stop=True):
         if X.shape[1] > 15:
             flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
             node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
@@ -424,9 +425,9 @@ class ACVTree(BaseTree):
             for v in (node_idx.value_counts().keys()):
                 order_va += v
             return self.importance_msdp_clf_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal,
-                                                   r_search_space=list(order_va[:15]))
+                                                   r_search_space=list(order_va[:15]), stop=stop)
         else:
-            return self.importance_msdp_clf_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal)
+            return self.importance_msdp_clf_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal, stop=stop)
 
     def compute_msdp_reg(self, X, S, data, model=None, N=10000, threshold=0.2):
         """

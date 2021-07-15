@@ -452,7 +452,7 @@ def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_prob
             for i in range(N):
                 R_buf[i] = R[i]
 
-            sdp_b = msdp_mthread(X, S[:S_size], model, rg_data)
+            sdp_b = msdp(X, S[:S_size], model, rg_data)
             for i in range(N):
                 if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
                     sdp[R_buf[i]] = sdp_b[R_buf[i]]
@@ -465,12 +465,12 @@ def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_prob
                     len_s_star[R_buf[i]] = S_size
                     for s in range(S_size):
                         s_star[R_buf[i], s] = S[s]
-                    for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
-                        s_star[R_buf[i], s] = -1
 
         for i in range(N):
             if sdp[R_buf[i]] >= global_proba:
                 r.append(R[i])
+                for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
+                    s_star[R_buf[i], s] = -1
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
 
@@ -570,7 +570,7 @@ def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_prob
             for i in range(N):
                 R_buf[i] = R[i]
 
-            sdp_b = msdp_reg_mthread(X, S[:S_size], model, rg_data, threshold)
+            sdp_b = msdp_reg(X, S[:S_size], model, rg_data, threshold)
 
             for i in range(N):
                 if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
@@ -584,12 +584,12 @@ def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_prob
                     len_s_star[R_buf[i]] = S_size
                     for s in range(S_size):
                         s_star[R_buf[i], s] = S[s]
-                    for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
-                        s_star[R_buf[i], s] = -1
 
         for i in range(N):
             if sdp[R_buf[i]] >= global_proba:
                 r.append(R[i])
+                for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
+                    s_star[R_buf[i], s] = -1
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
 
