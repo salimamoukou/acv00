@@ -464,6 +464,34 @@ class ACVTree(BaseTree):
         else:
             return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba, minimal=minimal, threshold=threshold, stop=stop)
 
+    def compute_exp_shaff(self, X, data, y_data, S, min_node_size=5):
+        exp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            exp[i] = compute_shaff_exp(X=X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size)
+        return exp
+
+    def compute_sdp_clf_shaff(self, X, y_X, data, y_data, S, min_node_size=5):
+        sdp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            sdp[i] = compute_shaff_sdp_clf(X=X[i], y_X=y_X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size)
+        return sdp
+
+    def compute_sdp_shaff(self, X, y_X, t, data, y_data, S, min_node_size=5):
+        sdp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            sdp[i] = compute_shaff_sdp(X=X[i], t=t, y_X=y_X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size)
+        return sdp
+
+    def compute_quantile_shaff(self, X, data, y_data, S, min_node_size=5, quantile=95):
+        exp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            exp[i] = compute_shaff_quantile(X=X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size, quantile=quantile)
+        return exp
+
+    def compute_sdp_rf(self, x, y, data, y_data, S, min_node_size=5):
+        sdp = cyext_acv.compute_sdp_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size)
+        return sdp
 
 
 
