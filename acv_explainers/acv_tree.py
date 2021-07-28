@@ -488,10 +488,156 @@ class ACVTree(BaseTree):
             exp[i] = compute_shaff_quantile(X=X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size, quantile=quantile)
         return exp
 
-    def compute_sdp_rf(self, x, y, data, y_data, S, min_node_size=5):
+    def compute_sdp_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
         sdp = cyext_acv.compute_sdp_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
-                                       self.children_right, self.max_depth, min_node_size)
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
         return sdp
 
 
+class ACVTreeAgnostic(BaseTree):
 
+    def compute_msdp_clf(self, X, S, data, model=None, N=10000):
+        """
+        Compute marginal SDP
+        """
+        # if data:
+        #     return msdp_true(X, S, self.model, self.data)
+
+        if model == None:
+            return msdp(X, S, self.model, data)
+        return msdp(X, S, model, data)
+
+    def importance_msdp_clf_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, r_search_space=None,
+                                   stop=True):
+        """
+        Compute marginal S^\star of model
+        """
+        # if data:
+        #     return importance_msdp_clf_true(X.values, self.model, self.data, C=C,
+        #                                          minimal=minimal,
+        #                                          global_proba=global_proba)
+        if model == None:
+            return importance_msdp_clf_search(X=X, rg_data=data, model=self.model, C=C, minimal=minimal,
+                                              global_proba=global_proba, r_search_space=r_search_space, stop=stop)
+        return importance_msdp_clf_search(X=X, rg_data=data, model=model, C=C, minimal=minimal,
+                                          global_proba=global_proba, r_search_space=r_search_space, stop=stop)
+
+    def importance_msdp_clf(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1, stop=True):
+        if X.shape[1] > 15:
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
+            order_va = ()
+            for v in (node_idx.value_counts().keys()):
+                order_va += v
+            return self.importance_msdp_clf_search(X=X, data=data, model=model, C=C, global_proba=global_proba,
+                                                   minimal=minimal,
+                                                   r_search_space=list(order_va[:15]), stop=stop)
+        else:
+            return self.importance_msdp_clf_search(X=X, data=data, model=model, C=C, global_proba=global_proba,
+                                                   minimal=minimal, stop=stop)
+
+    def compute_msdp_reg(self, X, S, data, model=None, N=10000, threshold=0.2):
+        """
+        Compute marginal SDP of regression model
+        """
+        # if data:
+        #     return msdp_true(X, S, self.model, self.data)
+
+        if model == None:
+            return msdp_reg(X, S, self.model, data, threshold)
+        return msdp_reg(X, S, model, data, threshold)
+
+    def importance_msdp_reg_search(self, X, data, model=None, C=[[]], minimal=1, global_proba=0.9, threshold=0.2,
+                                   r_search_space=None, stop=True):
+        """
+        Compute marginal S^\star of regression model
+        """
+        # if data:
+        #     return importance_msdp_clf_true(X.values, self.model, self.data, C=C,
+        #                                          minimal=minimal,
+        #                                          global_proba=global_proba)
+        if model == None:
+            return importance_msdp_reg_search(X, rg_data=data, model=self.model, C=C, minimal=minimal,
+                                              global_proba=global_proba, threshold=threshold,
+                                              r_search_space=r_search_space, stop=stop)
+        return importance_msdp_reg_search(X, rg_data=data, model=model, C=C, minimal=minimal, global_proba=global_proba,
+                                          threshold=threshold, r_search_space=r_search_space, stop=stop)
+
+    def importance_msdp_reg(self, X, data, model=None, C=[[]], global_proba=0.9, minimal=1, threshold=0.2, stop=True):
+        if X.shape[1] > 15:
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
+            order_va = ()
+            for v in (node_idx.value_counts().keys()):
+                order_va += v
+            return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba,
+                                                   minimal=minimal,
+                                                   r_search_space=list(order_va[:15]), threshold=threshold, stop=stop)
+        else:
+            return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba,
+                                                   minimal=minimal, threshold=threshold, stop=stop)
+
+    def compute_sdp_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        sdp = cyext_acv.compute_sdp_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
+        return sdp
+
+    def importance_sdp_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
+                          C=[[]], global_proba=0.9, minimal=1, stop=True):
+
+        if x.shape[1] > 15:
+
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
+            search_space = ()
+            for v in (node_idx.value_counts().keys()):
+                search_space += v
+        else:
+            search_space = [i for i in range(x.shape[1])]
+
+        sdp = cyext_acv.global_sdp_rf(x, y, data, y_data, self.features, self.thresholds, self.children_left,
+                                      self.children_right, self.max_depth, min_node_size, classifier, t, C,
+                                      global_proba, minimal, stop, search_space)
+        return sdp
+
+    def compute_exp_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        exp = cyext_acv.compute_exp_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
+        return exp
+
+    def compute_quantile_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, quantile=95):
+        y_quantiles = cyext_acv.compute_quantile_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t, quantile)
+        return y_quantiles
+
+    def compute_quantile_diff_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, quantile=95):
+        y_quantiles_diff = cyext_acv.compute_quantile_diff_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t, quantile)
+        return y_quantiles_diff
+
+    def compute_exp_shaff(self, X, data, y_data, S, min_node_size=5):
+        exp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            exp[i] = compute_shaff_exp(X=X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size)
+        return exp
+
+    def compute_sdp_clf_shaff(self, X, y_X, data, y_data, S, min_node_size=5):
+        sdp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            sdp[i] = compute_shaff_sdp_clf(X=X[i], y_X=y_X[i], S=S, model=self, data=data, Y=y_data,
+                                           min_node_size=min_node_size)
+        return sdp
+
+    def compute_sdp_shaff(self, X, y_X, t, data, y_data, S, min_node_size=5):
+        sdp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            sdp[i] = compute_shaff_sdp(X=X[i], t=t, y_X=y_X[i], S=S, model=self, data=data, Y=y_data,
+                                       min_node_size=min_node_size)
+        return sdp
+
+    def compute_quantile_shaff(self, X, data, y_data, S, min_node_size=5, quantile=95):
+        exp = np.zeros((X.shape[0], 1))
+        for i in range(X.shape[0]):
+            exp[i] = compute_shaff_quantile(X=X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size,
+                                            quantile=quantile)
+        return exp

@@ -962,10 +962,15 @@ def generate_y(x, data_type, coefs=0):
         logit2 = np.exp(-10 * np.sin(0.2 * x[:, 6]) + abs(x[:, 7]) + \
                         x[:, 8] + np.exp(-x[:, 9]) - 2.4)
     elif data_type == 'syn7':
-        logit1 = np.exp(np.sum(coefs[0:2] * x[:, 0:2], axis=1))
+        logit1 = np.sum(coefs[0:2] * x[:, 0:2], axis=1)
         # logit2 = np.exp(np.sum(x[:, 2:6] ** 2, axis=1) - 4.0)
-        logit2 = np.exp(np.sum(coefs[2:4] * x[:, 2:4], axis=1))
+        logit2 = np.sum(coefs[2:4] * x[:, 2:4], axis=1)
         # logit2 = np.exp(x[:, 2] * x[:, 3])
+
+        idx1 = (x[:, 4] < 0) * 1
+        idx2 = (x[:, 4] >= 0) * 1
+        logit = logit1 * idx1 + logit2 * idx2
+        return logit
 
 
         # For syn4, syn5 and syn6 only
@@ -976,11 +981,12 @@ def generate_y(x, data_type, coefs=0):
         logit = logit1 * idx1 + logit2 * idx2
 
         # Compute P(Y=0|X)
-    prob_0 = np.reshape((logit / (1 + logit)), [n, 1])
+    prob_0 = np.reshape((logit / (1 + logit)), [n])
 
     # Sampling process
     y = np.zeros([n, 2])
-    y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [n, ])
+    # y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [n, ])
+    y[:, 0] = prob_0
     y[:, 1] = 1 - y[:, 0]
 
     return y
@@ -1692,3 +1698,92 @@ def swing_tree_shap_clf_true_v(X, yX,  C,  tree, mean, cov, N_samples, threshold
                 swings_prop[:, a, 2] += dif_null
 
     return phi / m, swings, swings_prop
+
+
+def cond_predict_true(x, yx, S, coefs, mean, cov,  N=10000):
+    d = x.shape[0]
+    index = list(range(d))
+    rg_data = np.zeros(shape=(N, d))
+    rg_data[:, S] = x[S]
+
+    if len(S) != d:
+        S_bar = [i for i in index if i not in S]
+        rg = sampleMVN(N, mean, cov, S_bar, S, x[S])
+        rg_data[:, S_bar] = rg
+
+        logit1 = np.sum(coefs[0:2] * rg_data[:, 0:2], axis=1)
+        logit2 = np.sum(coefs[2:4] * rg_data[:, 2:4], axis=1)
+        idx1 = (rg_data[:, 4] < 0) * 1
+        idx2 = (rg_data[:, 4] >= 0) * 1
+        logit = logit1 * idx1 + logit2 * idx2
+
+        y_pred = logit
+        # print(prob_0)
+    else:
+        # x = np.expand_dims(x, axis=0)
+        # logit1 = np.exp(x[:, 0] * x[:, 1])
+        # logit2 = np.exp(x[:, 2] * x[:, 3])
+        # idx1 = (x[:, 4] < 0) * 1
+        # idx2 = (x[:, 4] >= 0) * 1
+        # logit = logit1 * idx1 + logit2 * idx2
+        #
+        # # Compute P(Y=0|X)
+        # prob_0 = np.reshape((logit / (1 + logit)), [1, 1])
+        #
+        # # Sampling process
+        # y = np.zeros([N, 2])
+        # y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [1, ])
+        # y[:, 1] = 1 - y[:, 0]
+
+        y_pred = np.expand_dims(yx, axis=0)
+
+    # return np.mean(y_pred, axis=0)
+    return y_pred - yx
+
+
+def cond_predict_true_clf(x, yx, coefs, S, mean, cov,  N=10000):
+    d = x.shape[0]
+    index = list(range(d))
+    rg_data = np.zeros(shape=(N, d))
+    rg_data[:, S] = x[S]
+
+    if len(S) != d:
+        S_bar = [i for i in index if i not in S]
+        rg = sampleMVN(N, mean, cov, S_bar, S, x[S])
+        rg_data[:, S_bar] = rg
+
+        logit1 = np.exp(rg_data[:, 0] * rg_data[:, 1])
+        logit2 = np.exp(rg_data[:, 2] * rg_data[:, 3])
+        idx1 = (rg_data[:, 4] < 0) * 1
+        idx2 = (rg_data[:, 4] >= 0) * 1
+        logit = logit1 * idx1 + logit2 * idx2
+
+        # Compute P(Y=0|X)
+        prob_0 = np.reshape((logit / (1 + logit)), [N])
+
+        # Sampling process
+        # y = np.zeros([N, 2])
+        # y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [N, ])
+        # y[:, 1] = 1 - y[:, 0]
+
+        y_pred = 1 - prob_0
+        # print(prob_0)
+    else:
+        # x = np.expand_dims(x, axis=0)
+        # logit1 = np.exp(x[:, 0] * x[:, 1])
+        # logit2 = np.exp(x[:, 2] * x[:, 3])
+        # idx1 = (x[:, 4] < 0) * 1
+        # idx2 = (x[:, 4] >= 0) * 1
+        # logit = logit1 * idx1 + logit2 * idx2
+        #
+        # # Compute P(Y=0|X)
+        # prob_0 = np.reshape((logit / (1 + logit)), [1, 1])
+        #
+        # # Sampling process
+        # y = np.zeros([N, 2])
+        # y[:, 0] = np.reshape(np.random.binomial(1, prob_0), [1, ])
+        # y[:, 1] = 1 - y[:, 0]
+
+        y_pred = np.expand_dims(yx, axis=0)
+
+    return y_pred-yx

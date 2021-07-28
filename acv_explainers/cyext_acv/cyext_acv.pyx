@@ -8,6 +8,7 @@ cimport cython
 from scipy.special import comb
 import itertools
 from tqdm import tqdm
+from acv_explainers.utils import weighted_percentile
 from cython.parallel cimport prange, parallel, threadid
 cimport openmp
 
@@ -4022,16 +4023,15 @@ cpdef double _comb_int_long(unsigned long N, unsigned long k) nogil:
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & data, double[:] & y_data, vector[int] & S,
+cdef double single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
-        int & max_depth, int & min_node_size):
+        int & max_depth, int & min_node_size, int & classifier, double & t, double[::1] & weights, double[::1] & samples, double[::1] & samples_child) nogil:
 
     cdef unsigned int n_trees = features.shape[0]
     cdef unsigned int N = data.shape[0]
     cdef double s, sdp
     sdp = 0
-    cdef double[:] weights, samples, samples_child
-    weights = np.zeros(N)
+
 
     cdef unsigned int b, level, it_node, i
     cdef vector[int] nodes_level, nodes_child
@@ -4041,8 +4041,9 @@ cdef single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & data, do
         nodes_level.push_back(0)
         nodes_child.clear()
 
-        samples = np.ones(N)
-        samples_child = np.ones(N)
+        for i in range(N):
+            samples[i] = 1
+            samples_child[i] = 1
 
         for level in range(max_depth):
             for it_node in range(nodes_level.size()):
@@ -4083,8 +4084,12 @@ cdef single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & data, do
         for i in range(N):
             weights[i] += samples[i] * (1/s)
 
-    for i in range(N):
-        sdp  += (weights[i]/n_trees) * (y_x == y_data[i])
+    if classifier == 1:
+        for i in range(N):
+            sdp  += (weights[i]/n_trees) * (y_x == y_data[i])
+    else:
+        for i in range(N):
+            sdp  += (weights[i]/n_trees) * ((y_x - y_data[i])*(y_x - y_data[i]) <= t)
 
     return sdp
 
@@ -4092,15 +4097,424 @@ cdef single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & data, do
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rf(double[:, :] X, double[:] y_X,  double[:, :] data, double[:] y_data, vector[int] S,
+cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
-        int max_depth, int min_node_size):
+        int max_depth, int min_node_size, int & classifier, double & t):
 
         cdef int N = X.shape[0]
-        cdef double[:] sdp = np.zeros(N)
+        cdef double[::1] sdp = np.zeros(N)
+        cdef double[:, ::1] weights, samples, samples_child
+        weights = np.zeros((N, data.shape[0]))
+        samples = np.ones((N, data.shape[0]))
+        samples_child = np.ones((N, data.shape[0]))
         cdef int i
-        for i in range(N):
+        for i in prange(N, nogil=True):
             sdp[i] = single_compute_sdp_rf(X[i], y_X[i], data, y_data, S,
                         features, thresholds, children_left, children_right,
-                        max_depth, min_node_size)
+                        max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :])
+        return np.array(sdp)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
+            int minimal, bint stop, list search_space):
+
+    cdef unsigned int N = X.shape[0]
+    cdef unsigned int m = X.shape[1]
+
+    cdef double[:, ::1] weights, samples, samples_child
+    weights = np.zeros((N, data.shape[0]))
+    samples = np.ones((N, data.shape[0]))
+    samples_child = np.ones((N, data.shape[0]))
+
+    cdef double[:] sdp, sdp_b
+    cdef double[:] sdp_global
+    sdp = np.zeros((N))
+    sdp_b = np.zeros((N))
+    sdp_global = np.zeros((m))
+
+    cdef unsigned int it, it_s, a_it, b_it, o_all, p, p_s, nb_leaf, p_u, p_d, p_su, p_sd, down, up
+    cdef double ss, ss_a, ss_u, ss_d
+    cdef int b, leaf_numb, i, s, s_0, s_1, S_size, j, max_size, size
+
+    cdef vector[int] S, len_s_star
+    len_s_star = np.zeros((N), dtype=np.int)
+
+    cdef list power, va_id
+
+    cdef vector[long] R, r
+    R.resize(N)
+    for i in range(N):
+        R[i] = i
+    r.resize(N)
+
+    cdef long[:] R_buf
+    R_buf = np.zeros((N), dtype=np.int)
+
+    if C[0] != []:
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
+        va_id = [[i] for i in search_space if i not in remove_va]
+        for ci in range(len(C)):
+            i = 0
+            for cj in range(len(C[ci])):
+                if C[ci][cj] in search_space:
+                    i += 1
+                    break
+            if i != 0:
+                va_id += [C[ci]]
+    else:
+        va_id = [[i] for i in search_space]
+
+    m = len(va_id)
+    power = []
+    max_size = 0
+    for size in range(m + 1):
+        power_b = []
+        for co in itertools.combinations(va_id, size):
+            power_b.append(np.array(sum(list(co),[])))
+            max_size += 1
+        power.append(power_b)
+        if max_size >= 2**15:
+            break
+
+    cdef vector[vector[vector[long]]] power_cpp = power
+    cdef long[:, :] s_star
+    s_star = -1*np.ones((N, X.shape[1]), dtype=np.int)
+
+
+    cdef long power_set_size = 2**m
+    S = np.zeros((data.shape[1]), dtype=np.int)
+
+    for s_0 in tqdm(range(minimal, m + 1)):
+        for s_1 in range(0, power_cpp[s_0].size()):
+            for i in range(power_cpp[s_0][s_1].size()):
+                S[i] = power_cpp[s_0][s_1][i]
+
+            S_size = power_cpp[s_0][s_1].size()
+            r.clear()
+            N = R.size()
+            for i in range(N):
+                R_buf[i] = R[i]
+
+                weights = np.zeros((N, data.shape[0]))
+                samples = np.ones((N, data.shape[0]))
+                samples_child = np.ones((N, data.shape[0]))
+
+                sdp_b[R_buf[i]] = single_compute_sdp_rf(X[R_buf[i]],  y_X[R_buf[i]], data, y_data, S[:S_size], features, thresholds,  children_left, children_right,
+                                 max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :])
+
+            for i in range(N):
+                if sdp_b[R_buf[i]] >= sdp[R_buf[i]]:
+                    sdp[R_buf[i]] = sdp_b[R_buf[i]]
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+
+                if S_size == X.shape[1]:
+                    sdp[R_buf[i]] = 1
+                    len_s_star[R_buf[i]] = S_size
+                    for s in range(S_size):
+                        s_star[R_buf[i], s] = S[s]
+                    for s in range(len_s_star[R_buf[i]], X.shape[1]): # to filter (important for coalition)
+                        s_star[R_buf[i], s] = -1
+
+        for i in range(N):
+            if sdp[R_buf[i]] >= global_proba:
+                r.push_back(R[i])
+                for s in range(len_s_star[R_buf[i]]):
+                    sdp_global[s_star[R_buf[i], s]] += 1
+
+        for i in range(r.size()):
+            std_remove[vector[long].iterator, long](R.begin(), R.end(), r[i])
+            R.pop_back()
+
+        if (R.size() == 0 or S_size >= X.shape[1]/2) and stop:
+            break
+
+    return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cdef double single_compute_exp_rf(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+        int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
+        int & max_depth, int & min_node_size, int & classifier, double & t, double[::1] & weights, double[::1] & samples, double[::1] & samples_child) nogil:
+
+    cdef unsigned int n_trees = features.shape[0]
+    cdef unsigned int N = data.shape[0]
+    cdef double s, sdp
+    sdp = 0
+
+
+    cdef unsigned int b, level, it_node, i
+    cdef vector[int] nodes_level, nodes_child
+
+    for b in range(n_trees):
+        nodes_level.clear()
+        nodes_level.push_back(0)
+        nodes_child.clear()
+
+        for i in range(N):
+            samples[i] = 1
+            samples_child[i] = 1
+
+        for level in range(max_depth):
+            for it_node in range(nodes_level.size()):
+                s = 0
+                if std_find[vector[int].iterator, int](S.begin(), S.end(), features[b, nodes_level[it_node]]) != S.end():
+                    if x[features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
+                        nodes_child.push_back(children_left[b, nodes_level[it_node]])
+
+                        for i in range(N):
+                            samples_child[i] = samples[i] * (data[i, features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]])
+                            s += samples_child[i]
+                    else:
+                        nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+                        for i in range(N):
+                            samples_child[i] = samples[i] * (data[i, features[b, nodes_level[it_node]]] > thresholds[b, nodes_level[it_node]])
+                            s += samples_child[i]
+                else:
+                     nodes_child.push_back(children_left[b, nodes_level[it_node]])
+                     nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+                     for i in range(N):
+                        samples_child[i] = samples[i]
+                        s += samples_child[i]
+
+                if s < min_node_size:
+                    break
+                else:
+                    for i in range(N):
+                        samples[i] = samples_child[i]
+
+            nodes_level = nodes_child
+
+        s = 0
+        for i in range(N):
+            s += samples[i]
+
+        for i in range(N):
+            weights[i] += samples[i] * (1/s)
+
+    if classifier == 1:
+        for i in range(N):
+            sdp  += (weights[i]/n_trees) * y_data[i]
+    else:
+        for i in range(N):
+            sdp  += (weights[i]/n_trees) * (y_x - y_data[i])*(y_x - y_data[i])
+
+    return sdp
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_exp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t):
+
+        cdef int N = X.shape[0]
+        cdef double[::1] sdp = np.zeros(N)
+        cdef double[:, ::1] weights, samples, samples_child
+        weights = np.zeros((N, data.shape[0]))
+        samples = np.ones((N, data.shape[0]))
+        samples_child = np.ones((N, data.shape[0]))
+        cdef int i
+        for i in prange(N, nogil=True):
+            sdp[i] = single_compute_exp_rf(X[i], y_X[i], data, y_data, S,
+                        features, thresholds, children_left, children_right,
+                        max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :])
+        return np.array(sdp)
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cdef double single_compute_quantile_rf(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+        int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
+        int & max_depth, int & min_node_size, int & classifier, double & t, double[::1] & weights, double[::1] & samples, double[::1] & samples_child, double & quantile):
+
+    cdef unsigned int n_trees = features.shape[0]
+    cdef unsigned int N = data.shape[0]
+    cdef double s, sdp
+    sdp = 0
+
+
+    cdef unsigned int b, level, it_node, i
+    cdef vector[int] nodes_level, nodes_child
+
+    for b in range(n_trees):
+        nodes_level.clear()
+        nodes_level.push_back(0)
+        nodes_child.clear()
+
+        for i in range(N):
+            samples[i] = 1
+            samples_child[i] = 1
+
+        for level in range(max_depth):
+            for it_node in range(nodes_level.size()):
+                s = 0
+                if std_find[vector[int].iterator, int](S.begin(), S.end(), features[b, nodes_level[it_node]]) != S.end():
+                    if x[features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
+                        nodes_child.push_back(children_left[b, nodes_level[it_node]])
+
+                        for i in range(N):
+                            samples_child[i] = samples[i] * (data[i, features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]])
+                            s += samples_child[i]
+                    else:
+                        nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+                        for i in range(N):
+                            samples_child[i] = samples[i] * (data[i, features[b, nodes_level[it_node]]] > thresholds[b, nodes_level[it_node]])
+                            s += samples_child[i]
+                else:
+                     nodes_child.push_back(children_left[b, nodes_level[it_node]])
+                     nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+                     for i in range(N):
+                        samples_child[i] = samples[i]
+                        s += samples_child[i]
+
+                if s < min_node_size:
+                    break
+                else:
+                    for i in range(N):
+                        samples[i] = samples_child[i]
+
+            nodes_level = nodes_child
+
+        s = 0
+        for i in range(N):
+            s += samples[i]
+
+        for i in range(N):
+            weights[i] += samples[i] * (1/s)
+
+    weights_py = np.array(weights)/n_trees
+    sorter = np.argsort(y_data)
+    y_quantile = weighted_percentile(y_data, quantile, weights_py, sorter)
+    return y_quantile
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_quantile_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t, double & quantile):
+
+        cdef int N = X.shape[0]
+        cdef double[::1] sdp = np.zeros(N)
+        cdef double[:, ::1] weights, samples, samples_child
+        weights = np.zeros((N, data.shape[0]))
+        samples = np.ones((N, data.shape[0]))
+        samples_child = np.ones((N, data.shape[0]))
+        cdef int i
+        for i in range(N):
+            sdp[i] = single_compute_quantile_rf(X[i], y_X[i], data, y_data, S,
+                        features, thresholds, children_left, children_right,
+                        max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :], quantile)
+        return np.array(sdp)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cdef double single_compute_quantile_diff_rf(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+        int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
+        int & max_depth, int & min_node_size, int & classifier, double & t, double[::1] & weights, double[::1] & samples, double[::1] & samples_child, double & quantile):
+
+    cdef unsigned int n_trees = features.shape[0]
+    cdef unsigned int N = data.shape[0]
+    cdef double s, sdp
+    sdp = 0
+
+    cdef double[::1] local_diff = np.zeros(N)
+
+    cdef unsigned int b, level, it_node, i
+    cdef vector[int] nodes_level, nodes_child
+
+    for b in range(n_trees):
+        nodes_level.clear()
+        nodes_level.push_back(0)
+        nodes_child.clear()
+
+        for i in range(N):
+            samples[i] = 1
+            samples_child[i] = 1
+
+        for level in range(max_depth):
+            for it_node in range(nodes_level.size()):
+                s = 0
+                if std_find[vector[int].iterator, int](S.begin(), S.end(), features[b, nodes_level[it_node]]) != S.end():
+                    if x[features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
+                        nodes_child.push_back(children_left[b, nodes_level[it_node]])
+
+                        for i in range(N):
+                            samples_child[i] = samples[i] * (data[i, features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]])
+                            s += samples_child[i]
+                    else:
+                        nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+                        for i in range(N):
+                            samples_child[i] = samples[i] * (data[i, features[b, nodes_level[it_node]]] > thresholds[b, nodes_level[it_node]])
+                            s += samples_child[i]
+                else:
+                     nodes_child.push_back(children_left[b, nodes_level[it_node]])
+                     nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+                     for i in range(N):
+                        samples_child[i] = samples[i]
+                        s += samples_child[i]
+
+                if s < min_node_size:
+                    break
+                else:
+                    for i in range(N):
+                        samples[i] = samples_child[i]
+
+            nodes_level = nodes_child
+
+        s = 0
+        for i in range(N):
+            s += samples[i]
+
+        for i in range(N):
+            weights[i] += samples[i] * (1/s)
+            # local_diff[i] = (y_data[i] - y_x)*(y_data[i] - y_x)
+            local_diff[i] = y_x - y_data[i]
+    weights_py = np.array(weights)/n_trees
+    sorter = np.argsort(local_diff)
+    y_quantile = weighted_percentile(local_diff, quantile, weights_py, sorter)
+    return y_quantile
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_quantile_diff_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t, double & quantile):
+
+        cdef int N = X.shape[0]
+        cdef double[::1] sdp = np.zeros(N)
+        cdef double[:, ::1] weights, samples, samples_child
+        weights = np.zeros((N, data.shape[0]))
+        samples = np.ones((N, data.shape[0]))
+        samples_child = np.ones((N, data.shape[0]))
+        cdef int i
+        for i in range(N):
+            sdp[i] = single_compute_quantile_diff_rf(X[i], y_X[i], data, y_data, S,
+                        features, thresholds, children_left, children_right,
+                        max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :], quantile)
         return np.array(sdp)
