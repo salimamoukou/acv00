@@ -585,7 +585,7 @@ class ACVTreeAgnostic(BaseTree):
     def importance_sdp_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
                           C=[[]], global_proba=0.9, minimal=1, stop=True):
 
-        if x.shape[1] > 15:
+        if x.shape[1] > 10:
 
             flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
             node_idx = pd.DataFrame({'nodes': np.array(flat_list)})
@@ -597,7 +597,7 @@ class ACVTreeAgnostic(BaseTree):
 
         sdp = cyext_acv.global_sdp_rf(x, y, data, y_data, self.features, self.thresholds, self.children_left,
                                       self.children_right, self.max_depth, min_node_size, classifier, t, C,
-                                      global_proba, minimal, stop, search_space)
+                                      global_proba, minimal, stop, list(search_space[:10]))
         return sdp
 
     def compute_exp_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
