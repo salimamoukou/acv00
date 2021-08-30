@@ -577,6 +577,12 @@ class ACVTreeAgnostic(BaseTree):
             return self.importance_msdp_reg_search(X=X, data=data, model=model, C=C, global_proba=global_proba,
                                                    minimal=minimal, threshold=threshold, stop=stop)
 
+    def compute_cdf_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        sdp = cyext_acv.compute_cdf_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
+        return sdp
+
+
     def compute_sdp_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
         sdp = cyext_acv.compute_sdp_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
