@@ -7,7 +7,7 @@ import random
 import pytest
 import sklearn
 import sklearn.pipeline
-import shap
+# import shap
 import time
 import pstats, cProfile
 

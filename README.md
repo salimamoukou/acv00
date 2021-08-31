@@ -11,11 +11,6 @@ See the papers [here](https://github.com/salimamoukou/acv00/blob/main/papers/)
 ## Requirements
 Python 3.6+ 
 
-Install the required packages:
-```
-$ pip install -r requirements.txt
-```
-
 **OSX**: ACV uses Cython extensions that need to be compiled with multi-threading support enabled. 
 The default Apple Clang compiler does not support OpenMP.
 To solve this issue, obtain the lastest gcc version with Homebrew that has multi-threading enabled: 
@@ -27,7 +22,7 @@ see for example [pysteps installation for OSX.](https://pypi.org/project/pysteps
 
 Install the acv package:
 ```
-$ python setup.py install 
+$ pip install acv-exp
 ```
 
 ## How does ACV work?

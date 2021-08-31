@@ -1,9 +1,7 @@
 scipy
 matplotlib
 seaborn
-rpy2 == 2.9.4
 tqdm
-shap
 Cython
 numpy
 sklearn
