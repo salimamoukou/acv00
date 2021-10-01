@@ -2,7 +2,8 @@ from pathlib import Path
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy
-from setuptools import setup, Extension
+# from setuptools import setup, Extension
+from distutils.core import setup, Extension
 
 c_ext = Extension('cext_acv', sources=['acv_explainers/cext_acv/_cext.cc'])
 cy_ext = Extension('cyext_acv', ['acv_explainers/cyext_acv/cyext_acv.pyx'], extra_compile_args=['-fopenmp'],
@@ -32,7 +33,7 @@ setup(name='acv-exp',
       setup_requires=['numpy'],
       install_requires=['numpy', 'scipy', 'scikit-learn', 'matplotlib', 'pandas', 'tqdm', 'ipython', 'seaborn'],
       extras_require={'test': ['xgboost', 'lightgbm', 'catboost', 'pyspark', 'shap', 'rpy2 == 2.9.4']},
-      packages=['acv_explainers', 'experiments'],
+      packages=['acv_explainers', 'experiments', 'acv_app', 'acv_app.colors'],
       license='MIT',
       zip_safe=False
       )

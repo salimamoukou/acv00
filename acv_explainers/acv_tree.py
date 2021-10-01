@@ -577,6 +577,16 @@ class ACVTreeAgnostic(BaseTree):
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
         return sdp
 
+    def compute_sdp_rule(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        sdp, rules = cyext_acv.compute_sdp_rule(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
+        return sdp, rules
+
+    def compute_sdp_maxrules(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, pi=0.95):
+        sdp, rules, sdp_all, rules_data = cyext_acv.compute_sdp_maxrule(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t, pi)
+        return sdp, rules, sdp_all, rules_data
+
     def importance_sdp_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
                           C=[[]], global_proba=0.9, minimal=1, stop=True):
 
@@ -636,3 +646,21 @@ class ACVTreeAgnostic(BaseTree):
             exp[i] = compute_shaff_quantile(X=X[i], S=S, model=self, data=data, Y=y_data, min_node_size=min_node_size,
                                             quantile=quantile)
         return exp
+
+    def sufficient_coal_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
+                          C=[[]], global_proba=0.9, minimal=1, stop=True):
+
+        if x.shape[1] > 10:
+
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.Series(flat_list)
+            search_space = []
+            for v in (node_idx.value_counts().keys()):
+                search_space += [v]
+        else:
+            search_space = [i for i in range(x.shape[1])]
+
+        sdp = cyext_acv.sufficient_coal_rf(x, y, data, y_data, self.features, self.thresholds, self.children_left,
+                                      self.children_right, self.max_depth, min_node_size, classifier, t, C,
+                                      global_proba, minimal, stop, search_space[:10])
+        return sdp

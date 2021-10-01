@@ -904,3 +904,43 @@ def weighted_percentile(a, q, weights=None, sorter=None):
     # Step 3.
     fraction = (q - partial_sum[start]) / (partial_sum[start + 1] - partial_sum[start])
     return sorted_a[start] + fraction * (sorted_a[start + 1] - sorted_a[start])
+
+
+def find_nbor(rec_a, rec_b, S):
+    axs = []
+    dim = []
+    for k in S:
+        if rec_a[k, 0] == rec_b[k, 1]:
+            axs.append(k)
+            dim.append(0)
+        elif rec_a[k, 1] == rec_b[k, 0]:
+            axs.append(k)
+            dim.append(1)
+    return axs, dim
+
+
+def extend_rec(rec_a, rec_b, S, axs, dim):
+    a = 0
+    for k in S:
+        if k not in axs:
+            if not rec_b[k, 0] <= rec_a[k, 0] and rec_b[k, 1] >= rec_a[k, 1]:
+                a += 1
+    if a == 0:
+        for i, k in enumerate(axs):
+            rec_a[k, dim[i]] = rec_b[k, dim[i]]
+    return rec_a
+
+def find_union(rec_a, list_ric, S):
+    axs, dim = [], []
+    for i, rec_b in enumerate(list_ric):
+        axs, dim = find_nbor(rec_a, rec_b, S)
+        if len(axs) != 0:
+            break
+    if len(axs) == 0 or len(list_ric) == 0:
+        return rec_a
+    else:
+        del list_ric[i]
+        rec_a = extend_rec(rec_a, rec_b, S, axs, dim)
+        print(rec_a)
+        return find_union(rec_a, list_ric, S)
+
