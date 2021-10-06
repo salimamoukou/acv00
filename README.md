@@ -160,3 +160,8 @@ the notebooks below demonstrate different use cases for ACV. Look inside the not
 
 
 * [Experiments of the papers](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper)
+
+# [News] 
+- **The Ideas presented in Confiance.ai will be available with tutorials on 10/10/2020**
+
+If you have some questions/suggestions, please free to contact on: salimamoukou@gmail.com
