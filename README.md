@@ -164,4 +164,4 @@ the notebooks below demonstrate different use cases for ACV. Look inside the not
 # [News] 
 - **The Ideas presented in Confiance.ai will be available with tutorials on 10/10/2020**
 
-If you have some questions/suggestions, please free to contact on: salimamoukou@gmail.com
+If you have some questions/suggestions, please free to contact at: salimamoukou@gmail.com
