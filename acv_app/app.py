@@ -5,10 +5,13 @@ from acv_explainers.acv_tree import ACVTreeAgnostic, ACVTree
 from acv_app import sdp_app
 from acv_app import sv_app
 from joblib import dump, load
-
+import argparse
+import subprocess
 
 DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), 'data')
-LOAD_PATH = '/home/samoukou/Documents/INVASE-master'
+# LOAD_PATH = '/home/samoukou/Documents/INVASE-master'
+APP_PATH = __file__
+
 
 # Set page title
 # st.set_page_config(page_title='ACPR challenge', layout="wide")
@@ -27,7 +30,12 @@ def compile_acv(model, x_train, y_train, x_test, y_test, path):
     y_test.to_csv(os.path.join(path, 'y_test.csv'), index=False)
 
 
-def main():
+def run_webapp(pickle_path):
+    run_file = subprocess.run(["streamlit", "run", APP_PATH, "--", "--path", pickle_path])
+    return run_file
+
+
+def main(LOAD_PATH):
     """Loads data, preprocess it, creates a simple model then wrapps the data and the model in a Xplainer
     Once data and the model are wrapped, it creates the streamlit front PAGES
     """
@@ -42,7 +50,6 @@ def main():
     st.sidebar.title("Choose your explanations")
     persona = st.sidebar.radio("", list(PAGES.keys()))
 
-
     @st.cache
     def load_data():
         x_train = pd.read_csv(os.path.join(LOAD_PATH, 'x_train.csv'))
@@ -53,6 +60,7 @@ def main():
 
     # data_load_state = st.sidebar.text('Loading data...')
     x_train, x_test, y_train, y_test = load_data()
+
     # data_load_state.text("Load data Done !")
 
     @st.cache(allow_output_mutation=True)
@@ -75,4 +83,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Params of ACV Explanations Web App")
+    parser.add_argument(
+        '--path',
+        # choices=['calculus', 'solve_eq', 'diff_solve'],
+        default='./',
+        type=str)
+
+    args = parser.parse_args()
+
+    main(args.path)

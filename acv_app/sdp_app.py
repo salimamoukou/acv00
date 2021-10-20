@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
+from acv_explainers.utils import extend_partition
 
 labels = {
     'MAIN_EFFECT': "SHAP main effect value for\n%s",
@@ -64,6 +65,20 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
         return rule_string
 
     @st.cache(allow_output_mutation=True)
+    def compute_sdp_maxrule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S, pi):
+        sdp, rules, sdp_all, rules_data = acvtree.compute_sdp_maxrules(x_test_np[obs:obs + 1], y_test_np[obs:obs + 1],
+                                              x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t, pi=pi)
+
+        extend_partition(rules, rules_data, sdp_all, pi=pi, S=[S])
+
+        rule = rules[0]
+        columns = [x_train.columns[i] for i in range(x_train.shape[1])]
+        rule_string = ['{} <= {} <= {}'.format(rule[i, 0] if rule[i, 0] > -1e+10 else -np.inf, columns[i],
+                                               rule[i, 1] if rule[i, 1] < 1e+10 else +np.inf) for i in S]
+        rule_string = ' and '.join(rule_string)
+        return rule_string
+
+    @st.cache(allow_output_mutation=True)
     def transform_scoal_to_col(sufficient_coal, columns_names):
         col_byobs = []
         for obs in sufficient_coal:
@@ -92,7 +107,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def color_max(data, sdp_index):
         color = []
-        for i in range(x_train.shape[1]):
+        for i in range(x_train.shape[1]+1):
             if i in sdp_index:
                 color.append('background-color: #3e82fc')
             else:
@@ -167,7 +182,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     sufficient_coal_names = transform_scoal_to_col(sufficient_coal, x_train.columns)
     # explantions_load_state.text("SDP explanation Done!")
 
-    st.subheader('All sufficient coalitions')
+    # st.subheader('All sufficient coalitions')
 
     if len(sufficient_coal[idx]) == 0:
         st.text('No explanation was found for this observation')
@@ -175,6 +190,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
 
         col1, col2 = st.columns(2)
         with col1:
+            st.subheader('All sufficient coalitions')
             sufficient_coal_df = {'Sufficient coalitions': sufficient_coal_names[idx],
                                   'SDP': sdp_coal[idx]}
 
@@ -183,6 +199,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
             st.dataframe(sufficient_coal_df, 6000, 6000)
 
         with col2:
+            st.subheader('Local Explanatory Importance')
             local_sdp = compute_local_sdp(idx, sufficient_coal)
             # data = {'feature_names': [x_train.columns[i] for i in range(x_train.shape[1])],
             #         'feature_importance': local_sdp}
@@ -212,6 +229,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
         )
 
         x_group = pd.DataFrame(x_test.values[idx:idx + 1], columns=x_test.columns)
+        x_group['Output'] = y_test[idx]
         x_group['Same Decision Probability (SDP)'] = sdp_coal[idx][exp_idx]
         st.dataframe(x_group.iloc[:1].style.apply(color_max, sdp_index=sufficient_coal[idx][exp_idx], axis=1))
 
@@ -219,3 +237,12 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
         rule_string = compute_sdp_rule(idx, x_train.values.astype(np.double), y_train.astype(np.double),
                                        x_test.values.astype(np.double), y_test.astype(np.double), t, sufficient_coal[idx][exp_idx])
         st.markdown(rule_string)
+
+        st.subheader('Maximal rule')
+        maxrule = st.checkbox('Compute', value=False)
+
+        if maxrule:
+            rule_string = compute_sdp_maxrule(idx, x_train.values.astype(np.double), y_train.astype(np.double),
+                                           x_test.values.astype(np.double), y_test.astype(np.double), t,
+                                           sufficient_coal[idx][exp_idx], global_proba)
+            st.markdown(rule_string)

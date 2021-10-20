@@ -930,6 +930,7 @@ def extend_rec(rec_a, rec_b, S, axs, dim):
             rec_a[k, dim[i]] = rec_b[k, dim[i]]
     return rec_a
 
+
 def find_union(rec_a, list_ric, S):
     axs, dim = [], []
     for i, rec_b in enumerate(list_ric):
@@ -941,6 +942,10 @@ def find_union(rec_a, list_ric, S):
     else:
         del list_ric[i]
         rec_a = extend_rec(rec_a, rec_b, S, axs, dim)
-        print(rec_a)
         return find_union(rec_a, list_ric, S)
 
+
+def extend_partition(rules, rules_data, sdp_all, pi, S):
+    for i in range(rules.shape[0]):
+        list_ric = [rules_data[i, j] for j in range(rules_data.shape[1]) if sdp_all[i, j] >= pi]
+        find_union(rules[i], list_ric, S=S[i])

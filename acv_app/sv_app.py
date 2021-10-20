@@ -5,7 +5,7 @@ import streamlit as st
 def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def compute_sv():
-        return acvtree.shap_values(x_test.values.astype(np.double), C=[[]])
+        return acvtree.shap_values(x_test.values.astype(np.double)[:100], C=[[]])
 
     idx = st.selectbox(
         'Choose the observation you want to explain',
