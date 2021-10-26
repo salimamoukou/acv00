@@ -69,7 +69,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
         sdp, rules, sdp_all, rules_data = acvtree.compute_sdp_maxrules(x_test_np[obs:obs + 1], y_test_np[obs:obs + 1],
                                               x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t, pi=pi)
 
-        extend_partition(rules, rules_data, sdp_all, pi=pi, S=[S])
+        # extend_partition(rules, rules_data, sdp_all, pi=pi, S=[S])
 
         rule = rules[0]
         columns = [x_train.columns[i] for i in range(x_train.shape[1])]

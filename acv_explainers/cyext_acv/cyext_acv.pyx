@@ -4748,7 +4748,7 @@ cdef double single_compute_sdp_rule(double[:] & x, double & y_x,  double[:, :] &
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rule(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_sdp_rule(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
@@ -4762,85 +4762,12 @@ cpdef compute_sdp_rule(double[:, :] X, double[::1] y_X,  double[:, :] data, doub
         cdef double[::1] sdp = np.zeros(N)
         cdef int i
         for i in prange(N, nogil=True, schedule='dynamic'):
-            sdp[i] = single_compute_sdp_rule(X[i], y_X[i], data, y_data, S,
+            sdp[i] = single_compute_sdp_rule(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i])
 
         return np.array(sdp), np.array(partition_byobs)
 
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.nonecheck(False)
-@cython.cdivision(True)
-cdef double single_compute_sdp_maxrule(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
-        int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
-        int & max_depth, int & min_node_size, int & classifier, double & t, double[:, :] & partition) nogil:
-
-    cdef unsigned int n_trees = features.shape[0]
-    cdef unsigned int N = data.shape[0]
-    cdef double s, sdp
-    cdef int o
-    sdp = 0
-
-    cdef unsigned int b, level, it_node, i
-    cdef vector[int] nodes_level, nodes_child, in_data, in_data_b
-
-    for b in range(n_trees):
-        nodes_level.clear()
-        nodes_level.push_back(0)
-        nodes_child.clear()
-        in_data.clear()
-        in_data_b.clear()
-        for i in range(N):
-            in_data.push_back(i)
-            in_data_b.push_back(i)
-
-        for level in range(max_depth):
-            for it_node in range(nodes_level.size()):
-
-                if std_find[vector[int].iterator, int](S.begin(), S.end(), features[b, nodes_level[it_node]]) != S.end():
-                    if x[features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
-                        nodes_child.push_back(children_left[b, nodes_level[it_node]])
-
-                        if partition[features[b, nodes_level[it_node]], 1] >= thresholds[b, nodes_level[it_node]]:
-                            partition[features[b, nodes_level[it_node]], 1] = thresholds[b, nodes_level[it_node]]
-
-                        for i in range(in_data.size()):
-                            if data[in_data[i], features[b, nodes_level[it_node]]] > thresholds[b, nodes_level[it_node]]:
-                                std_remove[vector[int].iterator, int](in_data_b.begin(), in_data_b.end(), in_data[i])
-                                in_data_b.pop_back()
-                        in_data = in_data_b
-
-                    else:
-                        nodes_child.push_back(children_right[b, nodes_level[it_node]])
-
-                        if partition[features[b, nodes_level[it_node]], 0] <= thresholds[b, nodes_level[it_node]]:
-                            partition[features[b, nodes_level[it_node]], 0] = thresholds[b, nodes_level[it_node]]
-
-                        for i in range(in_data.size()):
-                            if data[in_data[i], features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
-                                std_remove[vector[int].iterator, int](in_data_b.begin(), in_data_b.end(), in_data[i])
-                                in_data_b.pop_back()
-                        in_data = in_data_b
-
-                else:
-                     nodes_child.push_back(children_left[b, nodes_level[it_node]])
-                     nodes_child.push_back(children_right[b, nodes_level[it_node]])
-
-                if in_data.size() < min_node_size:
-                    break
-
-            nodes_level = nodes_child
-
-        if classifier == 1:
-            for i in range(in_data.size()):
-                sdp  += (1./(n_trees*in_data.size())) * (y_x == y_data[in_data[i]])
-        else:
-            for i in range(in_data.size()):
-                sdp  += (1./(n_trees*in_data.size())) * ((y_x - y_data[in_data[i]])*(y_x - y_data[in_data[i]]) <= t)
-
-    return sdp
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -4879,6 +4806,176 @@ cpdef compute_sdp_maxrule(double[:, :] X, double[::1] y_X,  double[:, :] data, d
                             max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
 
         return np.array(sdp), np.array(partition_byobs), np.array(sdp_data), np.array(partition_byobs_data)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cdef double single_compute_sdp_rule_fast(double[:] & x, double & y_x, vector[int] & S,
+        int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
+        int & max_depth, int & min_node_size, int & classifier, double & t, double[:, :, :, :] & partition) nogil:
+
+    cdef unsigned int n_trees = features.shape[0]
+    cdef double s, sdp
+    cdef int o
+    sdp = 0
+
+    cdef unsigned int b, level, it_node, i
+    cdef vector[int] nodes_level, nodes_child, in_data, in_data_b
+
+    for b in range(n_trees):
+        nodes_level.clear()
+        nodes_level.push_back(0)
+        nodes_child.clear()
+
+        for level in range(max_depth):
+            for it_node in range(nodes_level.size()):
+                if std_find[vector[int].iterator, int](S.begin(), S.end(), features[b, nodes_level[it_node]]) != S.end():
+                    if x[features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
+
+                        nodes_child.push_back(children_left[b, nodes_level[it_node]])
+
+                        if partition[features[b, nodes_level[it_node]], b, level, 1] >= thresholds[b, nodes_level[it_node]]:
+                            partition[features[b, nodes_level[it_node]], b, level,  1] = thresholds[b, nodes_level[it_node]]
+
+                    else:
+                        nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+                        if partition[features[b, nodes_level[it_node]], b, level,  0] <= thresholds[b, nodes_level[it_node]]:
+                            partition[features[b, nodes_level[it_node]], b, level, 0] = thresholds[b, nodes_level[it_node]]
+
+                else:
+                     nodes_child.push_back(children_left[b, nodes_level[it_node]])
+                     nodes_child.push_back(children_right[b, nodes_level[it_node]])
+
+            nodes_level = nodes_child
+
+    return sdp
+
+cpdef compile_rules(rule_data, data, S, min_node_size):
+    ntree = rule_data.shape[1]
+    rule_trees_up = []
+    rule_trees_dn = []
+    for i in range(ntree):
+        tn = 0
+        depth = rule_data.shape[2]
+        while(tn <= min_node_size):
+            part_up = np.min(rule_data[:, i, :depth, 1], axis=-1)
+            part_dn = np.max(rule_data[:, i, :depth, 0], axis=-1)
+            where = np.prod([(data[:, s] <= part_up[s]) * (data[:, s] >= part_dn[s])
+                                             for s in S], axis=0).astype(bool)
+            tn = np.sum(where)
+            depth -= 1
+
+        rule_trees_up.append(np.expand_dims(part_up, -1))
+        rule_trees_dn.append(np.expand_dims(part_dn, -1))
+    rule_trees_up = np.min(np.concatenate(rule_trees_up, axis=-1), axis=-1)
+    rule_trees_dn = np.max(np.concatenate(rule_trees_dn, axis=-1), axis=-1)
+    rule_trees = np.concatenate([np.expand_dims(rule_trees_dn, axis=-1), np.expand_dims(rule_trees_up, axis=-1)],
+                                axis=-1)
+    return rule_trees
+
+cpdef compile_rules_fromtop(rule_data, data, S, min_node_size):
+    ntree = rule_data.shape[1]
+    rule_trees_up = []
+    rule_trees_dn = []
+    for i in range(ntree):
+        tn = data.shape[0]
+        depth = 1
+        while(tn > min_node_size):
+            part_up = np.min(rule_data[:, i, :depth, 1], axis=-1)
+            part_dn = np.max(rule_data[:, i, :depth, 0], axis=-1)
+            where = np.prod([(data[:, s] <= part_up[s]) * (data[:, s] >= part_dn[s])
+                                             for s in S], axis=0).astype(bool)
+            tn = np.sum(where)
+            depth += 1
+
+        rule_trees_up.append(np.expand_dims(part_up, -1))
+        rule_trees_dn.append(np.expand_dims(part_dn, -1))
+    rule_trees_up = np.min(np.concatenate(rule_trees_up, axis=-1), axis=-1)
+    rule_trees_dn = np.max(np.concatenate(rule_trees_dn, axis=-1), axis=-1)
+    rule_trees = np.concatenate([np.expand_dims(rule_trees_dn, axis=-1), np.expand_dims(rule_trees_up, axis=-1)],
+                                axis=-1)
+    return rule_trees
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_sdp_rule_fast(double[:, :] X, double[::1] y_X, double[:, :] data, vector[vector[int]] S,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t):
+
+        buffer = 1e+10 * np.ones(shape=(X.shape[0], X.shape[1], children_left.shape[0], max_depth , 2))
+        buffer[:, :, :, :, 0] = -1e+10
+
+        cdef double [:, :, :, :, :] partition_byobs
+        partition_byobs = buffer
+
+        rules = np.zeros(shape=(X.shape[0], X.shape[1], 2))
+
+        cdef int N = X.shape[0]
+        cdef double[::1] sdp = np.zeros(N)
+        cdef int i
+        for i in range(N):
+            sdp[i] = single_compute_sdp_rule_fast(X[i], y_X[i], S[i],
+                        features, thresholds, children_left, children_right,
+                        max_depth, min_node_size, classifier, t, partition_byobs[i])
+
+        for i in range(N):
+            rules[i] = compile_rules(partition_byobs[i], data, S[i], min_node_size)
+
+
+        return np.array(sdp), rules
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_sdp_maxrule_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t, double & pi):
+
+        buffer = 1e+10 * np.ones(shape=(X.shape[0], X.shape[1], children_left.shape[0], max_depth , 2))
+        buffer[:, :, :, :, 0] = -1e+10
+
+        cdef double [:, :, :, :, :] partition_byobs
+        partition_byobs = buffer
+
+        buffer_data = 1e+10 * np.ones(shape=(X.shape[0], data.shape[0], X.shape[1], children_left.shape[0], max_depth , 2))
+        buffer_data[:, :, :, :, :, 0] = -1e+10
+
+        cdef double [:, :, :, :, :, :] partition_byobs_data
+        partition_byobs_data = buffer_data
+
+        rules = np.zeros(shape=(X.shape[0], X.shape[1], 2))
+        rules_data = np.zeros(shape=(X.shape[0], data.shape[0], X.shape[1], 2))
+
+        cdef int N = X.shape[0]
+        cdef double[::1] sdp = np.zeros(N)
+        cdef double[:, :] sdp_data = np.zeros((N, data.shape[0]))
+
+        cdef int i, j
+        for i in range(N):
+            sdp[i] = single_compute_sdp_rule_fast(X[i], y_X[i], S[i],
+                        features, thresholds, children_left, children_right,
+                        max_depth, min_node_size, classifier, t, partition_byobs[i])
+
+            for j in prange(data.shape[0], nogil=True, schedule='dynamic'):
+                sdp_data[i, j] = single_compute_sdp_rule_fast(data[j], y_X[i], S[i],
+                            features, thresholds, children_left, children_right,
+                            max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
+
+        for i in range(N):
+            rules[i] = compile_rules(partition_byobs[i], data, S[i], min_node_size)
+            for j in range(data.shape[0]):
+                rules_data[i, j] = compile_rules(partition_byobs_data[i, j], data, S[i], min_node_size)
+
+        return np.array(sdp), rules, np.array(sdp_data), rules_data
+
+
 
 
 

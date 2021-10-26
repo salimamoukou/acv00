@@ -949,3 +949,77 @@ def extend_partition(rules, rules_data, sdp_all, pi, S):
     for i in range(rules.shape[0]):
         list_ric = [rules_data[i, j] for j in range(rules_data.shape[1]) if sdp_all[i, j] >= pi]
         find_union(rules[i], list_ric, S=S[i])
+
+
+def global_rules_model(x_exp, rules, rules_output, rules_coverage, rules_acc, min_cov, S):
+    y_exp, rule_exp, rule_S = [], [], []
+    for j in range(x_exp.shape[0]):
+        x = x_exp[j]
+
+        y_out, y_coverage, y_weights, y_rule, y_S = [], [], [], [], []
+        for i in range(rules.shape[0]):
+            rule = rules[i]
+
+            x_in = np.prod([(x[s] <= rule[s, 1]) * (x[s] >= rule[s, 0]) for s in S[i]], axis=0).astype(bool)
+            if x_in:
+                y_out.append(rules_output[i])
+                y_coverage.append(rules_coverage[i])
+                y_weights.append(rules_acc[i])
+                y_rule.append(rule)
+                y_S.append(S[i])
+
+        if len(y_out) != 0:
+            y_weights = np.array(y_weights)
+            max_weights = np.max(y_weights[np.array(y_coverage) >= min_cov])
+            best_acc = np.argmax(y_weights == max_weights)
+            y_exp.append(y_out[best_acc])
+            rule_exp.append(y_rule[best_acc])
+            rule_S.append(y_S[best_acc])
+
+        else:
+            y_exp.append(None)
+            rule_exp.append(None)
+            rule_S.append(None)
+
+    return y_exp, rule_exp, rule_S
+
+
+def compute_rules_metrics(rules, rules_output, data, y_data, S_star):
+    d = data.shape[1]
+    rules_coverage = []
+    rules_var = []
+    rules_acc = []
+
+    for idx in range(rules.shape[0]):
+        S = S_star[idx]
+        rule = rules[idx]
+        where = np.prod([(data[:, s] <= rule[s, 1]) * (data[:, s] >= rule[s, 0])
+                                     for s in S], axis=0).astype(bool)
+
+        rules_coverage.append(np.sum(where)/data.shape[0])
+        rules_acc.append(np.mean(y_data[where] == rules_output[idx]))
+        rules_var.append(np.var(y_data[where]))
+    return rules_coverage, rules_acc, rules_var
+
+
+def rules_frequency(rules):
+    freq = np.zeros(rules.shape[0])
+    for i in range(rules.shape[0]):
+        rule = rules[i]
+        for j in range(rules.shape[0]):
+            if np.allclose(rules[j], rule):
+                freq[i] += 1
+    freq = freq/rules.shape[0]
+    return freq
+
+
+def unique_rules(rules, rules_output):
+    rules_unique = np.unique(rules, axis=0)
+    rules_unique_output = []
+    for i in range(rules_unique.shape[0]):
+        rule = rules_unique[i]
+        for j in range(rules.shape[0]):
+            if np.allclose(rule, rules[j]):
+                rules_unique_output.append(rules_output[j])
+                break
+    return rules_unique, np.array(rules_unique_output)

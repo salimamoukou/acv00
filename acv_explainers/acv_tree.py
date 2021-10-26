@@ -4,7 +4,7 @@ from .utils_exp import *
 from .utils_sdp import *
 import numpy as np
 import cyext_acv, cyext_acv_nopa, cyext_acv_cache
-
+from acv_explainers.utils import extend_partition
 
 class ACVTree(BaseTree):
 
@@ -582,9 +582,21 @@ class ACVTreeAgnostic(BaseTree):
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
         return sdp, rules
 
+    def compute_sdp_rule_fast(self, x, y, data, S, min_node_size=5, classifier=1, t=20):
+        sdp, rules = cyext_acv.compute_sdp_rule_fast(x, y, data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
+        return sdp, rules
+
     def compute_sdp_maxrules(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, pi=0.95):
         sdp, rules, sdp_all, rules_data = cyext_acv.compute_sdp_maxrule(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
                                        self.children_right, self.max_depth, min_node_size, classifier, t, pi)
+        extend_partition(rules, rules_data, sdp_all, pi=pi, S=S)
+        return sdp, rules, sdp_all, rules_data
+
+    def compute_sdp_maxrules_fast(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, pi=0.95):
+        sdp, rules, sdp_all, rules_data = cyext_acv.compute_sdp_maxrule_fast(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t, pi)
+        extend_partition(rules, rules_data, sdp_all, pi=pi, S=S)
         return sdp, rules, sdp_all, rules_data
 
     def importance_sdp_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
@@ -664,3 +676,12 @@ class ACVTreeAgnostic(BaseTree):
                                       self.children_right, self.max_depth, min_node_size, classifier, t, C,
                                       global_proba, minimal, stop, search_space[:10])
         return sdp
+
+    def compute_local_sdp(d, sufficient_coal):
+        flat = [item for sublist in sufficient_coal for item in sublist]
+        flat = pd.Series(flat)
+        flat = dict(flat.value_counts() / len(sufficient_coal))
+        local_sdp = np.zeros(d)
+        for key in flat.keys():
+            local_sdp[key] = flat[key]
+        return local_sdp
