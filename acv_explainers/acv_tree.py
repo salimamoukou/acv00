@@ -599,6 +599,12 @@ class ACVTreeAgnostic(BaseTree):
         extend_partition(rules, rules_data, sdp_all, pi=pi, S=S)
         return sdp, rules, sdp_all, rules_data
 
+    def compute_sdp_maxrules_fast_weights(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, pi=0.95):
+        sdp, rules, sdp_all, rules_data, w = cyext_acv.compute_sdp_maxrule_fast_weights(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t, pi)
+        extend_partition(rules, rules_data, sdp_all, pi=pi, S=S)
+        return sdp, rules, sdp_all, rules_data, w
+
     def importance_sdp_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
                           C=[[]], global_proba=0.9, minimal=1, stop=True):
 
