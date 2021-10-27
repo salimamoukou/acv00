@@ -577,6 +577,11 @@ class ACVTreeAgnostic(BaseTree):
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
         return sdp
 
+    def compute_sdp_rf_fast(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        sdp = cyext_acv.compute_sdp_rf_fast(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
+        return sdp
+
     def compute_sdp_rule(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
         sdp, rules = cyext_acv.compute_sdp_rule(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
@@ -610,6 +615,12 @@ class ACVTreeAgnostic(BaseTree):
         extend_partition(rules, rules_data, sdp_all, pi=pi, S=S)
         return sdp, rules, sdp_all, rules_data, w
 
+    def compute_sdp_maxrules_fast_opti(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, pi=0.95):
+        sdp, rules, sdp_all, rules_data, w = cyext_acv.compute_sdp_maxrule_fast_opti(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t, pi)
+        extend_partition(rules, rules_data, sdp_all, pi=pi, S=S)
+        return sdp, rules, sdp_all, rules_data, w
+
     def compute_sdp_maxrules_biased_v2(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, pi=0.95):
         sdp, rules, sdp_all, rules_data, w = cyext_acv.compute_sdp_maxrule_biased_v2(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
                                        self.children_right, self.max_depth, min_node_size, classifier, t, pi)
@@ -630,6 +641,24 @@ class ACVTreeAgnostic(BaseTree):
             search_space = [i for i in range(x.shape[1])]
 
         sdp = cyext_acv.global_sdp_rf(x, y, data, y_data, self.features, self.thresholds, self.children_left,
+                                      self.children_right, self.max_depth, min_node_size, classifier, t, C,
+                                      global_proba, minimal, stop, search_space[:10])
+        return sdp
+
+    def importance_sdp_rf_fast(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
+                          C=[[]], global_proba=0.9, minimal=1, stop=True):
+
+        if x.shape[1] > 10:
+
+            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+            node_idx = pd.Series(flat_list)
+            search_space = []
+            for v in (node_idx.value_counts().keys()):
+                search_space += [v]
+        else:
+            search_space = [i for i in range(x.shape[1])]
+
+        sdp = cyext_acv.global_sdp_rf_fast(x, y, data, y_data, self.features, self.thresholds, self.children_left,
                                       self.children_right, self.max_depth, min_node_size, classifier, t, C,
                                       global_proba, minimal, stop, search_space[:10])
         return sdp
