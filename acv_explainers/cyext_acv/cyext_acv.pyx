@@ -12,6 +12,8 @@ from acv_explainers.utils import weighted_percentile
 from cython.parallel cimport prange, parallel, threadid
 cimport openmp
 
+# TO DO: change every vector into set
+
 cdef extern from "<algorithm>" namespace "std" nogil:
      iter std_remove "std::remove" [iter, T](iter first, iter last, const T& val)
      iter std_find "std::find" [iter, T](iter first, iter last, const T& val)
@@ -4812,7 +4814,7 @@ cpdef compute_sdp_maxrule(double[:, :] X, double[::1] y_X,  double[:, :] data, d
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef double single_compute_sdp_rule_fast(double[:] & x, double & y_x, vector[int] & S,
+cdef double single_compute_sdp_rule_biased(double[:] & x, double & y_x, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t, double[:, :, :, :] & partition) nogil:
 
@@ -4904,7 +4906,7 @@ cpdef compile_rules_fromtop(rule_data, data, S, min_node_size):
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rule_fast(double[:, :] X, double[::1] y_X, double[:, :] data, vector[vector[int]] S,
+cpdef compute_sdp_rule_biased(double[:, :] X, double[::1] y_X, double[:, :] data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
@@ -4920,7 +4922,7 @@ cpdef compute_sdp_rule_fast(double[:, :] X, double[::1] y_X, double[:, :] data, 
         cdef double[::1] sdp = np.zeros(N)
         cdef int i
         for i in range(N):
-            sdp[i] = single_compute_sdp_rule_fast(X[i], y_X[i], S[i],
+            sdp[i] = single_compute_sdp_rule_biased(X[i], y_X[i], S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i])
 
@@ -4935,7 +4937,7 @@ cpdef compute_sdp_rule_fast(double[:, :] X, double[::1] y_X, double[:, :] data, 
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_maxrule_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+cpdef compute_sdp_maxrule_biased(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, double & pi):
 
@@ -4960,12 +4962,12 @@ cpdef compute_sdp_maxrule_fast(double[:, :] X, double[::1] y_X,  double[:, :] da
 
         cdef int i, j
         for i in range(N):
-            sdp[i] = single_compute_sdp_rule_fast(X[i], y_X[i], S[i],
+            sdp[i] = single_compute_sdp_rule_biased(X[i], y_X[i], S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i])
 
             for j in prange(data.shape[0], nogil=True, schedule='dynamic'):
-                sdp_data[i, j] = single_compute_sdp_rule_fast(data[j], y_X[i], S[i],
+                sdp_data[i, j] = single_compute_sdp_rule_biased(data[j], y_X[i], S[i],
                             features, thresholds, children_left, children_right,
                             max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
 
@@ -5053,7 +5055,48 @@ cdef double single_compute_sdp_rule_weights(double[:] & x, double & y_x,  double
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_maxrule_fast_weights(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+cpdef compute_sdp_maxrule_opti(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t, double & pi):
+
+        buffer = 1e+10 * np.ones(shape=(X.shape[0], X.shape[1], 2))
+        buffer[:, :, 0] = -1e+10
+
+        cdef double [:, :, :] partition_byobs = buffer
+
+        buffer_data = 1e+10 * np.ones(shape=(X.shape[0], data.shape[0], X.shape[1], 2))
+        buffer_data[:, :, :, 0] = -1e+10
+
+        cdef double [:, :, :, :] partition_byobs_data = buffer_data
+
+        rules_data = np.zeros(shape=(X.shape[0], data.shape[0], X.shape[1], 2))
+
+        cdef int N = X.shape[0]
+        cdef double[::1] sdp = np.zeros(N)
+        cdef double[:, :] sdp_data = np.zeros((N, data.shape[0]))
+
+        cdef double[:, :] weights = np.zeros(shape=(N, data.shape[0]))
+        cdef int i, j
+
+        for i in range(N):
+            sdp[i] = single_compute_sdp_rule_weights(X[i], y_X[i], data, y_data, S[i],
+                        features, thresholds, children_left, children_right,
+                        max_depth, min_node_size, classifier, t, partition_byobs[i], weights[i])
+
+            for j in prange(data.shape[0], nogil=True, schedule='dynamic'):
+                if weights[i, j] != 0:
+                    sdp_data[i, j] = single_compute_sdp_rule(data[j], y_X[i], data, y_data, S[i],
+                                features, thresholds, children_left, children_right,
+                                max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
+
+        return np.array(sdp), np.array(partition_byobs), np.array(sdp_data), np.array(partition_byobs_data), np.array(weights)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_sdp_maxrule_biased_v2(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, double & pi):
 
@@ -5086,7 +5129,7 @@ cpdef compute_sdp_maxrule_fast_weights(double[:, :] X, double[::1] y_X,  double[
 
             for j in prange(data.shape[0], nogil=True, schedule='dynamic'):
                 if weights[i, j] != 0:
-                    sdp_data[i, j] = single_compute_sdp_rule_fast(data[j], y_X[i], S[i],
+                    sdp_data[i, j] = single_compute_sdp_rule_biased(data[j], y_X[i], S[i],
                                 features, thresholds, children_left, children_right,
                                 max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
 
@@ -5096,6 +5139,4 @@ cpdef compute_sdp_maxrule_fast_weights(double[:, :] X, double[::1] y_X,  double[
                     rules_data[i, j] = compile_rules(partition_byobs_data[i, j], data, S[i], min_node_size)
 
         return np.array(sdp), np.array(partition_byobs), np.array(sdp_data), rules_data, np.array(weights)
-
-
 
