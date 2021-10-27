@@ -582,6 +582,11 @@ class ACVTreeAgnostic(BaseTree):
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
         return sdp, rules
 
+    def compute_sdp_rule_fast(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        sdp, rules = cyext_acv.compute_sdp_rule_fast(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+                                       self.children_right, self.max_depth, min_node_size, classifier, t)
+        return sdp, rules
+
     def compute_sdp_rule_biased(self, x, y, data, S, min_node_size=5, classifier=1, t=20):
         sdp, rules = cyext_acv.compute_sdp_rule_biased(x, y, data, S, self.features, self.thresholds, self.children_left,
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
