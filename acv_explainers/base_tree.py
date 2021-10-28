@@ -16,7 +16,8 @@ class BaseTree:
     This object provides a common interface to many different types of models.
     """
 
-    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, multi_threads=True, C=[[]]):
+    def __init__(self, model, data=None, data_missing=None, cache=False, cache_normalized=False, multi_threads=True,
+                 C=[[]]):
         self.model_type = "internal"
         self.trees = None
         self.base_offset = 0
@@ -513,19 +514,21 @@ class BaseTree:
                 self.num_outputs = self.trees[0].values.shape[1]
 
             if safe_isinstance(model, ["xgboost.sklearn.XGBClassifier",
-                                       "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
+                                       "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier",
+                                       "sklearn.ensemble.GradientBoostingClassifier",
+                                       "sklearn.ensemble._gb.GradientBoostingClassifier",
+                                       "sklearn.ensemble.gradient_boosting.GradientBoostingClassifier"]) and \
                     self.num_outputs == 1:
                 self.values_binary = np.zeros((num_trees, max_nodes, 2), dtype=self.internal_dtype)
 
                 for i in range(num_trees):
-
                     # y = self.model.predict(self.data)
                     # self.trees[i].values = np.zeros((max_nodes, self.num_outputs))
                     # rebuild_acvtree(0, self.trees[i], self.data, y)
                     # self.trees[i].values = self.trees[i].scaling * self.trees[i].values
                     # p = np.exp(self.trees[i].values)/(1+np.exp(self.trees[i].values))
-                    p = 1/(1+np.exp(-self.trees[i].values))
-                    self.values_binary[i, :len(self.trees[i].values)] = np.concatenate([1-p, p], axis=1)/num_trees
+                    p = 1 / (1 + np.exp(-self.trees[i].values))
+                    self.values_binary[i, :len(self.trees[i].values)] = np.concatenate([1 - p, p], axis=1) / num_trees
 
             # important to be -1 in unused sections!! This way we can tell which entries are valid.
             self.children_left = -np.ones((num_trees, max_nodes), dtype=np.int32)
@@ -591,7 +594,8 @@ class BaseTree:
                 self.leaf_idx_trees.append(self.leaf_idx)
 
             leaf_idx_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb)), dtype=np.int)
-            partition_leaves_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb), self.data.shape[1], 2))
+            partition_leaves_trees = -np.ones(
+                shape=(len(self.leaves_nb), np.max(self.leaves_nb), self.data.shape[1], 2))
             # data_leaves_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb), self.data.shape[0], self.data.shape[1]), dtype=np.int)
             for i in range(len(self.leaves_nb)):
                 leaf_idx_trees[i, :self.leaves_nb[i]] = np.array(self.leaf_idx_trees[i], dtype=np.int)
@@ -606,7 +610,6 @@ class BaseTree:
             self.max_var = np.max(self.max_var)
             # self.data_leaves_trees = data_leaves_trees
 
-
             # if safe_isinstance(model, ["xgboost.sklearn.XGBClassifier",
             #                            "catboost.core.CatBoostClassifier", "lightgbm.sklearn.LGBMClassifier"]) and \
             #         self.num_outputs == 1:
@@ -614,10 +617,6 @@ class BaseTree:
             #     print(np.max(p), np.min(1-p))
             #     self.values = np.concatenate([1-p, p], axis=2)
             #     self.num_outputs = 2
-
-
-
-
 
             self.num_nodes = np.array([len(t.values) for t in self.trees], dtype=np.int32)
             self.max_depth = np.max([t.max_depth for t in self.trees])
@@ -639,7 +638,6 @@ class BaseTree:
                 self.base_offset = (np.ones(self.num_outputs) * self.base_offset).astype(self.internal_dtype)
             self.base_offset = self.base_offset.flatten()
             assert len(self.base_offset) == self.num_outputs
-
 
     @abstractmethod
     def compute_cond_exp(self, X, S, data):
@@ -670,11 +668,11 @@ class BaseTree:
         pass
 
     @abstractmethod
-    def swing_values_clf(self, x,  tx, S, data, threshold):
+    def swing_values_clf(self, x, tx, S, data, threshold):
         pass
 
     @abstractmethod
-    def swing_values_reg(self, x,  tx, S, data, threshold):
+    def swing_values_reg(self, x, tx, S, data, threshold):
         pass
 
     @abstractmethod

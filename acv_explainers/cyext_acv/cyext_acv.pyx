@@ -4027,7 +4027,7 @@ cpdef double _comb_int_long(unsigned long N, unsigned long k) nogil:
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef double single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+cdef double single_compute_sdp_rf_v0(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t) nogil:
 
@@ -4092,7 +4092,7 @@ cdef double single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & d
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_sdp_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
@@ -4100,7 +4100,7 @@ cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double
         cdef double[::1] sdp = np.zeros(N)
         cdef int i
         for i in prange(N, nogil=True, schedule='dynamic'):
-            sdp[i] = single_compute_sdp_rf(X[i], y_X[i], data, y_data, S,
+            sdp[i] = single_compute_sdp_rf_v0(X[i], y_X[i], data, y_data, S,
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t)
         return np.array(sdp)
@@ -4110,7 +4110,7 @@ cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
+cpdef global_sdp_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
             int minimal, bint stop, list search_space):
@@ -4195,10 +4195,10 @@ cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[
                 R_buf[i] = R[i]
                 in_data[R_buf[i]] = 1
 
-                # sdp_b[R_buf[i]] = single_compute_sdp_rf(X[R_buf[i]],  y_X[R_buf[i]], data, y_data, S[:S_size], features, thresholds,  children_left, children_right,
+                # sdp_b[R_buf[i]] = single_compute_sdp_rf_v0(X[R_buf[i]],  y_X[R_buf[i]], data, y_data, S[:S_size], features, thresholds,  children_left, children_right,
                 #                 max_depth, min_node_size, classifier, t)
 
-            sdp_ba = compute_sdp_rf(X_arr[np.array(in_data, dtype=bool)],
+            sdp_ba = compute_sdp_rf_v0(X_arr[np.array(in_data, dtype=bool)],
                                     y_X_arr[np.array(in_data, dtype=bool)],
                                     data, y_data, S[:S_size], features, thresholds,  children_left,
                                     children_right, max_depth, min_node_size, classifier, t)
@@ -4584,7 +4584,7 @@ cpdef compute_cdf_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef sufficient_coal_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
+cpdef sufficient_coal_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
             int minimal, bint stop, list search_space):
@@ -4650,7 +4650,7 @@ cpdef sufficient_coal_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, do
                 S[i] = power_cpp[s_0][s_1][i]
 
             S_size = power_cpp[s_0][s_1].size()
-            sdp = compute_sdp_rf(X, y_X, data, y_data, S[:S_size], features, thresholds,  children_left,
+            sdp = compute_sdp_rf_v0(X, y_X, data, y_data, S[:S_size], features, thresholds,  children_left,
                                     children_right, max_depth, min_node_size, classifier, t)
 
             for i in range(N):
@@ -4679,7 +4679,7 @@ cpdef sufficient_coal_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, do
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef double single_compute_sdp_rule(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+cdef double single_compute_sdp_rule_v0(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t, double[:, :] & partition) nogil:
 
@@ -4752,7 +4752,7 @@ cdef double single_compute_sdp_rule(double[:] & x, double & y_x,  double[:, :] &
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rule(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+cpdef compute_sdp_rule_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
@@ -4766,7 +4766,7 @@ cpdef compute_sdp_rule(double[:, :] X, double[::1] y_X,  double[:, :] data, doub
         cdef double[::1] sdp = np.zeros(N)
         cdef int i
         for i in prange(N, nogil=True, schedule='dynamic'):
-            sdp[i] = single_compute_sdp_rule(X[i], y_X[i], data, y_data, S[i],
+            sdp[i] = single_compute_sdp_rule_v0(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i])
 
@@ -4777,7 +4777,7 @@ cpdef compute_sdp_rule(double[:, :] X, double[::1] y_X,  double[:, :] data, doub
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_maxrule(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+cpdef compute_sdp_maxrule_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, double & pi):
 
@@ -4800,12 +4800,12 @@ cpdef compute_sdp_maxrule(double[:, :] X, double[::1] y_X,  double[:, :] data, d
 
 
         for i in range(N):
-            sdp[i] = single_compute_sdp_rule(X[i], y_X[i], data, y_data, S[i],
+            sdp[i] = single_compute_sdp_rule_v0(X[i], y_X[i], data, y_data, S[i],
                             features, thresholds, children_left, children_right,
                             max_depth, min_node_size, classifier, t, partition_byobs[i])
 
             for j in prange(data.shape[0], nogil=True, schedule='dynamic'):
-                sdp_data[i, j] = single_compute_sdp_rule(data[j], y_X[i], data, y_data, S[i],
+                sdp_data[i, j] = single_compute_sdp_rule_v0(data[j], y_X[i], data, y_data, S[i],
                             features, thresholds, children_left, children_right,
                             max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
 
@@ -4880,29 +4880,6 @@ cpdef compile_rules(rule_data, data, S, min_node_size):
                                 axis=-1)
     return rule_trees
 
-
-cpdef compile_rules_fromtop(rule_data, data, S, min_node_size):
-    ntree = rule_data.shape[1]
-    rule_trees_up = []
-    rule_trees_dn = []
-    for i in range(ntree):
-        tn = data.shape[0]
-        depth = 1
-        while(tn > min_node_size):
-            part_up = np.min(rule_data[:, i, :depth, 1], axis=-1)
-            part_dn = np.max(rule_data[:, i, :depth, 0], axis=-1)
-            where = np.prod([(data[:, s] <= part_up[s]) * (data[:, s] >= part_dn[s])
-                                             for s in S], axis=0).astype(bool)
-            tn = np.sum(where)
-            depth += 1
-
-        rule_trees_up.append(np.expand_dims(part_up, -1))
-        rule_trees_dn.append(np.expand_dims(part_dn, -1))
-    rule_trees_up = np.min(np.concatenate(rule_trees_up, axis=-1), axis=-1)
-    rule_trees_dn = np.max(np.concatenate(rule_trees_dn, axis=-1), axis=-1)
-    rule_trees = np.concatenate([np.expand_dims(rule_trees_dn, axis=-1), np.expand_dims(rule_trees_up, axis=-1)],
-                                axis=-1)
-    return rule_trees
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -4984,7 +4961,7 @@ cpdef compute_sdp_maxrule_biased(double[:, :] X, double[::1] y_X,  double[:, :] 
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef double single_compute_sdp_rule_weights(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+cdef double single_compute_sdp_rule_v0_weights(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t, double[:, :] & partition, double[:] & w) nogil:
 
@@ -5081,13 +5058,13 @@ cpdef compute_sdp_maxrule_opti(double[:, :] X, double[::1] y_X,  double[:, :] da
         cdef int i, j
 
         for i in range(N):
-            sdp[i] = single_compute_sdp_rule_weights(X[i], y_X[i], data, y_data, S[i],
+            sdp[i] = single_compute_sdp_rule_v0_weights(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i], weights[i])
 
             for j in prange(data.shape[0], nogil=True, schedule='dynamic'):
                 if weights[i, j] != 0:
-                    sdp_data[i, j] = single_compute_sdp_rule(data[j], y_X[i], data, y_data, S[i],
+                    sdp_data[i, j] = single_compute_sdp_rule_v0(data[j], y_X[i], data, y_data, S[i],
                                 features, thresholds, children_left, children_right,
                                 max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
 
@@ -5125,7 +5102,7 @@ cpdef compute_sdp_maxrule_biased_v2(double[:, :] X, double[::1] y_X,  double[:, 
         cdef int i, j
 
         for i in range(N):
-            sdp[i] = single_compute_sdp_rule_weights(X[i], y_X[i], data, y_data, S[i],
+            sdp[i] = single_compute_sdp_rule_v0_weights(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i], weights[i])
 
@@ -5147,7 +5124,7 @@ cpdef compute_sdp_maxrule_biased_v2(double[:, :] X, double[::1] y_X,  double[:, 
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef double single_compute_sdp_rule_fast(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+cdef double single_compute_sdp_rule(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t, double[:, :] & partition) nogil:
 
@@ -5229,7 +5206,7 @@ cdef double single_compute_sdp_rule_fast(double[:] & x, double & y_x,  double[:,
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rule_fast(double[:, :] & X, double[::1] & y_X,  double[:, :] & data, double[::1] & y_data, vector[vector[int]] & S,
+cpdef compute_sdp_rule(double[:, :] & X, double[::1] & y_X,  double[:, :] & data, double[::1] & y_data, vector[vector[int]] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t):
 
@@ -5242,7 +5219,7 @@ cpdef compute_sdp_rule_fast(double[:, :] & X, double[::1] & y_X,  double[:, :] &
         cdef int i
 
         for i in prange(N, nogil=True, schedule='dynamic'):
-            sdp[i] = single_compute_sdp_rule_fast(X[i], y_X[i], data, y_data, S[i],
+            sdp[i] = single_compute_sdp_rule(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i])
 
@@ -5252,7 +5229,7 @@ cpdef compute_sdp_rule_fast(double[:, :] & X, double[::1] & y_X,  double[:, :] &
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef double single_compute_sdp_rule_fast_weights(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+cdef double single_compute_sdp_rule_weights(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t, double[:, :] & partition,
         double[:] & w) nogil:
@@ -5333,11 +5310,12 @@ cdef double single_compute_sdp_rule_fast_weights(double[:] & x, double & y_x,  d
 
     return sdp
 
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_maxrule_fast_opti(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+cpdef compute_sdp_maxrule(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, double & pi):
 
@@ -5361,13 +5339,13 @@ cpdef compute_sdp_maxrule_fast_opti(double[:, :] X, double[::1] y_X,  double[:, 
         cdef int i, j
 
         for i in range(N):
-            sdp[i] = single_compute_sdp_rule_fast_weights(X[i], y_X[i], data, y_data, S[i],
+            sdp[i] = single_compute_sdp_rule_weights(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, partition_byobs[i], weights[i])
 
             for j in prange(data.shape[0], nogil=True, schedule='dynamic'):
                 if weights[i, j] != 0:
-                    sdp_data[i, j] = single_compute_sdp_rule_fast(data[j], y_X[i], data, y_data, S[i],
+                    sdp_data[i, j] = single_compute_sdp_rule(data[j], y_X[i], data, y_data, S[i],
                                 features, thresholds, children_left, children_right,
                                 max_depth, min_node_size, classifier, t, partition_byobs_data[i, j])
 
@@ -5378,7 +5356,7 @@ cpdef compute_sdp_maxrule_fast_opti(double[:, :] X, double[::1] y_X,  double[:, 
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef double single_compute_sdp_rf_fast(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
+cdef double single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
         int & max_depth, int & min_node_size, int & classifier, double & t) nogil:
 
@@ -5454,7 +5432,7 @@ cdef double single_compute_sdp_rf_fast(double[:] & x, double & y_x,  double[:, :
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rf_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
@@ -5462,7 +5440,7 @@ cpdef compute_sdp_rf_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, d
         cdef double[::1] sdp = np.zeros(N)
         cdef int i
         for i in prange(N, nogil=True, schedule='dynamic'):
-            sdp[i] = single_compute_sdp_rf_fast(X[i], y_X[i], data, y_data, S,
+            sdp[i] = single_compute_sdp_rf(X[i], y_X[i], data, y_data, S,
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t)
         return np.array(sdp)
@@ -5472,7 +5450,7 @@ cpdef compute_sdp_rf_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, d
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef global_sdp_rf_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
+cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
             int minimal, bint stop, list search_space):
@@ -5560,7 +5538,7 @@ cpdef global_sdp_rf_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, do
                 # sdp_b[R_buf[i]] = single_compute_sdp_rf(X[R_buf[i]],  y_X[R_buf[i]], data, y_data, S[:S_size], features, thresholds,  children_left, children_right,
                 #                 max_depth, min_node_size, classifier, t)
 
-            sdp_ba = compute_sdp_rf_fast(X_arr[np.array(in_data, dtype=bool)],
+            sdp_ba = compute_sdp_rf(X_arr[np.array(in_data, dtype=bool)],
                                     y_X_arr[np.array(in_data, dtype=bool)],
                                     data, y_data, S[:S_size], features, thresholds,  children_left,
                                     children_right, max_depth, min_node_size, classifier, t)
@@ -5595,3 +5573,98 @@ cpdef global_sdp_rf_fast(double[:, :] X, double[::1] y_X,  double[:, :] data, do
             break
 
     return np.asarray(sdp_global)/X.shape[0], np.array(s_star, dtype=np.long), np.array(len_s_star, dtype=np.long), np.array(sdp)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef sufficient_coal_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
+            int minimal, bint stop, list search_space):
+
+    cdef unsigned int N = X.shape[0]
+    cdef unsigned int m = X.shape[1]
+
+    cdef double[:] sdp, sdp_b, sdp_ba
+    cdef double[:] sdp_global
+    sdp = np.zeros((N))
+    sdp_global = np.zeros((m))
+
+    cdef unsigned int it, it_s, a_it, b_it, o_all, p, p_s, nb_leaf, p_u, p_d, p_su, p_sd, down, up
+    cdef double ss, ss_a, ss_u, ss_d, K
+    cdef int b, leaf_numb, i, s, s_0, s_1, S_size, j, max_size, size, subset, a, k
+    K = 0
+
+    cdef vector[int] S, len_s_star
+    len_s_star = np.zeros((N), dtype=np.int)
+
+    cdef list power, va_id
+
+    if C[0] != []:
+        remove_va = [C[ci][cj] for ci in range(len(C)) for cj in range(len(C[ci]))]
+        va_id = [[i] for i in search_space if i not in remove_va]
+        for ci in range(len(C)):
+            i = 0
+            for cj in range(len(C[ci])):
+                if C[ci][cj] in search_space:
+                    i += 1
+                    break
+            if i != 0:
+                va_id += [C[ci]]
+    else:
+        va_id = [[i] for i in search_space]
+
+    m = len(va_id)
+    power = []
+    max_size = 0
+    for size in range(m + 1):
+        power_b = []
+        for co in itertools.combinations(va_id, size):
+            power_b.append(np.array(sum(list(co),[])))
+            max_size += 1
+        power.append(power_b)
+        if max_size >= 2**15:
+            break
+
+    cdef vector[vector[vector[long]]] power_cpp = power
+    cdef long[:, :] s_star
+    s_star = -1*np.ones((N, X.shape[1]), dtype=np.int)
+
+
+    cdef long power_set_size = 2**m
+    S = np.zeros((data.shape[1]), dtype=np.int)
+
+    cdef vector[vector[vector[long]]] sufficient = [[[-1]] for i in range(N)]
+    cdef vector[vector[double]] sufficient_sdp = [[-1] for i in range(N)]
+
+    for s_0 in tqdm(range(minimal, m + 1)):
+        for s_1 in range(0, power_cpp[s_0].size()):
+            for i in range(power_cpp[s_0][s_1].size()):
+                S[i] = power_cpp[s_0][s_1][i]
+
+            S_size = power_cpp[s_0][s_1].size()
+            sdp = compute_sdp_rf(X, y_X, data, y_data, S[:S_size], features, thresholds,  children_left,
+                                    children_right, max_depth, min_node_size, classifier, t)
+
+            for i in range(N):
+                if sdp[i] >= global_proba:
+                    subset = 0
+                    for j in range(sufficient[i].size()):
+                        a = 0
+                        for k in range(sufficient[i][j].size()):
+                            if std_find[vector[long].iterator, long](power_cpp[s_0][s_1].begin(), power_cpp[s_0][s_1].end(), sufficient[i][j][k]) != power_cpp[s_0][s_1].end():
+                                a += 1
+                        if a == sufficient[i][j].size():
+                            subset = 1
+                            break
+
+                    if subset == 0:
+                        sufficient[i].push_back(power_cpp[s_0][s_1])
+                        sufficient_sdp[i].push_back(sdp[i])
+                        for s in range(S_size):
+                            sdp_global[S[s]] += 1
+                        K += 1
+
+    return sufficient, sufficient_sdp, np.asarray(sdp_global)/K
