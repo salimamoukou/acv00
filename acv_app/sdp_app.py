@@ -33,7 +33,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     with col1:
         nb = st.number_input(label='TEST SIZE', value=10, min_value=5, max_value=500)
     with col2:
-        global_proba = st.number_input(label='SDP MIN', value=0.9, min_value=0.7, max_value=1.)
+        pi_level = st.number_input(label='SDP MIN', value=0.9, min_value=0.7, max_value=1.)
     with col3:
         t = st.number_input(label='SDP THRESHOLD', value=10., min_value=1., max_value=500.)
 
@@ -43,9 +43,9 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     )
 
     @st.cache(allow_output_mutation=True)
-    def compute_sdp(nb, x_train, y_train, x_test, y_test, global_proba, t):
+    def compute_sdp(nb, x_train, y_train, x_test, y_test, pi_level, t):
         sufficient_coal, sdp_coal, sdp_global = acvtree.sufficient_coal_rf(x_test[:nb], y_test[:nb], x_train, y_train,
-                                                                           stop=False, global_proba=global_proba,
+                                                                           stop=False, pi_level=pi_level,
                                                                            classifier=int(CLASSIFIER),
                                                                            t=t)
         for i in range(len(sufficient_coal)):
@@ -56,7 +56,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def compute_sdp_rule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S):
         sdp, rules = acvtree.compute_sdp_rule(x_test_np[obs:obs+1], y_test_np[obs:obs+1],
-                                              x_train_np, y_train_np, S=S, classifier=int(CLASSIFIER), t=t)
+                                              x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t)
         rule = rules[0]
         columns = [x_train.columns[i] for i in range(x_train.shape[1])]
         rule_string = ['{} <= {} <= {}'.format(rule[i, 0] if rule[i, 0] > -1e+10 else -np.inf, columns[i],
@@ -66,7 +66,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
 
     @st.cache(allow_output_mutation=True)
     def compute_sdp_maxrule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S, pi):
-        sdp, rules, sdp_all, rules_data = acvtree.compute_sdp_maxrules(x_test_np[obs:obs + 1], y_test_np[obs:obs + 1],
+        sdp, rules, sdp_all, rules_data, w = acvtree.compute_sdp_maxrules(x_test_np[obs:obs + 1], y_test_np[obs:obs + 1],
                                               x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t, pi=pi)
 
         # extend_partition(rules, rules_data, sdp_all, pi=pi, S=[S])
@@ -177,7 +177,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     # explantions_load_state = st.text('Computing SDP explanations...')
     sufficient_coal, sdp_coal, sdp_global = compute_sdp(nb, x_train.values.astype(np.double),
                                                         y_train.astype(np.double), x_test.values.astype(np.double),
-                                                        y_test.astype(np.double), global_proba=global_proba, t=t)
+                                                        y_test.astype(np.double), pi_level=pi_level, t=t)
 
     sufficient_coal_names = transform_scoal_to_col(sufficient_coal, x_train.columns)
     # explantions_load_state.text("SDP explanation Done!")
@@ -233,16 +233,16 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
         x_group['Same Decision Probability (SDP)'] = sdp_coal[idx][exp_idx]
         st.dataframe(x_group.iloc[:1].style.apply(color_max, sdp_index=sufficient_coal[idx][exp_idx], axis=1))
 
-        st.subheader('Local Rule with SDP')
+        st.subheader('Local rule with SDP')
         rule_string = compute_sdp_rule(idx, x_train.values.astype(np.double), y_train.astype(np.double),
                                        x_test.values.astype(np.double), y_test.astype(np.double), t, sufficient_coal[idx][exp_idx])
         st.markdown(rule_string)
 
-        st.subheader('Maximal rule')
+        st.subheader('Maximal rule with SDP')
         maxrule = st.checkbox('Compute', value=False)
 
         if maxrule:
             rule_string = compute_sdp_maxrule(idx, x_train.values.astype(np.double), y_train.astype(np.double),
                                            x_test.values.astype(np.double), y_test.astype(np.double), t,
-                                           sufficient_coal[idx][exp_idx], global_proba)
+                                           sufficient_coal[idx][exp_idx], pi_level)
             st.markdown(rule_string)

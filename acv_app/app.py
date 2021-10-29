@@ -19,8 +19,32 @@ APP_PATH = __file__
 # define all required cache data for the app
 
 def compile_acv(model, x_train, y_train, x_test, y_test, path):
+    if type(x_train) != pd.core.frame.DataFrame:
+        x_train = pd.DataFrame(x_train, columns=['X{}'.format(i) for i in range(x_train.shape[1])])
+        x_test = pd.DataFrame(x_test, columns=['X{}'.format(i) for i in range(x_test.shape[1])])
+        y_test = pd.DataFrame(y_test)
+        y_train = pd.DataFrame(y_train)
+
     acvtree = ACVTree(model, x_train.values)
     acvtree_agnostic = ACVTreeAgnostic(model, x_train.values[:5])
+
+    dump(acvtree, os.path.join(path, 'acvtree.joblib'))
+    dump(acvtree_agnostic, os.path.join(path, 'acvtree_agnostic.joblib'))
+    x_train.to_csv(os.path.join(path, 'x_train.csv'), index=False)
+    y_train.to_csv(os.path.join(path, 'y_train.csv'), index=False)
+    x_test.to_csv(os.path.join(path, 'x_test.csv'), index=False)
+    y_test.to_csv(os.path.join(path, 'y_test.csv'), index=False)
+
+
+def compile_ACXplainers(ACXplainers, x_train, y_train, x_test, y_test, path):
+    acvtree = ACXplainers
+    acvtree_agnostic = ACXplainers
+
+    if type(x_train) != pd.core.frame.DataFrame:
+        x_train = pd.DataFrame(x_train, columns=['X{}'.format(i) for i in range(x_train.shape[1])])
+        x_test = pd.DataFrame(x_test, columns=['X{}'.format(i) for i in range(x_test.shape[1])])
+        y_test = pd.DataFrame(y_test)
+        y_train = pd.DataFrame(y_train)
 
     dump(acvtree, os.path.join(path, 'acvtree.joblib'))
     dump(acvtree_agnostic, os.path.join(path, 'acvtree_agnostic.joblib'))
@@ -76,7 +100,7 @@ def main(LOAD_PATH):
         st.title('Local Explanation based on Shapley values ')
         acvtree = load(os.path.join(LOAD_PATH, 'acvtree.joblib'))
     else:
-        st.title('Local Explanation based on SDP ')
+        st.title('Local Explanations based on SDP ')
 
     page = PAGES[persona]
     page.write_pg(x_train, x_test, y_train, y_test, acvtree)

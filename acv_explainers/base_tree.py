@@ -7,6 +7,7 @@ import warnings
 from .py_acv import *
 from .utils import rebuild_tree
 from distutils.version import LooseVersion
+from sklearn.utils.validation import check_array
 
 
 # This is based on https://github.com/slundberg/shap/blob/master/shap/explainers/_tree.py
@@ -26,7 +27,7 @@ class BaseTree:
         self.tree_output = None  # what are the units of the values in the leaves of the trees
         self.internal_dtype = np.float64
         self.input_dtype = np.float64  # for sklearn we need to use np.float32 to always get exact matches to their predictions
-        self.data = data
+        self.data = check_array(data)
         self.data_missing = data_missing
         self.fully_defined_weighting = True  # does the background dataset land in every leaf (making it valid for the tree_path_dependent method)
         self.tree_limit = None  # used for limiting the number of trees we use by default (like from early stopping)
@@ -164,6 +165,16 @@ class BaseTree:
             scaling = 1.0 / len(model.estimators_)  # output is average of trees
             # self.scaling = scaling
             self.trees = [SingleTree(e.tree_, normalize=True, scaling=scaling, data=data, data_missing=data_missing) for
+                          e in model.estimators_]
+            self.objective = objective_name_map.get(model.criterion, None)
+            self.tree_output = "probability"
+        elif safe_isinstance(model, ["skranger.ensemble.classifier.RangerForestClassifier"]):
+            assert hasattr(model, "estimators_"), "Model has no `estimators_`! Have you called `model.fit`?"
+            self.internal_dtype = model.estimators_[0].tree_.value.dtype.type
+            self.input_dtype = np.float32
+            scaling = 1.0 / len(model.estimators_)  # output is average of trees
+            # self.scaling = scaling
+            self.trees = [SingleTree(e.tree_, normalize=False, scaling=scaling, data=data, data_missing=data_missing) for
                           e in model.estimators_]
             self.objective = objective_name_map.get(model.criterion, None)
             self.tree_output = "probability"
@@ -684,12 +695,12 @@ class BaseTree:
         pass
 
     @abstractmethod
-    def global_sdp_importance_clf(self, data, data_bground, columns_names, global_proba, decay, threshold,
+    def global_sdp_importance_clf(self, data, data_bground, columns_names, pi_level, decay, threshold,
                                   proba, C, verbose):
         pass
 
     @abstractmethod
-    def global_sdp_importance_reg(self, data, data_bground, columns_names, global_proba, decay, threshold,
+    def global_sdp_importance_reg(self, data, data_bground, columns_names, pi_level, decay, threshold,
                                   proba, C, verbose):
         pass
 
@@ -850,7 +861,7 @@ class SingleTree:
 
     def __init__(self, tree, normalize=False, scaling=1.0, data=None, data_missing=None):
         self.scaling = scaling
-        if safe_isinstance(tree, ["sklearn.tree._tree.Tree", "econml.tree._tree.Tree"]):
+        if safe_isinstance(tree, ["sklearn.tree._tree.Tree", "econml.tree._tree.Tree", "skranger.tree._tree.Tree"]):
             self.children_left = tree.children_left.astype(np.int32)
             self.children_right = tree.children_right.astype(np.int32)
             self.children_default = self.children_left  # missing values not supported in sklearn

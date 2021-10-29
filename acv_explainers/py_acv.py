@@ -578,17 +578,17 @@ def local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose, c
             return local_sdp(x, threshold, proba, index, data, final_coal, decay, C, verbose, cond_func)
 
 
-def global_sdp_importance(data, data_bground, columns_names, global_proba, decay, threshold,
+def global_sdp_importance(data, data_bground, columns_names, pi_level, decay, threshold,
                           proba, C, verbose, cond_func):
     """
-    Compute the Global SDP across "data" at level "global_proba" for forest_regressor.
+    Compute the Global SDP across "data" at level "pi_level" for forest_regressor.
 
     Args:
         forest (RandomForestRegressor): model
         data (array): data used to compute the Global SDP
         data_bground (array): data used in the estimations of the SDP
         columns_names (list): names of the variables
-        global_proba (float): proba used for the selection criterion. We count each time for a variable if it is on a
+        pi_level (float): proba used for the selection criterion. We count each time for a variable if it is on a
                               set with SDP >= global proba
         decay (float): decay value used when recursively apply the local_sdp function .
         threshold (float): the radius t of the SDP regressor (see paper: SDP for regression)
@@ -626,7 +626,7 @@ def global_sdp_importance(data, data_bground, columns_names, global_proba, decay
             else:
                 sdp_imp_name = [columns_names[c[0]]]
 
-            if value >= global_proba:
+            if value >= pi_level:
                 if str(sdp_imp_name) in sdp_coal_proba.keys():
                     sdp_coal_proba[str(sdp_imp_name)].append(value)
                     sdp_importance_coal_count[str(sdp_imp_name)] += 1 / n_size

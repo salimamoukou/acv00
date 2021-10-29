@@ -130,10 +130,10 @@ def test_sv_acv_cyext_coalition():
 
 def test_cyext_all_acv():
     x = data[:100]
-    global_proba = 0.9
+    pi_level = 0.9
     C = [[]]
     sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=C,
-                                                                      global_proba=global_proba)
+                                                                      pi_level=pi_level)
 
     s_star_all, n_star_all = acv_explainers.utils.get_null_coalition(sdp_index, size)
     s_star_l, n_star_l = acv_explainers.utils.get_active_null_coalition_list(sdp_index, size)
@@ -154,13 +154,13 @@ def test_cyext_all_acv():
 
 # def test_cyext_sdp_para():
 #     x = X[:100]
-#     global_proba = 0.9
+#     pi_level = 0.9
 #     C = [[]]
 #     sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X=x, data=data, C=[[]],
-#                                                                             global_proba=global_proba, num_threads=5)
+#                                                                             pi_level=pi_level, num_threads=5)
 #
 #     sdp_importance_p, sdp_index_p, size_p, sdp_p = acvtree.importance_sdp_clf_p2(X=x, data=data, C=[[]],
-#                                                                       global_proba=global_proba, num_threads=5)
+#                                                                       pi_level=pi_level, num_threads=5)
 #
 #     assert np.allclose(sdp_importance, sdp_importance_p)
 #     assert np.allclose(sdp_index_p, sdp_index)

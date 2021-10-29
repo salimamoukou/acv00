@@ -392,7 +392,7 @@ def msdp(X, S, model, rg_data):
     return sdp
 
 
-def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, r_search_space=None, stop=True):
+def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, pi_level=0.9, r_search_space=None, stop=True):
     N = X.shape[0]
     m = X.shape[1]
 
@@ -467,7 +467,7 @@ def importance_msdp_clf_search(X, model, rg_data, C=[[]], minimal=1, global_prob
                         s_star[R_buf[i], s] = S[s]
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.append(R[i])
                 for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
                     s_star[R_buf[i], s] = -1
@@ -510,7 +510,7 @@ def msdp_reg(X, S, model, rg_data, threshold=0.2):
     return sdp
 
 
-def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_proba=0.9, threshold=0.2, r_search_space=None, stop=True):
+def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, pi_level=0.9, threshold=0.2, r_search_space=None, stop=True):
     N = X.shape[0]
     m = X.shape[1]
 
@@ -586,7 +586,7 @@ def importance_msdp_reg_search(X, model, rg_data, C=[[]], minimal=1, global_prob
                         s_star[R_buf[i], s] = S[s]
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.append(R[i])
                 for s in range(len_s_star[R_buf[i]], X.shape[1]):  # to filter (important for coalition)
                     s_star[R_buf[i], s] = -1

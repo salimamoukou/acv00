@@ -840,7 +840,7 @@ cpdef compute_sdp_reg_cat_nopa(double[:, :] X, double[:] fX, double tX,
 cpdef global_sdp_reg_cat_nopa(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal):
 
     cdef unsigned int N = X.shape[0]
@@ -940,7 +940,7 @@ cpdef global_sdp_reg_cat_nopa(double[:, :] X, double[:] fX, double tX,
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -962,7 +962,7 @@ cpdef global_sdp_reg_cat_nopa(double[:, :] X, double[:] fX, double tX,
 cpdef global_sdp_reg_nopa(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal):
 
     cdef unsigned int N = X.shape[0]
@@ -1245,7 +1245,7 @@ cpdef global_sdp_reg_nopa(double[:, :] X, double[:] fX, double tX,
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -1299,7 +1299,7 @@ cpdef double _comb_int_long(unsigned long N, unsigned long k) nogil:
 cpdef global_sdp_clf_nopa(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal):
 
     cdef unsigned int N = X.shape[0]
@@ -1480,7 +1480,7 @@ cpdef global_sdp_clf_nopa(double[:, :] X, long[:] fX,
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1

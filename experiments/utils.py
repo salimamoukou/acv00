@@ -1519,7 +1519,7 @@ def single_sdp_true(x, S, tree, mean, cov, N):
     return 1
 
 
-def importance_sdp_clf_true(X, tree, mean, cov, N_samples, C=[[]], minimal=1, global_proba=0.9):
+def importance_sdp_clf_true(X, tree, mean, cov, N_samples, C=[[]], minimal=1, pi_level=0.9):
     N = X.shape[0]
     m = X.shape[1]
 
@@ -1580,7 +1580,7 @@ def importance_sdp_clf_true(X, tree, mean, cov, N_samples, C=[[]], minimal=1, gl
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.append(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1

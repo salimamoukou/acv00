@@ -846,7 +846,7 @@ cpdef compute_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
 cpdef global_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
@@ -946,7 +946,7 @@ cpdef global_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -968,7 +968,7 @@ cpdef global_sdp_reg_cat(double[:, :] X, double[:] fX, double tX,
 cpdef global_sdp_reg(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
@@ -1251,7 +1251,7 @@ cpdef global_sdp_reg(double[:, :] X, double[:] fX, double tX,
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -2637,7 +2637,7 @@ cpdef swing_sv_clf_direct(const double[:, :] X,
 cpdef global_sdp_reg_cpp_pa_coal(double[:, :] X, double[:] fX, double tX,
             double[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int num_threads, bint stop):
 
     cdef unsigned int N = X.shape[0]
@@ -2841,14 +2841,14 @@ cpdef global_sdp_reg_cpp_pa_coal(double[:, :] X, double[:] fX, double tX,
 
             for i in range(N):
                 ss = (mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 0])/(mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2]) if mean_forest[R_buf[i], 1] - mean_forest[R_buf[i], 2] !=0 else 0
-                if ss >= global_proba and ss >= sdp[R_buf[i]]:
+                if ss >= pi_level and ss >= sdp[R_buf[i]]:
                     sdp[R_buf[i]] = ss
                     len_s_star[R_buf[i]] = S_size
                     for s in range(S_size):
                         s_star[R_buf[i], s] = S[s]
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
 
                 for s in range(len_s_star[R_buf[i]], X.shape[1]): # to filter (important for coalition)
@@ -2872,7 +2872,7 @@ cpdef global_sdp_reg_cpp_pa_coal(double[:, :] X, double[:] fX, double tX,
 cpdef global_sdp_clf(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
@@ -3053,7 +3053,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -3075,7 +3075,7 @@ cpdef global_sdp_clf(double[:, :] X, long[:] fX,
 cpdef global_sdp_clf_ptrees(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal, bint stop):
 
     cdef unsigned int N = X.shape[0]
@@ -3223,7 +3223,7 @@ cpdef global_sdp_clf_ptrees(double[:, :] X, long[:] fX,
                         ss_u += mean_forest_b[b, leaf_numb, R_buf[i], 1]
                         ss_d += mean_forest_b[b, leaf_numb, R_buf[i], 2]
                 ss = (ss_a - ss_d)/(ss_u - ss_d) if ss_u - ss_d !=0 else 0
-                if ss >= global_proba and ss >= sdp[R_buf[i]]:
+                if ss >= pi_level and ss >= sdp[R_buf[i]]:
                     sdp[R_buf[i]] = ss
                     len_s_star[R_buf[i]] = S_size
                     for s in range(S_size):
@@ -3236,7 +3236,7 @@ cpdef global_sdp_clf_ptrees(double[:, :] X, long[:] fX,
                         s_star[R_buf[i], s] = S[s]
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]], X.shape[1]): # to filter (important for coalition)
                     s_star[R_buf[i], s] = -1
@@ -3787,7 +3787,7 @@ cpdef single_shap_values(const double[:] X,
 cpdef global_sdp_clf_approx(double[:, :] X, long[:] fX,
             long[:] y_pred, double[:, :] data,
             double[:, :, :] values, double[:, :, :, :] partition_leaves_trees,
-            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double global_proba,
+            long[:, :] leaf_idx_trees, long[:] leaves_nb, double[:] scaling, list C, double pi_level,
             int minimal, list search_space, bint stop):
 
     cdef unsigned int N = X.shape[0]
@@ -3975,7 +3975,7 @@ cpdef global_sdp_clf_approx(double[:, :] X, long[:] fX,
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -4112,7 +4112,7 @@ cpdef compute_sdp_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, dou
 @cython.cdivision(True)
 cpdef global_sdp_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
-        int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
+        int max_depth, int min_node_size, int & classifier, double & t, list C, double pi_level,
             int minimal, bint stop, list search_space):
 
     cdef unsigned int N = X.shape[0]
@@ -4220,7 +4220,7 @@ cpdef global_sdp_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, doub
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -4241,62 +4241,73 @@ cpdef global_sdp_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, doub
 @cython.cdivision(True)
 cdef double single_compute_exp_rf(double[:] & x, double & y_x,  double[:, :] & data, double[::1] & y_data, vector[int] & S,
         int[:, :] & features, double[:, :] & thresholds,  int[:, :] & children_left, int[:, :] & children_right,
-        int & max_depth, int & min_node_size, int & classifier, double & t, double[::1] & weights, double[::1] & samples, double[::1] & samples_child) nogil:
+        int & max_depth, int & min_node_size, int & classifier, double & t) nogil:
 
     cdef unsigned int n_trees = features.shape[0]
     cdef unsigned int N = data.shape[0]
     cdef double s, sdp
+    cdef int o
     sdp = 0
 
-    cdef unsigned int b, level, it_node, i
-    cdef vector[int] nodes_level, nodes_child, in_data, in_data_b
+    cdef int b, level, i, it_node
+    cdef set[int] nodes_level, nodes_child, in_data, in_data_b
+    cdef set[int].iterator it, it_point
 
     for b in range(n_trees):
-        nodes_level.clear()
-        nodes_level.push_back(0)
         nodes_child.clear()
+        nodes_level.clear()
+        nodes_level.insert(0)
+
         in_data.clear()
         in_data_b.clear()
         for i in range(N):
-            in_data.push_back(i)
-            in_data_b.push_back(i)
+            in_data.insert(i)
+            in_data_b.insert(i)
 
         for level in range(max_depth):
-            for it_node in range(nodes_level.size()):
+            it_point = nodes_level.begin()
+            while(it_point != nodes_level.end()):
+                it_node = deref(it_point)
+                if std_find[vector[int].iterator, int](S.begin(), S.end(), features[b, it_node]) != S.end():
+                    if x[features[b, it_node]] <= thresholds[b, it_node]:
+                        nodes_child.insert(children_left[b, it_node])
 
-                if std_find[vector[int].iterator, int](S.begin(), S.end(), features[b, nodes_level[it_node]]) != S.end():
-                    if x[features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
-                        nodes_child.push_back(children_left[b, nodes_level[it_node]])
-
-                        for i in range(in_data.size()):
-                            if data[in_data[i], features[b, nodes_level[it_node]]] > thresholds[b, nodes_level[it_node]]:
-                                std_remove[vector[int].iterator, int](in_data_b.begin(), in_data_b.end(), in_data[i])
-                                in_data_b.pop_back()
+                        it = in_data.begin()
+                        while(it != in_data.end()):
+                            if data[deref(it), features[b, it_node]] > thresholds[b, it_node]:
+                                in_data_b.erase(deref(it))
+                            inc(it)
                         in_data = in_data_b
 
                     else:
-                        nodes_child.push_back(children_right[b, nodes_level[it_node]])
-                        for i in range(in_data.size()):
-                            if data[in_data[i], features[b, nodes_level[it_node]]] <= thresholds[b, nodes_level[it_node]]:
-                                std_remove[vector[int].iterator, int](in_data_b.begin(), in_data_b.end(), in_data[i])
-                                in_data_b.pop_back()
-                        in_data = in_data_b
+                        nodes_child.insert(children_right[b, it_node])
 
+                        it = in_data.begin()
+                        while(it != in_data.end()):
+                            if data[deref(it), features[b, it_node]] <= thresholds[b, it_node]:
+                                in_data_b.erase(deref(it))
+                            inc(it)
+                        in_data = in_data_b
                 else:
-                     nodes_child.push_back(children_left[b, nodes_level[it_node]])
-                     nodes_child.push_back(children_right[b, nodes_level[it_node]])
+                     nodes_child.insert(children_left[b, it_node])
+                     nodes_child.insert(children_right[b, it_node])
 
                 if in_data.size() < min_node_size:
                     break
+                inc(it_point)
 
             nodes_level = nodes_child
 
         if classifier == 1:
-            for i in range(in_data.size()):
-                sdp  += (1./(n_trees*in_data.size())) * y_data[in_data[i]]
+            it = in_data.begin()
+            while(it != in_data.end()):
+                sdp  += (1./(n_trees*in_data.size())) * y_data[deref(it)]
+                inc(it)
         else:
-            for i in range(in_data.size()):
-                sdp  += (1./(n_trees*in_data.size())) * (y_x - y_data[in_data[i]])*(y_x - y_data[in_data[i]])
+            it = in_data.begin()
+            while(it != in_data.end()):
+                sdp  += (1./(n_trees*in_data.size())) * y_data[deref(it)]
+                inc(it)
 
     return sdp
 
@@ -4304,21 +4315,17 @@ cdef double single_compute_exp_rf(double[:] & x, double & y_x,  double[:, :] & d
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_exp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_exp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
         cdef int N = X.shape[0]
         cdef double[::1] sdp = np.zeros(N)
-        cdef double[:, ::1] weights, samples, samples_child
-        weights = np.zeros((N, data.shape[0]))
-        samples = np.ones((N, data.shape[0]))
-        samples_child = np.ones((N, data.shape[0]))
         cdef int i
-        for i in prange(N, nogil=True):
-            sdp[i] = single_compute_exp_rf(X[i], y_X[i], data, y_data, S,
+        for i in prange(N, nogil=True, schedule='dynamic'):
+            sdp[i] = single_compute_exp_rf(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
-                        max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :])
+                        max_depth, min_node_size, classifier, t)
         return np.array(sdp)
 
 @cython.boundscheck(False)
@@ -4395,7 +4402,7 @@ cdef double single_compute_quantile_rf(double[:] & x, double & y_x,  double[:, :
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_quantile_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_quantile_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, double & quantile):
 
@@ -4407,7 +4414,7 @@ cpdef compute_quantile_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, d
         samples_child = np.ones((N, data.shape[0]))
         cdef int i
         for i in range(N):
-            sdp[i] = single_compute_quantile_rf(X[i], y_X[i], data, y_data, S,
+            sdp[i] = single_compute_quantile_rf(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :], quantile)
         return np.array(sdp)
@@ -4484,7 +4491,7 @@ cdef double single_compute_quantile_diff_rf(double[:] & x, double & y_x,  double
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_quantile_diff_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_quantile_diff_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t, double & quantile):
 
@@ -4496,7 +4503,7 @@ cpdef compute_quantile_diff_rf(double[:, :] X, double[::1] y_X,  double[:, :] da
         samples_child = np.ones((N, data.shape[0]))
         cdef int i
         for i in range(N):
-            sdp[i] = single_compute_quantile_diff_rf(X[i], y_X[i], data, y_data, S,
+            sdp[i] = single_compute_quantile_diff_rf(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t, weights[i, :], samples[i, :], samples_child[i, :], quantile)
         return np.array(sdp)
@@ -4566,7 +4573,7 @@ cdef double single_compute_cdf_rf(double[:] & x, double & y_x,  double[:, :] & d
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_cdf_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_cdf_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
@@ -4574,7 +4581,7 @@ cpdef compute_cdf_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double
         cdef double[::1] sdp = np.zeros(N)
         cdef int i
         for i in prange(N, nogil=True):
-            sdp[i] = single_compute_cdf_rf(X[i], y_X[i], data, y_data, S,
+            sdp[i] = single_compute_cdf_rf(X[i], y_X[i], data, y_data, S[i],
                         features, thresholds, children_left, children_right,
                         max_depth, min_node_size, classifier, t)
         return np.array(sdp)
@@ -4586,7 +4593,7 @@ cpdef compute_cdf_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double
 @cython.cdivision(True)
 cpdef sufficient_coal_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
-        int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
+        int max_depth, int min_node_size, int & classifier, double & t, list C, double pi_level,
             int minimal, bint stop, list search_space):
 
     cdef unsigned int N = X.shape[0]
@@ -4654,7 +4661,7 @@ cpdef sufficient_coal_rf_v0(double[:, :] X, double[::1] y_X,  double[:, :] data,
                                     children_right, max_depth, min_node_size, classifier, t)
 
             for i in range(N):
-                if sdp[i] >= global_proba:
+                if sdp[i] >= pi_level:
                     subset = 0
                     for j in range(sufficient[i].size()):
                         a = 0
@@ -5432,7 +5439,24 @@ cdef double single_compute_sdp_rf(double[:] & x, double & y_x,  double[:, :] & d
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
+cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[vector[int]] S,
+        int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
+        int max_depth, int min_node_size, int & classifier, double & t):
+
+        cdef int N = X.shape[0]
+        cdef double[::1] sdp = np.zeros(N)
+        cdef int i
+        for i in prange(N, nogil=True, schedule='dynamic'):
+            sdp[i] = single_compute_sdp_rf(X[i], y_X[i], data, y_data, S[i],
+                        features, thresholds, children_left, children_right,
+                        max_depth, min_node_size, classifier, t)
+        return np.array(sdp)
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cpdef compute_sdp_rf_same_set(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data, vector[int] S,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
         int max_depth, int min_node_size, int & classifier, double & t):
 
@@ -5452,7 +5476,7 @@ cpdef compute_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double
 @cython.cdivision(True)
 cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
-        int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
+        int max_depth, int min_node_size, int & classifier, double & t, list C, double pi_level,
             int minimal, bint stop, list search_space):
 
     cdef unsigned int N = X.shape[0]
@@ -5538,7 +5562,7 @@ cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[
                 # sdp_b[R_buf[i]] = single_compute_sdp_rf(X[R_buf[i]],  y_X[R_buf[i]], data, y_data, S[:S_size], features, thresholds,  children_left, children_right,
                 #                 max_depth, min_node_size, classifier, t)
 
-            sdp_ba = compute_sdp_rf(X_arr[np.array(in_data, dtype=bool)],
+            sdp_ba = compute_sdp_rf_same_set(X_arr[np.array(in_data, dtype=bool)],
                                     y_X_arr[np.array(in_data, dtype=bool)],
                                     data, y_data, S[:S_size], features, thresholds,  children_left,
                                     children_right, max_depth, min_node_size, classifier, t)
@@ -5560,7 +5584,7 @@ cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[
                         s_star[R_buf[i], s] = -1
 
         for i in range(N):
-            if sdp[R_buf[i]] >= global_proba:
+            if sdp[R_buf[i]] >= pi_level:
                 r.push_back(R[i])
                 for s in range(len_s_star[R_buf[i]]):
                     sdp_global[s_star[R_buf[i], s]] += 1
@@ -5581,7 +5605,7 @@ cpdef global_sdp_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[
 @cython.cdivision(True)
 cpdef sufficient_coal_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, double[::1] y_data,
         int[:, :] features, double[:, :] thresholds,  int[:, :] children_left, int[:, :] children_right,
-        int max_depth, int min_node_size, int & classifier, double & t, list C, double global_proba,
+        int max_depth, int min_node_size, int & classifier, double & t, list C, double pi_level,
             int minimal, bint stop, list search_space):
 
     cdef unsigned int N = X.shape[0]
@@ -5645,11 +5669,11 @@ cpdef sufficient_coal_rf(double[:, :] X, double[::1] y_X,  double[:, :] data, do
                 S[i] = power_cpp[s_0][s_1][i]
 
             S_size = power_cpp[s_0][s_1].size()
-            sdp = compute_sdp_rf(X, y_X, data, y_data, S[:S_size], features, thresholds,  children_left,
+            sdp = compute_sdp_rf_same_set(X, y_X, data, y_data, S[:S_size], features, thresholds,  children_left,
                                     children_right, max_depth, min_node_size, classifier, t)
 
             for i in range(N):
-                if sdp[i] >= global_proba:
+                if sdp[i] >= pi_level:
                     subset = 0
                     for j in range(sufficient[i].size()):
                         a = 0
