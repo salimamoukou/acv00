@@ -14,14 +14,14 @@ class ACVTree(BaseTree):
         Estimate the Shapley Values of a set of samples using the Leaf estimator
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to explain the model's output
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to explain the model's output
 
-            C (list(list)): A list that contains a list of columns indices for each grouped variables
+            C (list[list[int]]): A list that contains a list of columns indices for each grouped variables
 
             num_threads (int): not used, deprecated
 
         Returns:
-            shapley_values (np.array[2]): The Shapley Values of each sample (# samples X # features X # model's output)
+            shapley_values (numpy.ndarray): The Shapley Values of each sample (# samples X # features X # model's output)
         """
         X = check_array(X, dtype=[np.double])
         if not self.cache:
@@ -33,29 +33,29 @@ class ACVTree(BaseTree):
 
     def shap_values_acv_adap(self, X, S_star, N_star, size, C=[[]], num_threads=10):
         """
-        Estimate the **Active** Shapley Values for a set of samples given **the corresponding** S_star and N_star u
-        sing the Leaf estimator.
+        Estimate the **Active** Shapley Values for a set of samples given **the corresponding** S_star and N_star of
+        each sample using the Leaf estimator.
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to explain the model's output
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to explain the model's output
 
-            S_star (np.array[2]): A matrix (# samples X # features) that contains the indices of the sufficient variables
+            S_star (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the sufficient variables
                                   for each sample. For each row, the first elements should corresponds to the indices of
                                   the Sufficient variables.
 
-            N_star (np.array[2]): A matrix (# samples X # features) that contains the indices of the null variables
+            N_star (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the null variables
                                   for each sample. For each row, the first elements should corresponds to the indices of
                                   the null variables.
 
-            size (np.array[1]): A 1-D matrix (# samples) that contains the size of the corresponding sufficient variables
+            size (numpy.ndarray): A 1-D matrix (# samples) that contains the size of the corresponding sufficient variables
                                 for each samples
 
-            C (list(list)): A list that contains a list of columns indices for each grouped variables
+            C (list[list[int]]): A list that contains a list of columns indices for each grouped variables
 
             num_threads (int): not used, deprecated
 
         Returns:
-            shapley_values (np.array[2]): The **Active** Shapley Values of each sample (# samples X # features X # model's output)
+            active_shapley_values (numpy.ndarray): The **Active** Shapley Values of each sample (# samples X # features X # model's output)
         """
         X = check_array(X, dtype=[np.double])
         S_star = check_array(S_star, dtype=[np.long])
@@ -69,22 +69,22 @@ class ACVTree(BaseTree):
 
     def shap_values_acv(self, X, S_star, N_star, C=[[]], num_threads=10):
         """
-        Estimate the **Active** Shapley Values for a set of samples given a **single** S_star and N_star for all
+        Estimate the **Active** Shapley Values for a set of samples given a **single** S_star and N_star **for all**
         the observations using the Leaf estimator.
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to explain the model's output
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to explain the model's output
 
             S_star (list): A list that contains the columns indices of the active variables
 
             N_star (list): A list that contains the columns indices of the null variables
 
-            C (list(list)): A list that contains a list of columns indices for each grouped variables
+            C (list[list[int]]): A list that contains a list of columns indices for each grouped variables
 
             num_threads (int): not used, deprecated
 
         Returns:
-            np.array[2]: The **Active** Shapley Values of each sample (# samples X # features X # model's output)
+            numpy.ndarray: The **Active** Shapley Values of each sample (# samples X # features X # model's output)
         """
         X = check_array(X, dtype=[np.double])
         return cyext_acv.shap_values_acv_leaves(X, self.data, self.values,
@@ -99,12 +99,12 @@ class ACVTree(BaseTree):
         reduce the complexity from 2**(features) to 2**(10).
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to compute the Sufficient Explanations
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the Sufficient Explanations
 
-            data (np.array[2]): The background dataset to use for the estimation of the explanations. It should be the
+            data (numpy.ndarray): The background dataset to use for the estimation of the explanations. It should be the
                                 training samples.
 
-            C (list(list)): A list that contains a list of columns indices for each grouped variables
+            C (list[list[int]]): A list that contains a list of columns indices for each grouped variables
 
             pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations
 
@@ -115,21 +115,20 @@ class ACVTree(BaseTree):
                          end.
 
         Returns:
-            global_sdp_importance (np.array[1]): A 1-D matrix (# features) that is the global explanatory importance
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
                                                  based on samples X. For a given i, sdp_importance[i] corresponds to the
                                                  frequency of apparition of feature i in the Minimal Sufficient Explanations
                                                  of the set of samples X
 
-            sdp_index (np.array[2]): A matrix (# samples X # features) that contains the indices of the variables in the
-                                     the Minimal Sufficient Explanations for each sample. For a given i, the positive
-                                     value of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
-                                     observation i.
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the column indices of the variables
+                                       in the the Minimal Sufficient Explanations for each sample. For a given i, the positive
+                                       value of sdp_index[i] corresponds to the Minimal Sufficient Explanations of observation i.
 
-            size (np.array[1]): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
-                                for each sample.
+            size (numpy.ndarray): A 1-D matrix (# samples), size[i] corresponds to the size of the Minimal Sufficient Explanation
+                                  of sample i.
 
-            sdp (np.array[1]): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
-                               of the Sufficient Explanation for each sample.
+            sdp (numpy.ndarray): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation for each sample.
 
 
         """
@@ -148,15 +147,15 @@ class ACVTree(BaseTree):
     def importance_sdp_clf_greedy(self, X, data, C=[[]], pi_level=0.9, minimal=1, stop=True):
         """
         Estimate the Minimal-Sufficient Explanations of a set of samples for tree-based classifier models. It searches
-        the Sufficient Explanations in the space of the all the variables thus it has a complexity of 2**(# features).
+        the Sufficient Explanations in the space of all the variables thus it has a complexity of 2**(# features).
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to compute the Sufficient Explanations
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the Sufficient Explanations
 
-            data (np.array[2]): The background dataset to use for the estimation of the explanations. It should be the
+            data (numpy.ndarray): The background dataset to use for the estimation of the explanations. It should be the
                                 training samples.
 
-            C (list(list)): A list that contains a list of columns indices for each grouped variables
+            C (list[list[int]]): A list that contains a list of columns indices for each grouped variables
 
             pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations
 
@@ -167,21 +166,21 @@ class ACVTree(BaseTree):
                          end.
 
         Returns:
-            global_sdp_importance (np.array[1]): A 1-D matrix (# features) that is the global explanatory importance
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
                                                  based on samples X. For a given i, sdp_importance[i] corresponds to the
                                                  frequency of apparition of feature i in the Minimal Sufficient Explanations
                                                  of the set of samples X
 
-            sdp_index (np.array[2]): A matrix (# samples X # features) that contains the indices of the variables in the
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the variables in the
                                      the Minimal Sufficient Explanations for each sample. For a given i, the positive
                                      value of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
                                      observation i.
 
-            size (np.array[1]): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
-                                for each sample.
+            size (numpy.ndarray): A 1-D matrix (# samples), size[i] corresponds to the size of the Minimal Sufficient Explanation
+                                  of observation i
 
-            sdp (np.array[1]): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
-                               of the Sufficient Explanation for each sample.
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] that contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
         """
         X = check_array(X, dtype=[np.double])
         data = check_array(data, dtype=[np.double])
@@ -208,12 +207,12 @@ class ACVTree(BaseTree):
         the Sufficient Explanations in the given subspace (search_space). Thus, it has a complexity of 2**(# search_space).
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to compute the Sufficient Explanations
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the Sufficient Explanations
 
-            data (np.array[2]): The background dataset to use for the estimation of the explanations. It should be the
+            data (numpy.ndarray): The background dataset to use for the estimation of the explanations. It should be the
                                 training samples.
 
-            C (list(list)): A list that contains a list of columns indices for each grouped variables
+            C (list[list[int]]): A list that contains a list of columns indices for each grouped variables
 
             pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations
 
@@ -226,21 +225,21 @@ class ACVTree(BaseTree):
                          end.
 
         Returns:
-            global_sdp_importance (np.array[1]): A 1-D matrix (# features) that is the global explanatory importance
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
                                                  based on samples X. For a given i, sdp_importance[i] corresponds to the
                                                  frequency of apparition of feature i in the Minimal Sufficient Explanations
                                                  of the set of samples X
 
-            sdp_index (np.array[2]): A matrix (# samples X # features) that contains the indices of the variables in the
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the variables in the
                                      the Minimal Sufficient Explanations for each sample. For a given i, the positive
                                      value of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
                                      observation i.
 
-            size (np.array[1]): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
-                                for each sample.
+            size (numpy.ndarray): A 1-D matrix (# samples), size[i] corresponds to the size of the Minimal Sufficient Explanation
+                                  of observation i
 
-            sdp (np.array[1]): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
-                               of the Sufficient Explanation for each sample.
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] that contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
         """
         X = check_array(X, dtype=[np.double])
         data = check_array(data, dtype=[np.double])
@@ -265,17 +264,18 @@ class ACVTree(BaseTree):
         Estimate the Same Decision Probability (SDP) of a set of samples X given subset S using the Leaf estimator.
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to compute the SDP
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
 
-            S (np.array[1]): A 1-D that contains the indices of the variable on which we condition to compute the SDP
+            S (numpy.ndarray): A 1-D that contains the indices of the variable on which we condition to compute the SDP
 
-            data (np.array[2]): The background dataset to use for the estimation of the SDP. It should be the
-                                training samples.
+            data (numpy.ndarray): The background dataset to use for the estimation of the SDP. It should be the
+                                  training samples.
 
             num_threads (int): not used, deprecated
 
         Returns:
-            sdp (np.array[1]) A 1-D matrix (# samples) that contains the SDP of each observation of X.
+            sdp (numpy.ndarray)  A 1-D matrix (# samples), sdp[i] that contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
         """
         X = check_array(X, dtype=[np.double])
         data = check_array(data, dtype=[np.double])
@@ -301,17 +301,18 @@ class ACVTree(BaseTree):
         Estimate the Same Decision Probability (SDP) of a set of samples X given subset S using the Discrete estimator.
 
         Args:
-            X (np.array[2]): A matrix of samples (# samples X # features) on which to compute the SDP
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
 
-            S (np.array[1]): A 1-D that contains the indices of the variable on which we condition to compute the SDP
+            S (numpy.ndarray): A 1-D that contains the indices of the variable on which we condition to compute the SDP
 
-            data (np.array[2]): The background dataset to use for the estimation of the SDP. It should be the
+            data (numpy.ndarray): The background dataset to use for the estimation of the SDP. It should be the
                                 training samples.
 
             num_threads (int): not used, deprecated
 
         Returns:
-            sdp (np.array[1]) A 1-D matrix (# samples) that contains the SDP of each observation of X.
+            sdp (numpy.ndarray)  A 1-D matrix (# samples), sdp[i] that contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
         """
         X = check_array(X, dtype=[np.double])
         data = check_array(data, dtype=[np.double])
@@ -714,7 +715,7 @@ class ACVTree(BaseTree):
 
     def compute_msdp_clf(self, X, S, data, model=None, N=10000):
         """
-        Compute marginal SDP
+        Compute marginal SDP of a set of sample X given S for classifier
         """
         # if data:
         #     return msdp_true(X, S, self.model, self.data)
@@ -726,7 +727,7 @@ class ACVTree(BaseTree):
     def importance_msdp_clf_search(self, X, data, model=None, C=[[]], minimal=1, pi_level=0.9, r_search_space=None,
                                    stop=True):
         """
-        Compute marginal S^\star of model
+        Compute the marginal minimal sufficient explanations of any classifier
         """
         # if data:
         #     return importance_msdp_clf_true(X.values, self.model, self.data, C=C,
@@ -754,7 +755,7 @@ class ACVTree(BaseTree):
 
     def compute_msdp_reg(self, X, S, data, model=None, N=10000, threshold=0.2):
         """
-        Compute marginal SDP of regression model
+         Compute marginal SDP of a set of sample X given S for regressor
         """
         # if data:
         #     return msdp_true(X, S, self.model, self.data)
@@ -766,7 +767,7 @@ class ACVTree(BaseTree):
     def importance_msdp_reg_search(self, X, data, model=None, C=[[]], minimal=1, pi_level=0.9, threshold=0.2,
                                    r_search_space=None, stop=True):
         """
-        Compute marginal S^\star of regression model
+        Compute the marginal minimal sufficient explanations of any regressor model
         """
         # if data:
         #     return importance_msdp_clf_true(X.values, self.model, self.data, C=C,
@@ -780,6 +781,9 @@ class ACVTree(BaseTree):
                                           threshold=threshold, r_search_space=r_search_space, stop=stop)
 
     def importance_msdp_reg(self, X, data, model=None, C=[[]], pi_level=0.9, minimal=1, threshold=0.2, stop=True):
+        """
+        Compute the marginal minimal sufficient explanations of any regressor model
+        """
         if X.shape[1] > 15:
             flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
             node_idx = pd.Series(flat_list)
