@@ -7,6 +7,8 @@ ACV is a python library that aims to explain **any machine learning models** or 
  It also proposes new Shapley Values that have better local fidelity.
 
 We can regroup the different explanations in two groups: **Agnostic Explanations** and **Tree-based Explanations**.
+
+See the papers [here](https://github.com/salimamoukou/acv00/tree/main/papers).
  
 ### Installation
 
@@ -34,8 +36,7 @@ explanation methods:
 * Same Decision Probability (SDP) and **Sufficient Explanations**
 * **Sufficient Rules**
 
-See the paper [Consistent Sufficient Explanations and Minimal Local Rules for explaining regression and classification models]
- for more details.
+See the paper [Consistent Sufficient Explanations and Minimal Local Rules for explaining regression and classification models](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details.
 
 **I. First, we need to fit our explainer (ACXplainers) to input-output of the data **(X, Y)** or model
 **(X, f(X))** if we want to explain the data or the model respectively.**
@@ -79,7 +80,7 @@ sdp = acv_xplainer.compute_sdp_rf(X, S, data_bground) # data_bground is the back
 #### Minimal Sufficient Explanations
 The Sufficient Explanations is the Minimal Subset S such that fixing the values <img src="https://latex.codecogs.com/gif.latex?X_S=x_S" /> 
 permit to maintain the prediction with high probability <img src="https://latex.codecogs.com/gif.latex?\pi" />.
-See the paper [ref] for more details. 
+See the paper [here](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details. 
 
 * **How to compute all the Sufficient Explanations  ?**
 
@@ -97,7 +98,7 @@ sdp_importance, sufficient_expl, size, sdp = acv_xplainer.importance_sdp_rf(X, y
 
 #### Local Explanatory Importance
 For a given instance, the local explanatory importance of each variable corresponds to the frequency of 
-apparition of the given variable in the Sufficient Explanations. See the paper [ref] for more details. 
+apparition of the given variable in the Sufficient Explanations. See the paper [here](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details. 
 
 * **How to compute the Local Explanatory Importance ?**
 
