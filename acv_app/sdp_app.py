@@ -44,7 +44,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
 
     @st.cache(allow_output_mutation=True)
     def compute_sdp(nb, x_train, y_train, x_test, y_test, pi_level, t):
-        sufficient_coal, sdp_coal, sdp_global = acvtree.sufficient_coal_rf(x_test[:nb], y_test[:nb], x_train, y_train,
+        sufficient_coal, sdp_coal, sdp_global = acvtree.sufficient_expl_rf(x_test[:nb], y_test[:nb], x_train, y_train,
                                                                            stop=False, pi_level=pi_level,
                                                                            classifier=int(CLASSIFIER),
                                                                            t=t)
@@ -67,7 +67,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def compute_sdp_maxrule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S, pi):
         sdp, rules, sdp_all, rules_data, w = acvtree.compute_sdp_maxrules(x_test_np[obs:obs + 1], y_test_np[obs:obs + 1],
-                                              x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t, pi=pi)
+                                              x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t, pi_level=pi)
 
         # extend_partition(rules, rules_data, sdp_all, pi=pi, S=[S])
 

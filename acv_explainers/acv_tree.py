@@ -34,17 +34,17 @@ class ACVTree(BaseTree):
     def shap_values_acv_adap(self, X, S_star, N_star, size, C=[[]], num_threads=10):
         """
         Estimate the **Active** Shapley Values for a set of samples given **the corresponding** S_star and N_star of
-        each sample using the Leaf estimator.
+        **each sample** using the Leaf estimator.
 
         Args:
             X (numpy.ndarray): A matrix of samples (# samples X # features) on which to explain the model's output
 
             S_star (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the sufficient variables
-                                  for each sample. For each row, the first elements should corresponds to the indices of
+                                  of each sample. For each row, the first elements should corresponds to the indices of
                                   the Sufficient variables.
 
             N_star (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the null variables
-                                  for each sample. For each row, the first elements should corresponds to the indices of
+                                  of each sample. For each row, the first elements should corresponds to the indices of
                                   the null variables.
 
             size (numpy.ndarray): A 1-D matrix (# samples) that contains the size of the corresponding sufficient variables
@@ -1038,7 +1038,7 @@ class ACVTreeAgnostic(BaseTree):
                                                               classifier, t, quantile)
         return y_quantiles_diff
 
-    def sufficient_coal_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
+    def sufficient_expl_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
                            C=[[]], pi_level=0.9, minimal=1, stop=True):
 
         if x.shape[1] > 10:
@@ -1051,7 +1051,7 @@ class ACVTreeAgnostic(BaseTree):
         else:
             search_space = [i for i in range(x.shape[1])]
 
-        sdp = cyext_acv.sufficient_coal_rf(x, y, data, y_data, self.features, self.thresholds, self.children_left,
+        sdp = cyext_acv.sufficient_expl_rf(x, y, data, y_data, self.features, self.thresholds, self.children_left,
                                            self.children_right, self.max_depth, min_node_size, classifier, t, C,
                                            pi_level, minimal, stop, search_space[:10])
         return sdp

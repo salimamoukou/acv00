@@ -233,6 +233,7 @@ def rebuild_tree(parent_id, tree, data, y):
         rebuild_tree(left, tree, data_left, y_left)
         rebuild_tree(right, tree, data_right, y_right)
 
+
 def rebuild_acvtree(parent_id, tree, data, y):
     tree.node_sample_weight[parent_id] = data.shape[0]
     tree.values[parent_id] = np.mean(y, axis=0)
@@ -574,7 +575,6 @@ def get_partition(leaf_id, part, node_id, children_left, children_right, feature
 def explore_partition(i, x, children_left, children_right, features, thresholds, values,
                       compatible_leaves, partition_leaves, partition_global, prob_global, s_global, S, S_bar, data,
                       down_tx, up_tx, intv=False):
-
     if children_left[i] < 0:
         #         tab[i] = 1
         compatible_leaves.append(i)
@@ -644,10 +644,10 @@ def explore_partition(i, x, children_left, children_right, features, thresholds,
 
             explore_partition(children_left[i], x, children_left, children_right, features, thresholds, values,
                               compatible_leaves, part_left, partition_global, prob_global, s_global, S, S_bar, data
-                              ,down_tx, up_tx, intv)
+                              , down_tx, up_tx, intv)
             explore_partition(children_right[i], x, children_left, children_right, features, thresholds, values,
                               compatible_leaves, part_right, partition_global, prob_global, s_global, S, S_bar, data
-                              ,down_tx, up_tx, intv)
+                              , down_tx, up_tx, intv)
 
 
 def get_tree_partition(x, fx, tx, tree, S, data=None, is_reg=True):
@@ -720,8 +720,9 @@ def get_tree_partition(x, fx, tx, tree, S, data=None, is_reg=True):
     return part_final, values[compatible_leaves]
 
 
-
 import_errors = {}
+
+
 def assert_import(package_name):
     global import_errors
     if package_name in import_errors:
@@ -810,6 +811,7 @@ def get_active_null_coalition_list(s_star, len_s_star):
         n_star_all.append(list(set(index) - set(s_star_all[-1])))
     return s_star_all, n_star_all
 
+
 class ModelW:
     def __init__(self, model, prediction='predict_proba'):
         self.model = model
@@ -831,6 +833,7 @@ class ModelW:
 
     def predict(self, x):
         return self.__call__(x)
+
 
 def weighted_percentile(a, q, weights=None, sorter=None):
     """
@@ -951,7 +954,7 @@ def extend_partition(rules, rules_data, sdp_all, pi, S):
         find_union(rules[i], list_ric, S=S[i])
 
 
-def global_rules_model(x_exp, rules, rules_output, rules_coverage, rules_acc, min_cov, S):
+def global_rules_model(x_exp, rules, rules_output, rules_coverage, rules_acc, min_cov, S, min_acc=0.8):
     y_exp, rule_exp, rule_S = [], [], []
     for j in range(x_exp.shape[0]):
         x = x_exp[j]
@@ -968,10 +971,11 @@ def global_rules_model(x_exp, rules, rules_output, rules_coverage, rules_acc, mi
                 y_rule.append(rule)
                 y_S.append(S[i])
 
-        if len(y_out) != 0:
-            y_weights = np.array(y_weights)
+        y_weights = np.array(y_weights)
+        if len(y_out) != 0 and np.max(y_weights[np.array(y_coverage) >= min_cov]) >= min_acc:
             max_weights = np.max(y_weights[np.array(y_coverage) >= min_cov])
             best_acc = np.argmax(y_weights == max_weights)
+
             y_exp.append(y_out[best_acc])
             rule_exp.append(y_rule[best_acc])
             rule_S.append(y_S[best_acc])
@@ -984,22 +988,65 @@ def global_rules_model(x_exp, rules, rules_output, rules_coverage, rules_acc, mi
     return y_exp, rule_exp, rule_S
 
 
-def compute_rules_metrics(rules, rules_output, data, y_data, S_star):
+def global_rules_model_reg(x_exp, rules, rules_output, rules_coverage, rules_acc, min_cov, S, min_mse=500):
+    y_exp, rule_exp, rule_S = [], [], []
+    for j in range(x_exp.shape[0]):
+        x = x_exp[j]
+
+        y_out, y_coverage, y_weights, y_rule, y_S = [], [], [], [], []
+        for i in range(rules.shape[0]):
+            rule = rules[i]
+
+            x_in = np.prod([(x[s] <= rule[s, 1]) * (x[s] >= rule[s, 0]) for s in S[i]], axis=0).astype(bool)
+            if x_in:
+                y_out.append(rules_output[i])
+                y_coverage.append(rules_coverage[i])
+                y_weights.append(rules_acc[i])
+                y_rule.append(rule)
+                y_S.append(S[i])
+
+        y_weights = np.array(y_weights)
+        if len(y_out) != 0 and np.min(y_weights[np.array(y_coverage) >= min_cov]) <= min_mse:
+            min_weights = np.min(y_weights[np.array(y_coverage) >= min_cov])
+            best_acc = np.argmax(y_weights == min_weights)
+
+            y_exp.append(y_out[best_acc])
+            rule_exp.append(y_rule[best_acc])
+            rule_S.append(y_S[best_acc])
+
+        else:
+            y_exp.append(None)
+            rule_exp.append(None)
+            rule_S.append(None)
+
+    return y_exp, rule_exp, rule_S
+
+
+def compute_rules_metrics(rules, data, y_data, S_star, classifier=True):
     d = data.shape[1]
     rules_coverage = []
     rules_var = []
     rules_acc = []
-
+    rules_output = []
+    rules_output_proba = []
     for idx in range(rules.shape[0]):
         S = S_star[idx]
         rule = rules[idx]
         where = np.prod([(data[:, s] <= rule[s, 1]) * (data[:, s] >= rule[s, 0])
-                                     for s in S], axis=0).astype(bool)
+                         for s in S], axis=0).astype(bool)
+        if classifier:
+            rules_output.append(1 * (np.mean(y_data[where]) > 0.5))
+            rules_output_proba.append((np.mean(y_data[where])))
+            rules_acc.append(np.mean(y_data[where] == rules_output[-1]))
+        else:
+            rules_output.append(np.mean(y_data[where]))
+            rules_acc.append(np.mean((y_data[where] - rules_output[-1]) ** 2))
 
-        rules_coverage.append(np.sum(where)/data.shape[0])
-        rules_acc.append(np.mean(y_data[where] == rules_output[idx]))
+        rules_coverage.append(np.sum(where) / data.shape[0])
         rules_var.append(np.var(y_data[where]))
-    return rules_coverage, rules_acc, rules_var
+    if classifier:
+        return rules_coverage, rules_acc, rules_var, rules_output, rules_output_proba
+    return rules_coverage, rules_acc, rules_var, rules_output
 
 
 def rules_frequency(rules):
@@ -1009,7 +1056,7 @@ def rules_frequency(rules):
         for j in range(rules.shape[0]):
             if np.allclose(rules[j], rule):
                 freq[i] += 1
-    freq = freq/rules.shape[0]
+    freq = freq / rules.shape[0]
     return freq
 
 

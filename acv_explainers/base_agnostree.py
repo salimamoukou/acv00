@@ -49,7 +49,7 @@ class BaseAgnosTree:
                           e in model.estimators_]
             self.tree_output = "probability"
 
-        elif safe_isinstance(model, ["skranger.ensemble.classifier.RangerForestClassifier"]):
+        elif safe_isinstance(model, ["skranger.ensemble.regressor.RangerForestRegressor"]):
             assert hasattr(model, "estimators_"), "Model has no `estimators_`! Have you called `model.fit`?"
             self.internal_dtype = model.estimators_[0].tree_.value.dtype.type
             self.input_dtype = np.float32
