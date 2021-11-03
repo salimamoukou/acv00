@@ -102,7 +102,7 @@ sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data, C, gl
 # Then, we used the active coalition found to compute the Active Shapley values.
 S_star, N_star = acv_explainers.utils.get_null_coalition(sdp_index, size)
 
-forest_acv_adap = acvtree.shap_values_acv_adap(X, C, S_star, N_star)
+forest_acv_adap = acvtree.shap_values_acv_adap(X, C, S_star, N_star, size)
 
 """
 Description of the arguments
@@ -117,6 +117,7 @@ N_star (np.ndarray[2]): index of the remaining variables
 We can also compute ACV with the same active and null coalition for all observations.
 This is much faster than the previous method.
 ```python
+S_star, N_star = acv_explainers.utils.get_active_null_coalition_list(sdp_index, size)
 forest_acv = acvtree.shap_values_acv(X, C, S_star, N_star)
 
 """
