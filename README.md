@@ -3,8 +3,7 @@
 ACV is a python library that aims to explain **any machine learning models** or **data**. 
 
 * It gives **local rule-based** explanations for any model or data.
-* It provides **a better estimation of Shapley Values for tree-based model** 
- when the variables are dependent (> dependent TreeSHAP [ref]). 
+* It provides **a better estimation of Shapley Values for tree-based model** (more accurate than [path-dependent TreeSHAP](https://github.com/slundberg/shap])). 
  It also proposes new Shapley Values that have better local fidelity.
 
 We can regroup the different explanations in two groups: **Agnostic Explanations** and **Tree-based Explanations**.
@@ -32,10 +31,11 @@ $ pip install acv-exp
 The Agnostic approaches explain any data (**X**, **Y**) or model (**X**, **f(X)**) using the following 
 explanation methods:
 
-* Same Decision Probability (SDP) and Sufficient Explanations
-* Sufficient Rules
+* Same Decision Probability (SDP) and **Sufficient Explanations**
+* **Sufficient Rules**
 
-See the paper [ref] for more details.
+See the paper [Consistent Sufficient Explanations and Minimal Local Rules for explaining regression and classification models]
+ for more details.
 
 **I. First, we need to fit our explainer (ACXplainers) to input-output of the data **(X, Y)** or model
 **(X, f(X))** if we want to explain the data or the model respectively.**
@@ -62,6 +62,9 @@ acv_app.compile_ACXplainers(acv_xplainer, X_train, y_train, X_test, y_test, path
 # Launch the webApp
 acv_app.run_webapp(pickle_path=os.getcwd())
 ```
+![Capture d’écran de 2021-11-03 19-50-12](https://user-images.githubusercontent.com/40361886/140174581-4c5bf018-05ad-49e0-b005-2a65453626e1.png)
+
+
 
 **III. Or we can compute each explanation separately as follow:**
 
@@ -71,18 +74,25 @@ The main tool of our explanations is the Same Decision Probability (SDP). Given 
 * **How to compute <img src="https://latex.codecogs.com/gif.latex?SDP_S%28x%2C%20f%29" />  ?**
 
 ```python
-sdp = acv_xplainer.compute_sdp_rf(X, S, data_bground)
+sdp = acv_xplainer.compute_sdp_rf(X, S, data_bground) # data_bground is the background dataset that is used for the estimation. It should be the training samples.
 ```
 #### Minimal Sufficient Explanations
-The Minimal Sufficient Explanations is the Minimal Subset S such that fixing the values <img src="https://latex.codecogs.com/gif.latex?X_S=x_S" /> 
+The Sufficient Explanations is the Minimal Subset S such that fixing the values <img src="https://latex.codecogs.com/gif.latex?X_S=x_S" /> 
 permit to maintain the prediction with high probability <img src="https://latex.codecogs.com/gif.latex?\pi" />.
 See the paper [ref] for more details. 
 
-* **How to compute all the Sufficient Explanations <img src="https://latex.codecogs.com/gif.latex?S^\star" /> ?**
+* **How to compute all the Sufficient Explanations  ?**
 
+    Since the Sufficient Explanation is not unique for a given instance, we can compute all of them.
 ```python
-sufficient_expl, sdp_expl, sdp_global = acv_xplainer.sufficient_expl_rf(X_test, y_test, X_train, y_train, pi_level=pi_level,
-                                                                    classifier=int(True))
+sufficient_expl, sdp_expl, sdp_global = acv_xplainer.sufficient_expl_rf(X, y, X_train, y_train, pi_level=0.9)
+```
+
+* **How to compute the Minimal Sufficient Explanation <img src="https://latex.codecogs.com/gif.latex?S^\star" /> ?**
+    
+    The following code return the Sufficient Explanation with minimal cardinality. 
+```python
+sdp_importance, sufficient_expl, size, sdp = acv_xplainer.importance_sdp_rf(X, y, X_train, y_train, pi_level=0.9)
 ```
 
 #### Local Explanatory Importance
@@ -97,19 +107,19 @@ lximp = acv_xplainer.compute_local_sdp(d=X_train.shape[1], sufficient_expl)
 
 #### Local rule-based explanations
 For a given instance **(x, y)** and its Sufficient Explanation S, we compute a local minimal rule which contains *x* such 
-that every observation **z** that satisfies this rule has <img src="https://latex.codecogs.com/gif.latex?SDP_S(y; z) \geq \pi" /> 
+that every observation **z** that satisfies this rule has <img src="https://latex.codecogs.com/gif.latex?SDP_S(\boldsymbol{x};&space;y)&space;\geq&space;\pi" title="SDP_S(\boldsymbol{x}; y) \geq \pi" />
 
 * **How to compute the local rule explanations ?**
 
 ```python
-sdp, rules, _, _, _ = acv_xplainer.compute_sdp_maxrules(X_test, y_test, data_bground, y_bground, S)
+sdp, rules, _, _, _ = acv_xplainer.compute_sdp_maxrules(X, y, data_bground, y_bground, S) # data_bground is the background dataset that is used for the estimation. It should be the training samples.
 ```
 
 ## B. Tree-based explanations
-ACV gives tree-based explanations for XGBoost, LightGBM, CatBoostClassifier, scikit-learn and pyspark tree models. It
+ACV gives Shapley Values explanations for XGBoost, LightGBM, CatBoostClassifier, scikit-learn and pyspark tree models. It
 provides the following  Shapley Values: 
 
-* Classic local Shapley Values *conda(The value function is the conditional expectation <img src="https://latex.codecogs.com/gif.latex?E[f(x) | X_S =x_S]" />)*
+* Classic local Shapley Values (The value function is the conditional expectation <img src="https://latex.codecogs.com/gif.latex?E[f(x)&space;|&space;\boldsymbol{X}_S&space;=&space;\boldsymbol{x}_S]" title="E[f(x) | \boldsymbol{X}_S = \boldsymbol{x}_S]" />)
 * Active Shapley values (Local fidelity and Sparse by design)
 * Swing Shapley Values (The Shapley values are interpretable by design) *(Coming soon)*
 
@@ -124,18 +134,18 @@ from acv_explainers import ACVTree
 forest = XGBClassifier() # or any Tree Based models
 #...trained the model
 
-acvtree = ACVTree(forest, data_bground) # data_bground should be np.ndarray with dtype=double
+acvtree = ACVTree(forest, data_bground) # data_bground is the background dataset that is used for the estimation. It should be the training samples.
 ```
-#### Accurate Shapley Values when the variables are dependent
+#### Accurate Shapley Values
 
 ```python
 sv = acvtree.shap_values(X)
 ```
-Note that it provides a better estimation of the tree path dependent of TreeSHAP [ref]
+Note that it provides a better estimation of the [tree-path dependent of TreeSHAP](https://github.com/slundberg/shap]) when the variables are dependent.
 
 #### Accurate Shapley Values with encoded categorical variables
 
-Let assume we have a categorical variable Y with k modalities that we encoded by introducing the dummy variables <img src="https://latex.codecogs.com/gif.latex?Y_1%2C%5Cdots%2C%20Y_%7Bk-1%7D" />. As show in the paper, we must take the coalition of the dummy variables to correctly compute the Shapley values.
+Let assume we have a categorical variable Y with k modalities that we encoded by introducing the dummy variables <img src="https://latex.codecogs.com/gif.latex?Y_1%2C%5Cdots%2C%20Y_%7Bk-1%7D" />. As shown in the paper, we must take the coalition of the dummy variables to correctly compute the Shapley values.
 
 ```python
 
@@ -146,8 +156,8 @@ Let assume we have a categorical variable Y with k modalities that we encoded by
 cat_index = [[0, 1, 2], [3, 4, 5]]
 forest_sv = acvtree.shap_values(X, C=cat_index)
 ```
-In addition, we can compute the SV given any coalitions. For example, let assume we have 7 variables 
-<img src="https://latex.codecogs.com/gif.latex?(X_0, X_1, \dots , X_6)" /> and we want the following coalition <img src="https://latex.codecogs.com/gif.latex?C_0%20%3D%20%28X_0%2C%20X_1%2C%20X_2%29%2C%20C_1%3D%28X_3%2C%20X_4%29%2C%20C_2%3D%28X_5%2C%20X_6%29" />
+In addition, we can compute the SV given any coalitions. For example, let assume we have 10 variables 
+<img src="https://latex.codecogs.com/gif.latex?(X_0, X_1, \dots , X_{10})" /> and we want the following coalition <img src="https://latex.codecogs.com/gif.latex?C_0%20%3D%20%28X_0%2C%20X_1%2C%20X_2%29%2C%20C_1%3D%28X_3%2C%20X_4%29%2C%20C_2%3D%28X_5%2C%20X_6%29" />
 
 ```python
 
@@ -158,21 +168,19 @@ forest_sv = acvtree.shap_values(X, C=coalition)
 Recall that the <img src="https://latex.codecogs.com/gif.latex?SDP_S%28x%2C%20f%29" /> is the probability that the prediction remains the same when we fixed variables 
 <img src="https://latex.codecogs.com/gif.latex?X_S=x_S" /> given the subset S.
 ```python
-sdp = acvtree.compute_sdp_clf(X, S, data_bground)
+sdp = acvtree.compute_sdp_clf(X, S, data_bground) # data_bground is the background dataset that is used for the estimation. It should be the training samples.
 ```
 #### **How to compute the Sufficient Coalition <img src="https://latex.codecogs.com/gif.latex?S^\star" /> and the Global SDP importance for tree-based classifier ?**
 Recall that the Minimal Sufficient Explanations is the Minimal Subset S such that fixing the values <img src="https://latex.codecogs.com/gif.latex?X_S=x_S" /> 
 permit to maintain the prediction with high probability <img src="https://latex.codecogs.com/gif.latex?\pi" />.
 
 ```python 
-forest = RandomForestClassifier()
-#...trained the model
-sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data_bground)
+sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data_bground) # data_bground is the background dataset that is used for the estimation. It should be the training samples.
 ```
 
 #### Active Shapley values
 
-The Active Shapley values is a SV based on a new game defined in the Paper ([Accurate and robust Shapley Values for explaining predictions and focusing on local important variables](https://github.com/salimamoukou/acv00/blob/main/papers/) such that null (non-important) has zero SV and the "payout" is fairly distribute among active variables.
+The Active Shapley values is a SV based on a new game defined in the Paper ([Accurate and robust Shapley Values for explaining predictions and focusing on local important variables](https://github.com/salimamoukou/acv00/blob/main/papers/) such that null (non-important) variables has zero SV and the "payout" is fairly distribute among active variables.
 
 * **How to compute Active Shapley values ?**
 
@@ -181,7 +189,7 @@ import acv_explainers
 
 # First, we need to compute the Active and Null coalition
 sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data_bground)
-S_star, N_star = acv_explainers.utils.get_null_coalition(sdp_index, size)
+S_star, N_star = acv_explainers.utils.get_active_null_coalition_list(sdp_index, size)
 
 # Then, we used the active coalition found to compute the Active Shapley values.
 forest_asv_adap = acvtree.shap_values_acv_adap(X, C, S_star, N_star, size)
@@ -195,7 +203,3 @@ in ACVTree initialization e.g. ACVTree(model, data_bground, cache=True).
 ## Examples and tutorials (a lot more to come...)
 We can find a tutorial of the usages of ACV in [demo_acv](https://github.com/salimamoukou/acv00/blob/main/notebooks/demo_acv_explainer) and 
 the notebooks below demonstrate different use cases for ACV. Look inside the notebook directory of the repository if you want to try playing with the original notebooks yourself.
-
-
-* [Experiments of the papers](https://github.com/salimamoukou/acv00/blob/main/notebooks/experiments_paper)
-

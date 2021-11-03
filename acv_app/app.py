@@ -22,6 +22,8 @@ def compile_acv(model, x_train, y_train, x_test, y_test, path):
     if type(x_train) != pd.core.frame.DataFrame:
         x_train = pd.DataFrame(x_train, columns=['X{}'.format(i) for i in range(x_train.shape[1])])
         x_test = pd.DataFrame(x_test, columns=['X{}'.format(i) for i in range(x_test.shape[1])])
+
+    if type(y_train) != pd.core.frame.DataFrame:
         y_test = pd.DataFrame(y_test)
         y_train = pd.DataFrame(y_train)
 
@@ -43,6 +45,8 @@ def compile_ACXplainers(ACXplainers, x_train, y_train, x_test, y_test, path):
     if type(x_train) != pd.core.frame.DataFrame:
         x_train = pd.DataFrame(x_train, columns=['X{}'.format(i) for i in range(x_train.shape[1])])
         x_test = pd.DataFrame(x_test, columns=['X{}'.format(i) for i in range(x_test.shape[1])])
+
+    if type(y_train) != pd.core.frame.DataFrame:
         y_test = pd.DataFrame(y_test)
         y_train = pd.DataFrame(y_train)
 
@@ -97,10 +101,10 @@ def main(LOAD_PATH):
     # model_load_state.text("Load model Done!")
 
     if persona == 'Shapley based Explanations':
-        st.title('Local Explanation based on Shapley values ')
+        st.title('Local Explanations based on Shapley values ')
         acvtree = load(os.path.join(LOAD_PATH, 'acvtree.joblib'))
     else:
-        st.title('Local Explanations based on SDP ')
+        st.title('Consistent Local Explanations based on SDP ')
 
     page = PAGES[persona]
     page.write_pg(x_train, x_test, y_train, y_test, acvtree)
@@ -110,7 +114,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Params of ACV Explanations Web App")
     parser.add_argument(
         '--path',
-        # choices=['calculus', 'solve_eq', 'diff_solve'],
         default='./',
         type=str)
 

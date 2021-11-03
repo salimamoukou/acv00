@@ -23,19 +23,20 @@ labels = {
 
 
 def write_pg(x_train, x_test, y_train, y_test, acvtree):
-    if y_test.dtype == int:
-        CLASSIFIER = st.checkbox('Classifier', value=True)
+    st.sidebar.title("Parameters")
+    if y_test.dtype == int or y_test.dtype == bool:
+        CLASSIFIER = st.sidebar.checkbox('Classifier', value=True)
     else:
-        CLASSIFIER = st.checkbox('Classifier', value=False)
+        CLASSIFIER = st.sidebar.checkbox('Classifier', value=False)
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        nb = st.number_input(label='TEST SIZE', value=10, min_value=5, max_value=500)
+        nb = st.sidebar.number_input(label='SAMPLE SIZE', value=10, min_value=5, max_value=500)
     with col2:
-        pi_level = st.number_input(label='SDP MIN', value=0.9, min_value=0.7, max_value=1.)
+        pi_level = st.sidebar.number_input(label='SDP MIN (\pi)', value=0.9, min_value=0.7, max_value=1.)
     with col3:
-        t = st.number_input(label='SDP THRESHOLD', value=10., min_value=1., max_value=500.)
+        t = st.sidebar.number_input(label='SDP THRESHOLD FOR REGRESSOR', value=10., min_value=1., max_value=500.)
 
     idx = st.selectbox(
         'Choose the observation you want to explain',
@@ -46,7 +47,6 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     def compute_sdp(nb, x_train, y_train, x_test, y_test, pi_level, t):
         sufficient_coal, sdp_coal, sdp_global = acvtree.sufficient_expl_rf(x_test[:nb], y_test[:nb], x_train, y_train,
                                                                            stop=False, pi_level=pi_level,
-                                                                           classifier=int(CLASSIFIER),
                                                                            t=t)
         for i in range(len(sufficient_coal)):
             sufficient_coal[i].pop(0)
@@ -56,7 +56,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def compute_sdp_rule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S):
         sdp, rules = acvtree.compute_sdp_rule(x_test_np[obs:obs+1], y_test_np[obs:obs+1],
-                                              x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t)
+                                              x_train_np, y_train_np, S=[S], t=t)
         rule = rules[0]
         columns = [x_train.columns[i] for i in range(x_train.shape[1])]
         rule_string = ['{} <= {} <= {}'.format(rule[i, 0] if rule[i, 0] > -1e+10 else -np.inf, columns[i],
@@ -67,7 +67,9 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def compute_sdp_maxrule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S, pi):
         sdp, rules, sdp_all, rules_data, w = acvtree.compute_sdp_maxrules(x_test_np[obs:obs + 1], y_test_np[obs:obs + 1],
-                                              x_train_np, y_train_np, S=[S], classifier=int(CLASSIFIER), t=t, pi_level=pi)
+                                              x_train_np, y_train_np, S=[S], t=t, pi_level=pi)
+
+        acvtree.fit_global_rules(x_train_np, y_train_np, rules, [S])
 
         # extend_partition(rules, rules_data, sdp_all, pi=pi, S=[S])
 
@@ -190,8 +192,8 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
 
         col1, col2 = st.columns(2)
         with col1:
-            st.subheader('All sufficient coalitions')
-            sufficient_coal_df = {'Sufficient coalitions': sufficient_coal_names[idx],
+            st.header('All sufficient explanations')
+            sufficient_coal_df = {'Sufficient explanations': sufficient_coal_names[idx],
                                   'SDP': sdp_coal[idx]}
 
             sufficient_coal_df = pd.DataFrame(sufficient_coal_df)
@@ -199,7 +201,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
             st.dataframe(sufficient_coal_df, 6000, 6000)
 
         with col2:
-            st.subheader('Local Explanatory Importance')
+            st.header('Local Explanatory Importance')
             local_sdp = compute_local_sdp(idx, sufficient_coal)
             # data = {'feature_names': [x_train.columns[i] for i in range(x_train.shape[1])],
             #         'feature_importance': local_sdp}
@@ -219,7 +221,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
             # plt.ylabel(' ')
             st.pyplot(fig)
 
-        st.subheader('Feature values highlight with SDP')
+        st.header('Feature values highlight by SDP')
         st.text('This observation has {} different explanations, below to observe their values'.format(
             len(sufficient_coal[idx])))
 
@@ -233,16 +235,30 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
         x_group['Same Decision Probability (SDP)'] = sdp_coal[idx][exp_idx]
         st.dataframe(x_group.iloc[:1].style.apply(color_max, sdp_index=sufficient_coal[idx][exp_idx], axis=1))
 
-        st.subheader('Local rule with SDP')
+        st.header('Local rule explanation')
         rule_string = compute_sdp_rule(idx, x_train.values.astype(np.double), y_train.astype(np.double),
                                        x_test.values.astype(np.double), y_test.astype(np.double), t, sufficient_coal[idx][exp_idx])
-        st.markdown(rule_string)
+        # st.markdown(rule_string)
 
-        st.subheader('Maximal rule with SDP')
+        st.markdown("<" + 'h3' + " style='text-align: " + \
+                    "; color:" + 'black' + "; '>" + rule_string + "</" + 'h3' + ">",
+                    unsafe_allow_html=True)
+
+        st.header('Sufficient local rule explanation (Maximal rule)')
         maxrule = st.checkbox('Compute', value=False)
 
         if maxrule:
             rule_string = compute_sdp_maxrule(idx, x_train.values.astype(np.double), y_train.astype(np.double),
                                            x_test.values.astype(np.double), y_test.astype(np.double), t,
                                            sufficient_coal[idx][exp_idx], pi_level)
-            st.markdown(rule_string)
+
+            st.markdown("<" + 'h3' + " style='text-align: " + \
+                        "; color:" + 'black' + "; '>" + rule_string + "</" + 'h3' + ">",
+                        unsafe_allow_html=True)
+            # st.markdown(rule_string)
+
+            rule_info = {'Rule coverage': acvtree.rules_coverage,
+                          'Rule accuracy/mse': acvtree.rules_acc}
+
+            rule_info = pd.DataFrame(rule_info)
+            st.dataframe(rule_info, 6000, 6000)

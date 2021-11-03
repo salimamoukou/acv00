@@ -28,7 +28,7 @@ x_test = data.iloc[:100]
 y_test = y[:100]
 x = x_test.iloc[:1]
 y_x = y_test[:1]
-ac_xplainer = ACXplainer(n_estimators=1)
+ac_xplainer = ACXplainer(classifier=True, n_estimators=1)
 
 
 def test_acx_fit():
@@ -44,18 +44,6 @@ def test_acx_sdp_rule():
 
 
 def test_acx_importance_sdp_rf():
-    ac_xplainer.fit(data, y)
-    sdp_importance, sdp_index, size, sdp = ac_xplainer.importance_sdp_rf(x, y_x, data, y)
-
-
-def test_acx_sufficient_expl_rf():
-    ac_xplainer.fit(data, y)
-    sufficient_coal, sdp_coal, sdp_global = ac_xplainer.sufficient_expl_rf(x, y_x, data, y, pi_level=0.9,
-                                                                           classifier=int(True))
-
-
-def test_acx_max_rule():
-    ac_xplainer.fit(data, y)
     sdp, rules, sdp_all, rules_data, w = ac_xplainer.compute_sdp_maxrules(x, y_x, data, y, S=[[0, 1, 9]])
 
 def test_acx_global_rules():
