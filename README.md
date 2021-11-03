@@ -124,7 +124,7 @@ provides the following  Shapley Values:
 * Active Shapley values (Local fidelity and Sparse by design)
 * Swing Shapley Values (The Shapley values are interpretable by design) *(Coming soon)*
 
-In addition, we use the coalitional version of SV to properly handle categorical variables in the computation of SV.
+In addition, we use the coalitional version of SV **to properly handle categorical variables in the computation of SV**.
 
 See the papers [here](https://github.com/salimamoukou/acv00/blob/main/papers/)
 
