@@ -108,7 +108,7 @@ lximp = acv_xplainer.compute_local_sdp(d=X_train.shape[1], sufficient_expl)
 
 #### Local rule-based explanations
 For a given instance **(x, y)** and its Sufficient Explanation S, we compute a local minimal rule which contains *x* such 
-that every observation **z** that satisfies this rule has <img src="https://latex.codecogs.com/gif.latex?SDP_S(\boldsymbol{x};&space;y)&space;\geq&space;\pi" title="SDP_S(\boldsymbol{x}; y) \geq \pi" />
+that every observation **z** that satisfies this rule has <img src="https://latex.codecogs.com/gif.latex?SDP_S(\boldsymbol{x};&space;y)&space;\geq&space;\pi" title="SDP_S(\boldsymbol{x}; y) \geq \pi" />. See the paper [here](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details
 
 * **How to compute the local rule explanations ?**
 
