@@ -107,8 +107,8 @@ lximp = acv_xplainer.compute_local_sdp(d=X_train.shape[1], sufficient_expl)
 ```
 
 #### Local rule-based explanations
-For a given instance **(x, y)** and its Sufficient Explanation S, we compute a local minimal rule which contains *x* such 
-that every observation **z** that satisfies this rule has <img src="https://latex.codecogs.com/gif.latex?SDP_S(\boldsymbol{x};&space;y)&space;\geq&space;\pi" title="SDP_S(\boldsymbol{x}; y) \geq \pi" />. See the paper [here](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details
+For a given instance **(x, y)** and its Sufficient Explanation S such that <img src="https://latex.codecogs.com/gif.latex?SDP_S(\boldsymbol{x};&space;y)&space;\geq&space;\pi" title="SDP_S(\boldsymbol{x}; y) \geq \pi" />, we compute a local minimal rule which contains **x** such 
+that every observation **z** that satisfies this rule has <img src="https://latex.codecogs.com/gif.latex?SDP_S(\boldsymbol{z};&space;y)&space;\geq&space;\pi" title="SDP_S(\boldsymbol{z}; y) \geq \pi" />. See the paper [here](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details
 
 * **How to compute the local rule explanations ?**
 
@@ -158,7 +158,7 @@ cat_index = [[0, 1, 2], [3, 4, 5]]
 forest_sv = acvtree.shap_values(X, C=cat_index)
 ```
 In addition, we can compute the SV given any coalitions. For example, let assume we have 10 variables 
-<img src="https://latex.codecogs.com/gif.latex?(X_0, X_1, \dots , X_{10})" /> and we want the following coalition <img src="https://latex.codecogs.com/gif.latex?C_0%20%3D%20%28X_0%2C%20X_1%2C%20X_2%29%2C%20C_1%3D%28X_3%2C%20X_4%29%2C%20C_2%3D%28X_5%2C%20X_6%29" />
+<img src="https://latex.codecogs.com/gif.latex?(\boldsymbol{X}_0,&space;\boldsymbol{X}_1,&space;\dots,&space;\boldsymbol{X}_{10})" title="(\boldsymbol{X}_0, \boldsymbol{X}_1, \dots, \boldsymbol{X}_{10})" /> and we want the following coalition <img src="https://latex.codecogs.com/gif.latex?C_0%20%3D%20%28X_0%2C%20X_1%2C%20X_2%29%2C%20C_1%3D%28X_3%2C%20X_4%29%2C%20C_2%3D%28X_5%2C%20X_6%29" />
 
 ```python
 
