@@ -18,7 +18,7 @@ class ACXplainer:
             n_estimators=50,
             verbose=False,
             mtry=0,
-            importance="none",
+            importance="impurity",
             min_node_size=0,
             max_depth=5,
             replace=True,
@@ -95,6 +95,8 @@ class ACXplainer:
         self.d = None
         self.check_is_globalrule = False
         self.rules_output_proba = None
+        self.rules_ori = None
+        self.rules_s_star_ori = None
 
         if self.classifier:
             self.model = RangerForestClassifier(self.n_estimators,
@@ -109,7 +111,8 @@ class ACXplainer:
                                                 self.inbag,
                                                 self.split_rule,
                                                 self.num_random_splits,
-                                                seed=self.seed)
+                                                seed=self.seed,
+                                                enable_tree_details=True)
         else:
             if self.split_rule == 'gini':
                 self.split_rule = 'variance'
@@ -125,7 +128,8 @@ class ACXplainer:
                                                self.inbag,
                                                self.split_rule,
                                                self.num_random_splits,
-                                               seed=self.seed)
+                                               seed=self.seed,
+                                               enable_tree_details=True)
 
     def fit(self, X, y, sample_weight=None, split_select_weights=None, always_split_features=None,
             categorical_features=None):
@@ -153,11 +157,12 @@ class ACXplainer:
                        always_split_features=always_split_features, categorical_features=categorical_features)
 
     def fit_global_rules(self, X, y, rules, rules_s_star):
+        # TODO: think about removing s_star ? add complexity ?
         X, y = check_X_y(X, y, dtype=np.double)
         y = as_float_array(y)
-        self.rules = rules
-        # TODO: Compute rules_output in the fit function , think about removing s_star ? add complexity ?
-        self.rules_s_star = rules_s_star
+        self.rules_ori = rules
+        self.rules_s_star_ori = rules_s_star
+        self.rules, self.rules_s_star = unique_rules_s_star(rules, rules_s_star)
         if self.classifier:
             self.rules_coverage, self.rules_acc, self.rules_var, self.rules_output, self.rules_output_proba = \
                 compute_rules_metrics(
@@ -424,11 +429,13 @@ class ACXplainer:
         self.check_is_explainer()
 
         if X.shape[1] > 10:
-            flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
-            node_idx = pd.Series(flat_list)
-            search_space = []
-            for v in (node_idx.value_counts().keys()):
-                search_space += [v]
+            feature_importance = -np.array(self.model.feature_importances_)
+            search_space = list(np.argsort(feature_importance))
+            # flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+            # node_idx = pd.Series(flat_list)
+            # search_space = []
+            # for v in (node_idx.value_counts().keys()):
+            #     search_space += [v]
         else:
             search_space = [i for i in range(X.shape[1])]
 
@@ -485,11 +492,13 @@ class ACXplainer:
         self.check_is_explainer()
         if X.shape[1] > 10:
 
-            flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
-            node_idx = pd.Series(flat_list)
-            search_space = []
-            for v in (node_idx.value_counts().keys()):
-                search_space += [v]
+            feature_importance = -np.array(self.model.feature_importances_)
+            search_space = list(np.argsort(feature_importance))
+            # flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+            # node_idx = pd.Series(flat_list)
+            # search_space = []
+            # for v in (node_idx.value_counts().keys()):
+            #     search_space += [v]
         else:
             search_space = [i for i in range(X.shape[1])]
         # TODO: Remove the [-1] in the Sufficent Coal

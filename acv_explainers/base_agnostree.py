@@ -181,6 +181,12 @@ class SingleTree:
         self.children_default = self.children_left  # missing values not supported in sklearn
         self.features = tree.feature.astype(np.int32)
         self.thresholds = tree.threshold.astype(np.float64)
+        # corrected rangers features handle
+        for i in range(self.features.shape[0]):
+            if self.features[i] == -2:
+                if self.children_left[i] != -1 or self.children_right[i] != -1:
+                    self.features[i] = 0
+
         self.values = tree.value.reshape(tree.value.shape[0], tree.value.shape[1] * tree.value.shape[2])
         if normalize:
             self.values = (self.values.T / self.values.sum(1)).T

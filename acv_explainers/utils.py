@@ -1070,3 +1070,15 @@ def unique_rules(rules, rules_output):
                 rules_unique_output.append(rules_output[j])
                 break
     return rules_unique, np.array(rules_unique_output)
+
+
+def unique_rules_s_star(rules, rules_output):
+    rules_unique = np.unique(rules, axis=0)
+    rules_unique_output = []
+    for i in range(rules_unique.shape[0]):
+        rule = rules_unique[i]
+        for j in range(rules.shape[0]):
+            if np.allclose(rule, rules[j]):
+                rules_unique_output.append(rules_output[j])
+                break
+    return rules_unique, rules_unique_output
