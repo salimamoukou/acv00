@@ -86,7 +86,7 @@ See the paper [here](https://github.com/salimamoukou/acv00/tree/main/papers/Suff
     
     The following code return the Sufficient Explanation with minimal cardinality. 
 ```python
-sdp_importance, sufficient_expl, size, sdp = acv_xplainer.importance_sdp_rf(X, y, X_train, y_train, pi_level=0.9)
+sdp_importance, min_sufficient_expl, size, sdp = acv_xplainer.importance_sdp_rf(X, y, X_train, y_train, pi_level=0.9)
 ```
 
 * **How to compute all the Sufficient Explanations  ?**
