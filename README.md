@@ -82,18 +82,18 @@ The Sufficient Explanations is the Minimal Subset S such that fixing the values 
 permit to maintain the prediction with high probability <img src="https://latex.codecogs.com/gif.latex?\pi" />.
 See the paper [here](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details. 
 
-* **How to compute all the Sufficient Explanations  ?**
-
-    Since the Sufficient Explanation is not unique for a given instance, we can compute all of them.
-```python
-sufficient_expl, sdp_expl, sdp_global = acv_xplainer.sufficient_expl_rf(X, y, X_train, y_train, pi_level=0.9)
-```
-
 * **How to compute the Minimal Sufficient Explanation <img src="https://latex.codecogs.com/gif.latex?S^\star" /> ?**
     
     The following code return the Sufficient Explanation with minimal cardinality. 
 ```python
 sdp_importance, sufficient_expl, size, sdp = acv_xplainer.importance_sdp_rf(X, y, X_train, y_train, pi_level=0.9)
+```
+
+* **How to compute all the Sufficient Explanations  ?**
+
+    Since the Minimal Sufficient Explanation may not be unique for a given instance, we can compute all of them.
+```python
+sufficient_expl, sdp_expl, sdp_global = acv_xplainer.sufficient_expl_rf(X, y, X_train, y_train, pi_level=0.9)
 ```
 
 #### Local Explanatory Importance

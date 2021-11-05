@@ -2,7 +2,7 @@ from pathlib import Path
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy
-# from setuptools import setup, Extension
+from setuptools import setup, Extension
 from distutils.core import setup, Extension
 
 c_ext = Extension('cext_acv', sources=['acv_explainers/cext_acv/_cext.cc'])
@@ -22,7 +22,7 @@ long_description = (this_directory / "README.md").read_text()
 setup(name='acv-exp',
       author='Salim I. Amoukou',
       author_email='salim.ibrahim-amoukou@universite-paris-saclay.fr',
-      version='1.1.1',
+      version='1.1.2',
       description='ACV is a library that provides robust and accurate explanations for machine learning models or data',
       long_description=long_description,
       long_description_content_type="text/markdown",
