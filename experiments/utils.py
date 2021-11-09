@@ -1,55 +1,130 @@
 import itertools
-from collections import defaultdict
-from operator import itemgetter
-import string
-import random
-import scipy.stats as stats
-from typing import Tuple, List
-from sklearn.cluster import AffinityPropagation
+
+import math
 import matplotlib.pyplot as plt
+
+import multiprocessing as mp
 import numpy as np
+
 import pandas as pd
-import time
+
+import random
+
+import scipy.stats as st
+import scipy.stats as stats
+
 import seaborn as sns
+
+import string
+
+import sys
+import time
+import warnings
+from collections import defaultdict
+# from exp_linear import *
+
+from operator import itemgetter
+
+from scipy.special import comb
+from scipy.stats import kendalltau
+from sklearn.cluster import AffinityPropagation
+
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+# import shap
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+# from sklearn.model_selection import StratifiedShuffleSplit
+
+from sklearn.metrics import roc_auc_score, average_precision_score, accuracy_score, precision_recall_curve
+from sklearn.model_selection import train_test_split
 # from sklearn.model_selection import StratifiedShuffleSplit
 # from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.metrics import roc_auc_score, average_precision_score, accuracy_score
+
 from sklearn.tree import DecisionTreeClassifier
-from tqdm import tqdm
-import scipy.stats as st
-# import shap
-from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.tree import DecisionTreeRegressor
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-import sys
-import itertools
-import math
-import numpy as np
-import pandas as pd
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-import seaborn as sns
-import multiprocessing as mp
-import warnings
-import itertools
-# from exp_linear import *
-from collections import defaultdict
-from operator import itemgetter
-import string
-import random
-import scipy.stats as stats
+
 from typing import Tuple, List
-from sklearn.cluster import AffinityPropagation
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
-from sklearn.model_selection import train_test_split
-# from sklearn.model_selection import StratifiedShuffleSplit
-from sklearn.metrics import roc_auc_score
-from sklearn.preprocessing import OrdinalEncoder
-from scipy.special import comb
+
+
+
+def styling_dataframe_local_sdp(instance: pd.DataFrame,
+                                local_sdp: pd.DataFrame):
+    """Add a style to instance dataframe.
+    All columns where there's a 1 in local_sdp, the background is set to blue
+    The background of column 'SDP' is set to red
+
+    Args:
+        instance (pd.DataFrame): Instance from which we got the SDP
+        local_sdp (pd.DataFrame): The local sdp with a 1/0 for all variables and a SDP column
+
+    Returns:
+        pd.DataFrame: The instance with the new style
+    """
+
+    instance = (
+        instance
+        .assign(
+            SDP=lambda df: local_sdp.iloc[0].SDP
+        )
+    )
+
+    cols = list(local_sdp.columns)
+    cols.remove('SDP')
+
+    instance = instance[['SDP'] + cols]
+    local_sdp = (
+        local_sdp.drop(columns='SDP')
+        .iloc[0]
+    )
+
+    instance = (
+        instance
+        .style
+        .apply(highlight_importance_features,
+               s=local_sdp,
+               props='background-color: #3e82fc',
+               axis=1,
+               subset=cols)
+        .set_properties(**{'background-color': '#ff073a'},
+                        subset=['SDP'])
+    )
+
+
+    return instance
+
+
+def compute_kendall(shap_values, shap_values_acv):
+    shap_values_rank = shap_values.rank(axis=1, method='first', ascending=False).astype(int)
+    shap_values_acv_rank = shap_values_acv.rank(axis=1, method='first', ascending=False).astype(int)
+    kendall_res = []
+    for i in range(len(shap_values_rank)):
+        kendall_res.append(kendalltau(shap_values_rank.iloc[i].values, shap_values_acv_rank.iloc[i].values).correlation)
+    return kendall_res
+
+def plot_roc_pr_curves(y_test, y_pred):
+    # Print global scores
+    print(f"Roc AUC score : {roc_auc_score(y_test, y_pred)}")
+    print(f"PR AUC score  : {average_precision_score(y_test, y_pred)}")
+
+    # Plot ROC and PR curves
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5),
+                             sharex=True, sharey=True)
+
+    ax = axes[0]
+    fpr_RF, tpr_RF, _ = roc_curve(y_test, y_pred)
+    ax.step(fpr_RF, tpr_RF, linestyle='-.', c='g', lw=1, where='post')
+    ax.set_title("ROC", fontsize=20)
+    ax.legend(loc='upper center', fontsize=8)
+    ax.set_xlabel('False Positive Rate', fontsize=18)
+    ax.set_ylabel('True Positive Rate (Recall)', fontsize=18)
+
+    ax = axes[1]
+    precision_RF, recall_RF, _ = precision_recall_curve(y_test, y_pred)
+    ax.step(recall_RF, precision_RF, linestyle='-.', c='g', lw=1, where='post')
+    ax.set_title("Precision-Recall", fontsize=20)
+    ax.set_xlabel('Recall (True Positive Rate)', fontsize=18)
+    ax.set_ylabel('Precision', fontsize=18)
 
 
 def plot_feature_importance(importance, names, model_type, xlabel='SHAP values', title=' '):
