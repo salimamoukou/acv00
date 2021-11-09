@@ -36,7 +36,7 @@ explanation methods:
 * Same Decision Probability (SDP) and **Sufficient Explanations**
 * **Sufficient Rules**
 
-See the paper [Consistent Sufficient Explanations and Minimal Local Rules for explaining regression and classification models](https://github.com/salimamoukou/acv00/tree/main/papers/Suffient%20Explanations%20and%20Sufficient%20Rules) for more details.
+See the paper [Consistent Sufficient Explanations and Minimal Local Rules for explaining regression and classification models](https://arxiv.org/abs/2111.04658) for more details.
 
 **I. First, we need to fit our explainer (ACXplainers) to input-output of the data **(X, Y)** or model
 **(X, f(X))** if we want to explain the data or the model respectively.**
@@ -181,7 +181,7 @@ sdp_importance, sdp_index, size, sdp = acvtree.importance_sdp_clf(X, data_bgroun
 
 #### Active Shapley values
 
-The Active Shapley values is a SV based on a new game defined in the Paper ([Accurate and robust Shapley Values for explaining predictions and focusing on local important variables](https://github.com/salimamoukou/acv00/blob/main/papers/) such that null (non-important) variables has zero SV and the "payout" is fairly distribute among active variables.
+The Active Shapley values is a SV based on a new game defined in the Paper ([Accurate and robust Shapley Values for explaining predictions and focusing on local important variables](https://arxiv.org/abs/2106.03820) such that null (non-important) variables has zero SV and the "payout" is fairly distribute among active variables.
 
 * **How to compute Active Shapley values ?**
 
