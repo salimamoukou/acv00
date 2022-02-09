@@ -3,7 +3,7 @@ from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy
 # from setuptools import setup, Extension # for pypi build
-from distutils.core import setup, Extension # python setup
+from distutils.core import setup, Extension  # python setup
 
 c_ext = Extension('cext_acv', sources=['acv_explainers/cext_acv/_cext.cc'])
 cy_ext = Extension('cyext_acv', ['acv_explainers/cyext_acv/cyext_acv.pyx'], extra_compile_args=['-fopenmp'],
