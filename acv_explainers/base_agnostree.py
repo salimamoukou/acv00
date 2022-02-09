@@ -5,6 +5,9 @@ import struct
 import cext_acv
 import warnings
 from .py_acv import *
+import cyext_acv, cyext_acv_nopa, cyext_acv_cache
+from .py_acv import *
+from sklearn.utils.validation import check_array
 from .utils import rebuild_tree
 from distutils.version import LooseVersion
 
@@ -168,6 +171,41 @@ class BaseAgnosTree:
             self.num_nodes = np.array([len(t.values) for t in self.trees], dtype=np.int32)
             self.max_depth = np.max([t.max_depth for t in self.trees])
 
+    def shap_values_cache(self, X, data_bground, C=[[]], num_threads=10):
+        """
+                Same as **shap_values**, but use cached values to speed up computation
+
+        """
+        X = check_array(X, dtype=[np.double])
+        return cyext_acv_cache.shap_values_leaves_cache(X, data_bground, self.values,
+                                                        self.partition_leaves_trees,
+                                                        self.leaf_idx_trees, self.leaves_nb, self.lm, self.lm_s,
+                                                        self.lm_si,
+                                                        self.max_var,
+                                                        self.node_idx_trees, C, num_threads)
+
+    def shap_values(self, X, data_bground, C=[[]], num_threads=10):
+        """
+        Estimate the Shapley Values of a set of samples using the Leaf estimator
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to explain the model's output
+
+            C (list[list[int]]): A list that contains a list of columns indices for each grouped variables
+
+            num_threads (int): not used, deprecated
+
+        Returns:
+            shapley_values (numpy.ndarray): The Shapley Values of each sample (# samples X # features X # model's output)
+        """
+        X = check_array(X, dtype=[np.double])
+        if not self.cache:
+            return cyext_acv.shap_values_leaves_pa(X, data_bground, self.values,
+                                                   self.partition_leaves_trees,
+                                                   self.leaf_idx_trees, self.leaves_nb, self.max_var,
+                                                   self.node_idx_trees, C, num_threads)
+        return self.shap_values_cache(X, data_bground, C)
+
 class SingleTree:
     """ A single decision tree.
 
@@ -197,3 +235,4 @@ class SingleTree:
             self.children_left, self.children_right, self.node_sample_weight,
             self.values
         )
+

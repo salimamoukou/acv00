@@ -1082,3 +1082,152 @@ def unique_rules_s_star(rules, rules_output):
                 rules_unique_output.append(rules_output[j])
                 break
     return rules_unique, rules_unique_output
+
+def find_nbor_r(rec_a, rec_b, S):
+    rec_a = rec_a.copy()
+    rec_b = rec_b.copy()
+    axs = []
+    dim = []
+    for k in S:
+        if rec_a[k, 0] == rec_b[k, 1]:
+            add = True
+            for l in S:
+                if k != l:
+                    if not (rec_b[l, 0] <= rec_a[l, 0] and rec_b[l, 1] >= rec_a[l, 1]):
+                        add = False
+                        break
+            if add:
+                axs.append(k)
+                dim.append(0)
+
+        elif rec_a[k, 1] == rec_b[k, 0]:
+            add = True
+            for l in S:
+                if k != l:
+                    if not (rec_b[l, 0] <= rec_a[l, 0] and rec_b[l, 1] >= rec_a[l, 1]):
+                        add = False
+                        break
+            if add:
+                axs.append(k)
+                dim.append(1)
+    return axs, dim
+
+
+def extend_rec_r(rec_a, rec_b, S, axs, dim):
+    rec_a = rec_a.copy()
+    rec_b = rec_b.copy()
+    a = 0
+    for k in S:
+        if k not in axs:
+            if not (rec_b[k, 0] <= rec_a[k, 0] and rec_b[k, 1] >= rec_a[k, 1]):
+                a += 1
+    if a == 0:
+        for i, k in enumerate(axs):
+            rec_a[k, dim[i]] = rec_b[k, dim[i]]
+
+    rec_part = []
+    not_axs = [i for i in S if i not in axs]
+    ps = powerset(not_axs)
+    for power in ps:
+        rec_remain = []
+        merge = True
+        for k in S:
+            if k in axs:
+                rec_remain.append([rec_b[k, 0], rec_b[k, 1]])
+            else:
+                if k in power:
+                    if rec_b[k, 0] == rec_a[k, 0]:
+                        merge = False
+                        break
+                    rec_remain.append([rec_b[k, 0], rec_a[k, 0]])
+                else:
+                    if rec_b[k, 1] == rec_a[k, 1]:
+                        merge = False
+                        break
+                    rec_remain.append([rec_a[k, 1], rec_b[k, 1]])
+
+        if merge:
+            rec_part.append(np.array(rec_remain))
+
+    return rec_a, rec_part
+
+
+def is_subset(rec_a, rec_b):
+    if rec_a == [] or rec_b == []:
+        return False
+    is_subset = True
+    for i in range(rec_a.shape[0]):
+        if not (rec_b[i, 0] <= rec_a[i, 0] and rec_b[i, 1] >= rec_a[i, 1]):
+            is_subset = False
+            break
+    return is_subset
+
+
+def find_mergable(rec_a, list_rec, S):
+    for rec_b in list_rec:
+        axs, dim = find_nbor_r(rec_a, rec_b, S)
+        if len(axs) != 0:
+            break
+
+    if len(axs) != 0:
+        rec_union, rec_part = extend_rec_r(rec_a, rec_b, S, axs, dim)
+        return True, rec_a, rec_b, rec_union, rec_part
+    else:
+        return False, rec_a, [], [], []
+
+
+def remove_rule(rule, rule_sets):
+    for i, r in enumerate(rule_sets):
+        if np.allclose(r, rule):
+            rule_sets.pop(i)
+            break
+
+
+def return_largest_rectangle(rule_p, rule_sets, S):
+    rule_sets = rule_sets.copy()
+    max_step = 5000
+    step = 0
+    i = 0
+    rule_size = len(rule_sets)
+    while (i <= rule_size and step <= max_step):
+
+        step += 1
+        rule = rule_sets[0]
+        find, rule, rule_b, rule_union, rules_part = find_mergable(rule, rule_sets, S)
+
+        if is_subset(rule_p, rule_b):
+            find = False
+
+        if find == True:
+            remove_rule(rule, rule_sets)
+            remove_rule(rule_b, rule_sets)
+
+            random.shuffle(rule_sets) # new add
+            rule_sets.append(rule_union)
+            rule_size += 1
+
+            if rules_part != []:
+                rule_sets.extend(rules_part)
+                rule_size += len(rules_part)
+        else:
+            remove_rule(rule, rule_sets)
+            random.shuffle(rule_sets)  # new add
+            rule_sets.append(rule)
+        i += 1
+    return rule_sets
+
+
+def return_best(rule_p, rule_sets, S):
+    rule_p = rule_p[S]
+    rule_sets = [r[S] for r in rule_sets]
+    rules_part = return_largest_rectangle(rule_p, rule_sets, list(range(rule_p.shape[0])))
+    for r in rules_part:
+        if is_subset(rule_p, r):
+            break
+    return r, rules_part
+
+
+def unique_rules_r(rules, sdp_all, pi):
+    rules = np.array([rules[i] for i in range(rules.shape[0]) if sdp_all[i] >= pi])
+    rules_unique = np.unique(rules, axis=0)
+    return rules_unique

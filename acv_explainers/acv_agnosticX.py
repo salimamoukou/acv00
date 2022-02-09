@@ -9,7 +9,7 @@ from skranger.ensemble import RangerForestClassifier, RangerForestRegressor
 from sklearn.utils.validation import check_is_fitted, check_X_y, column_or_1d, check_array, as_float_array, \
     check_consistent_length
 from sklearn.exceptions import NotFittedError
-
+import random
 
 class ACXplainer:
     def __init__(
@@ -27,7 +27,8 @@ class ACXplainer:
             inbag=None,
             split_rule="gini",
             num_random_splits=1,
-            seed=2021
+            seed=2021,
+            quantiles=None
     ):
         """
         ACXplainer is a agnostic explainer that computes two different explanations for any model or data:
@@ -129,7 +130,8 @@ class ACXplainer:
                                                self.split_rule,
                                                self.num_random_splits,
                                                seed=self.seed,
-                                               enable_tree_details=True)
+                                               enable_tree_details=True,
+                                               quantiles=True)
 
     def fit(self, X, y, sample_weight=None, split_select_weights=None, always_split_features=None,
             categorical_features=None):
@@ -312,7 +314,7 @@ class ACXplainer:
         return sdp, rules
 
     def compute_sdp_maxrules(self, X, y, data, y_data, S, min_node_size=5, t=20, pi_level=0.95,
-                             verbose=False):
+                             verbose=False, algo2=False, rdm_size=20):
         """
          Estimate the maximal rule-based explanations of a set of samples X given Sufficient Explanations S using the consistent estimator
          (Projected Forest + Quantile Regression), see Paper [ref]. For each instance x, all
@@ -372,7 +374,19 @@ class ACXplainer:
                                                                                        min_node_size, self.classifier,
                                                                                        t, pi_level)
 
-        extend_partition(rules, rules_data, sdp_all, pi=pi_level, S=S)
+        if not algo2:
+            extend_partition(rules, rules_data, sdp_all, pi=pi_level, S=S)
+        else:
+            rules_rdm = [rules.copy() for z in range(rdm_size)]
+            for i in tqdm(range(rdm_size)):
+                for a, ru in enumerate(rules_rdm[i]):
+                    rules_comp = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
+                    random.shuffle(rules_comp)
+                    r, _ = return_best(rules_rdm[i][a], rules_comp, S[a])
+                    rules_rdm[i][a][S[a]] = r
+
+            return sdp, rules_rdm, sdp_all, rules_data, w
+
         return sdp, rules, sdp_all, rules_data, w
 
     def importance_sdp_rf(self, X, y, data, y_data, min_node_size=5, t=20,

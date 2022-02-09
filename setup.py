@@ -2,7 +2,7 @@ from pathlib import Path
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy
-from setuptools import setup, Extension
+# from setuptools import setup, Extension
 from distutils.core import setup, Extension
 
 c_ext = Extension('cext_acv', sources=['acv_explainers/cext_acv/_cext.cc'])
