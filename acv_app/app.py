@@ -9,7 +9,6 @@ import argparse
 import subprocess
 
 DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), 'data')
-# LOAD_PATH = '/home/samoukou/Documents/INVASE-master'
 APP_PATH = __file__
 
 

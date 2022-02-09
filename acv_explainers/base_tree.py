@@ -174,7 +174,7 @@ class BaseTree:
             self.input_dtype = np.float32
             scaling = 1.0 / len(model.estimators_)  # output is average of trees
             # self.scaling = scaling
-            self.trees = [SingleTree(e.tree_, normalize=False, scaling=scaling, data=data, data_missing=data_missing) for
+            self.trees = [SingleTree(e.tree_, normalize=True, scaling=scaling, data=data, data_missing=data_missing) for
                           e in model.estimators_]
             self.objective = objective_name_map.get(model.criterion, None)
             self.tree_output = "probability"

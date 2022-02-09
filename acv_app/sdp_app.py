@@ -232,7 +232,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
 
         x_group = pd.DataFrame(x_test.values[idx:idx + 1], columns=x_test.columns)
         x_group['Output'] = y_test[idx]
-        x_group['Same Decision Probability (SDP)'] = sdp_coal[idx][exp_idx]
+        x_group['SDP'] = sdp_coal[idx][exp_idx]
         st.dataframe(x_group.iloc[:1].style.apply(color_max, sdp_index=sufficient_coal[idx][exp_idx], axis=1))
 
         st.header('Local rule explanation')
