@@ -10,7 +10,7 @@ ACV is a python library that aims to explain **any machine learning models** or 
 
 We can regroup the different explanations in two groups: **Agnostic Explanations** and **Tree-based Explanations**.
 
-See the papers [here](https://github.com/salimamoukou/acv00/tree/main/papers).
+See the papers [here](https://salimamoukou.github.io/).
  
 ### Installation
 
