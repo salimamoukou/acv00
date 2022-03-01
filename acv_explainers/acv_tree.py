@@ -7,6 +7,10 @@ import cyext_acv, cyext_acv_nopa, cyext_acv_cache
 from acv_explainers.utils import extend_partition
 from sklearn.utils.validation import check_array, column_or_1d, check_consistent_length
 
+from sklearn.utils.validation import check_is_fitted, check_X_y, column_or_1d, check_array, as_float_array, \
+    check_consistent_length
+from sklearn.exceptions import NotFittedError
+
 class ACVTree(BaseTree):
 
     def shap_values(self, X, C=[[]], num_threads=10):
@@ -824,48 +828,266 @@ class ACVTree(BaseTree):
                                             quantile=quantile)
         return exp
 
-    def compute_sdp_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
-        sdp = cyext_acv.compute_sdp_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+    def compute_sdp_rf(self, X, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        """
+         Estimate the Same Decision Probability (SDP) of a set of samples X given subset S using the consistent estimator
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the column indices of the variable on which we condition to compute the SDP
+                                 for each observation
+
+            min_node_size (int): The minimal node size of the Projected Random Forest
+
+            t (float):  The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+        Returns:
+            sdp (numpy.ndarray):  A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Minimal Sufficient Explanation of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        sdp = cyext_acv.compute_sdp_rf(X, y, data, y_data, S, self.features, self.thresholds,
+                                       self.children_left,
+                                       self.children_right, self.max_depth, min_node_size,
+                                       classifier, t)
+        return sdp
+
+    def compute_cdf_rf(self, X, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        """
+         Estimate the Projected Cumulative Distribution Function (P-CDF) of a set of samples X given subset S using the
+          consistent estimator
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the variable on which we condition to compute the P-CDF
+                                 for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (float): not used here
+
+        Returns:
+            exp (numpy.ndarray): A 1-D matrix (# samples), exp[i] contains the Conditional Expectation of observation i
+                                 given S
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+
+        sdp = cyext_acv.compute_cdf_rf(X, y, data, y_data, S, self.features, self.thresholds, self.children_left,
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
         return sdp
 
-    def compute_cdf_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
-        sdp = cyext_acv.compute_cdf_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
-                                       self.children_right, self.max_depth, min_node_size, classifier, t)
-        return sdp
-
-    def importance_sdp_rf(self, x, y, data, y_data, min_node_size=5, classifier=1, t=20,
+    def importance_sdp_rf(self, X, y, data, y_data, min_node_size=5, classifier=1, t=20,
                           C=[[]], pi_level=0.9, minimal=1, stop=True):
 
-        if x.shape[1] > 10:
+        """
+         Estimate the Minimal Sufficient Explanations and the Global sdp importance of a set of samples X using the
+         consistent estimator
 
-            flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
-            node_idx = pd.Series(flat_list)
-            search_space = []
-            for v in (node_idx.value_counts().keys()):
-                search_space += [v]
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            min_node_size (int): The minimal node size
+
+            t (float): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            C (list[list[int]]): A list that contains a list of the indices of column for each grouped variables
+
+            pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations.
+                              It should be in (0, 1).
+
+            minimal (int): It will search the Sufficient Explanations from subsets of size "minimal" instead of 1 by default
+
+            stop (bool): If stop=True, it will stop searching for the Sufficient Explanations if it does not find
+                         any Sufficient Explanations smaller than (# features / 2), otherwise it will continues until
+                         end.
+
+        Returns:
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
+                                                 based on samples X. For a given i, sdp_importance[i] corresponds to the
+                                                 frequency of apparition of feature i in the Minimal Sufficient Explanations
+                                                 of the set of samples X
+
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the variables in the
+                                     the Minimal Sufficient Explanations for each sample. For a given i, the positive
+                                     values of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
+                                     observation i.
+
+            size (numpy.ndarray): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
+                                for each sample.
+
+            sdp (numpy.ndarray): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
+                               of the Sufficient Explanation for each sample.
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+
+        if X.shape[1] > 10:
+            try:
+                feature_importance = -np.array(self.model.feature_importances_)
+                search_space = list(np.argsort(feature_importance))
+            except AttributeError:
+                flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+                node_idx = pd.Series(flat_list)
+                search_space = []
+                for v in (node_idx.value_counts().keys()):
+                    search_space += [v]
         else:
-            search_space = [i for i in range(x.shape[1])]
+            search_space = [i for i in range(X.shape[1])]
 
-        sdp = cyext_acv.global_sdp_rf(x, y, data, y_data, self.features, self.thresholds, self.children_left,
-                                      self.children_right, self.max_depth, min_node_size, classifier, t, C,
-                                      pi_level, minimal, stop, search_space[:10])
-        return sdp
+        return cyext_acv.global_sdp_rf(X, y, data, y_data, self.features, self.thresholds,
+                                       self.children_left,
+                                       self.children_right, self.max_depth, min_node_size,
+                                       classifier, t, C,
+                                       pi_level, minimal, stop, search_space[:10])
 
-    def compute_exp_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
-        exp = cyext_acv.compute_exp_rf(x, y, data, y_data, S, self.features, self.thresholds, self.children_left,
+    def sufficient_expl_rf(self, X, y, data, y_data, min_node_size=5, classifier=1, t=20,
+                           C=[[]], pi_level=0.9, minimal=1, stop=True):
+
+        """
+         Estimate all the Sufficient Explanations and the Global sdp importance of a set of samples X using the
+         consistent estimator
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            min_node_size (int): The minimal node size
+
+            t (float): The level of variations around the prediction that defined the SDP for regression (only for regression)
+
+            C (list[list[int]]): A list that contains a list of the indices of the column for each grouped variables
+
+            pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations.
+                              It should be in (0, 1).
+
+            minimal (int): It will search the Sufficient Explanations from subsets of size "minimal" instead of 1 by default
+
+            stop (bool): If stop=True, it will stop searching for the Sufficient Explanations if it does not find
+                         any Sufficient Explanations smaller than (# features / 2), otherwise it will continues until
+                         end.
+
+        Returns:
+            sufficient_coal (list[list[list[int]]]): a list that contains the column indices of the Sufficient Explanations
+                                                     of each sample
+            sdp_coal (list[list[list[int]]]): a list that contains the SDP of the Sufficient Explanations of each sample
+
+            sdp_global (numpy.ndarray): 1-D array (# features), sdp_global[i] corresponds to the frequency of apparition
+            of variable i in the **all** the sufficient explanations over the samples X.
+        """
+
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        if X.shape[1] > 10:
+
+            try:
+                feature_importance = -np.array(self.model.feature_importances_)
+                search_space = list(np.argsort(feature_importance))
+            except AttributeError:
+                flat_list = [item for t in self.node_idx_trees for sublist in t for item in sublist]
+                node_idx = pd.Series(flat_list)
+                search_space = []
+                for v in (node_idx.value_counts().keys()):
+                    search_space += [v]
+        else:
+            search_space = [i for i in range(X.shape[1])]
+        # TODO: Remove the [-1] in the Sufficent Coal
+        return cyext_acv.sufficient_expl_rf(X, y, data, y_data, self.features, self.thresholds,
+                                            self.children_left,
+                                            self.children_right, self.max_depth, min_node_size,
+                                            classifier, t, C,
+                                            pi_level, minimal, stop, search_space[:10])
+
+    def compute_exp_rf(self, X, y, data, y_data, S, min_node_size=5, classifier=1, t=20):
+        """
+         Estimate the Conditional Expectation (exp) of a set of samples X given subset S using the consistent estimator
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the variable on which we condition to compute the SDP
+                                 for each observation
+
+            min_node_size (int): The minimal node size
+
+            t (float): not used here
+
+        Returns:
+            exp (numpy.ndarray): A 1-D matrix (# samples), exp[i] contains the Conditional Expectation of observation i
+                                 given S
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        exp = cyext_acv.compute_exp_rf(X, y, data, y_data, S, self.features, self.thresholds, self.children_left,
                                        self.children_right, self.max_depth, min_node_size, classifier, t)
         return exp
 
-    def compute_quantile_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, quantile=95):
-        y_quantiles = cyext_acv.compute_quantile_rf(x, y, data, y_data, S, self.features, self.thresholds,
+    def compute_quantile_rf(self, X, y, data, y_data, S, min_node_size=5, classifier=1, t=20, quantile=95):
+        y_quantiles = cyext_acv.compute_quantile_rf(X, y, data, y_data, S, self.features, self.thresholds,
                                                     self.children_left,
                                                     self.children_right, self.max_depth, min_node_size, classifier, t,
                                                     quantile)
         return y_quantiles
 
-    def compute_quantile_diff_rf(self, x, y, data, y_data, S, min_node_size=5, classifier=1, t=20, quantile=95):
-        y_quantiles_diff = cyext_acv.compute_quantile_diff_rf(x, y, data, y_data, S, self.features, self.thresholds,
+    def compute_quantile_diff_rf(self, X, y, data, y_data, S, min_node_size=5, classifier=1, t=20, quantile=95):
+        y_quantiles_diff = cyext_acv.compute_quantile_diff_rf(X, y, data, y_data, S, self.features, self.thresholds,
                                                               self.children_left,
                                                               self.children_right, self.max_depth, min_node_size,
                                                               classifier, t, quantile)
