@@ -13,6 +13,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.preprocessing import OrdinalEncoder
+# from bigholes import HoleFinder
+from tqdm import tqdm
+
 
 
 def plot_feature_importance(importance, names, model_type, xlabel='SHAP values', title=' '):
@@ -1083,6 +1086,7 @@ def unique_rules_s_star(rules, rules_output):
                 break
     return rules_unique, rules_unique_output
 
+
 def find_nbor_r(rec_a, rec_b, S):
     rec_a = rec_a.copy()
     rec_b = rec_b.copy()
@@ -1202,7 +1206,7 @@ def return_largest_rectangle(rule_p, rule_sets, S):
             remove_rule(rule, rule_sets)
             remove_rule(rule_b, rule_sets)
 
-            random.shuffle(rule_sets) # new add
+            random.shuffle(rule_sets)  # new add
             rule_sets.append(rule_union)
             rule_size += 1
 
@@ -1231,3 +1235,89 @@ def unique_rules_r(rules, sdp_all, pi):
     rules = np.array([rules[i] for i in range(rules.shape[0]) if sdp_all[i] >= pi])
     rules_unique = np.unique(rules, axis=0)
     return rules_unique
+
+
+def return_adjacent_rec(adj, rule_sets, S):
+    adj = adj.copy()
+    # rule_sets = rule_sets.copy()
+    for r in rule_sets:
+        for rule in adj:
+            axs, dim = find_nbor_r(rule, r, S)
+            if len(axs) != 0:
+                break
+        if len(axs) != 0:
+            adj.append(r)
+            remove_rule(r, rule_sets)
+            adj = return_adjacent_rec(adj, rule_sets, S)
+    return adj
+
+
+def overapprox_rectangle(adj):
+    adj = np.array(adj)
+    min_axis = np.min(adj[:, :, 0], axis=0).reshape(-1, 1)
+    max_axis = np.max(adj[:, :, 1], axis=0).reshape(-1, 1)
+
+    return np.concatenate([min_axis, max_axis], axis=-1)
+
+
+def overapprox_rule(rule_p, rule_sets, S):
+    rule_p = rule_p[S]
+    rule_sets = [r[S] for r in rule_sets]
+    adj = return_adjacent_rec([rule_p], rule_sets, list(range(rule_p.shape[0])))
+    return overapprox_rectangle(adj)
+
+
+def return_edges(list_rec):
+    n = list_rec.shape[0]
+    d = list_rec.shape[1]
+    base = np.zeros((n, d))
+
+    for i in range(n):
+        for j in range(d):
+            base[i, j] = list_rec[i, j, 0]
+
+    all_points = []
+    subsets = powerset(list(range(d)))
+
+    for S in subsets:
+        base_buf = base.copy()
+        for s in S:
+            for i in range(n):
+                base_buf[i, s] = list_rec[i, s, 1]
+        all_points.append(base_buf)
+    return np.concatenate(all_points, axis=0)
+
+
+def mc_approx_rules(rules, rules_data, S_star, strategy='random', maxitr=1000, interiorOnly=False,
+                    threshold=None, verbose=False):
+
+    #     strategy = 'random' # or 'even' or 'sequential'
+    #     maxitr = 1000 # how many queries to do since last best found before satisfied
+    # whether to consider only rectangles that are bounded on all sides by points rather than limits of the space
+    #     interiorOnly = False # for datasets with few points, finding interior rectangles is much harder
+    #     threshold = None # just find a list of the biggest
+
+    approx_rec = rules.copy()
+    for a in tqdm(range(rules.shape[0])):
+        rule_p = rules[a][S_star[a]]
+        rule_sets = [r[S_star[a]] for r in rules_data[a]]
+        adj = np.array(return_adjacent_rec([rule_p], rule_sets, list(range(rule_p.shape[0]))))
+
+        edges = return_edges(adj)
+
+        d = len(S_star[a])
+        vertices = []
+        for i in range(edges.shape[0]):
+            count = np.sum(np.prod(edges[i] == edges, axis=1))
+            if count != 2 ** (d):
+                vertices.append(edges[i])
+
+        pt = np.unique(vertices, axis=0)
+        hf = HoleFinder(pt, strategy, interiorOnly)
+
+        hallOfFame = hf.findLargestMEHRs(maxitr, threshold, verbose)  # also dumps hallOfFame to disk
+
+        approx_rec[a, S_star[a], 0] = hallOfFame[-1].L
+        approx_rec[a, S_star[a], 1] = hallOfFame[-1].U
+    return approx_rec
+

@@ -377,15 +377,17 @@ class ACXplainer:
         if not algo2:
             extend_partition(rules, rules_data, sdp_all, pi=pi_level, S=S)
         else:
-            rules_rdm = [rules.copy() for z in range(rdm_size)]
-            for i in tqdm(range(rdm_size)):
-                for a, ru in enumerate(rules_rdm[i]):
-                    rules_comp = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
-                    random.shuffle(rules_comp)
-                    r, _ = return_best(rules_rdm[i][a], rules_comp, S[a])
-                    rules_rdm[i][a][S[a]] = r
-
-            return sdp, rules_rdm, sdp_all, rules_data, w
+            # rules_rdm = [rules.copy() for z in range(rdm_size)]
+            # for i in tqdm(range(rdm_size)):
+            #     for a, ru in enumerate(rules_rdm[i]):
+            #         rules_comp = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
+            #         random.shuffle(rules_comp)
+            #         r, _ = return_best(rules_rdm[i][a], rules_comp, S[a])
+            #         rules_rdm[i][a][S[a]] = r
+            for a in tqdm(range(rules.shape[0])):
+                rules_sets = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
+                rules[a][S[a]] = overapprox_rule(rules[a], rules_sets, S[a])
+            # return sdp, rules_rdm, sdp_all, rules_data, w
 
         return sdp, rules, sdp_all, rules_data, w
 
