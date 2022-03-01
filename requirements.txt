@@ -3,7 +3,7 @@ matplotlib
 seaborn
 tqdm
 Cython
-numpy==1.20
+numpy < 1.22
 sklearn
 pandas
 xgboost
