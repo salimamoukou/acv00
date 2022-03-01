@@ -27,7 +27,7 @@ class BaseTree:
         self.tree_output = None  # what are the units of the values in the leaves of the trees
         self.internal_dtype = np.float64
         self.input_dtype = np.float64  # for sklearn we need to use np.float32 to always get exact matches to their predictions
-        self.data = check_array(data)
+        self.data = check_array(data, dtype=[np.double])
         self.data_missing = data_missing
         self.fully_defined_weighting = True  # does the background dataset land in every leaf (making it valid for the tree_path_dependent method)
         self.tree_limit = None  # used for limiting the number of trees we use by default (like from early stopping)
