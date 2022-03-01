@@ -5,6 +5,8 @@ ACV is a python library that aims to explain **any machine learning models** or 
 * It gives **local rule-based** explanations for any model or data.
 * It provides **a better estimation of Shapley Values for tree-based model** (more accurate than [path-dependent TreeSHAP](https://github.com/slundberg/shap])). 
  It also proposes new Shapley Values that have better local fidelity.
+    * and the **correct way of computing Shapley Values of categorical variables after encoding 
+    (eg., One Hot or Dummy, etc.)** 
 
 We can regroup the different explanations in two groups: **Agnostic Explanations** and **Tree-based Explanations**.
 
