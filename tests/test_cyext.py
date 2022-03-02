@@ -4,42 +4,35 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import pandas as pd
 import random
-import pytest
-import sklearn
-import sklearn.pipeline
-# import shap
-import time
-import pstats, cProfile
+from sklearn import datasets
 
 random.seed(2021)
 np.random.seed(2021)
-data_frame = pd.read_csv('/home/samoukou/Documents/ACV/data/lucas0_train.csv')
 
-y = data_frame.Lung_cancer.values
-data_frame.drop(['Lung_cancer'], axis=1, inplace=True)
+data, y = datasets.load_breast_cancer(return_X_y=True)
 
 forest = RandomForestClassifier(n_estimators=5, min_samples_leaf=2, random_state=212, max_depth=8)
-forest.fit(data_frame, y)
-acvtree = ACVTree(forest, data_frame.values)
+forest.fit(data, y)
 
-X = np.array(data_frame.values, dtype=np.float)[:100]
-data = np.array(data_frame.values, dtype=np.float)
+acvtree = ACVTree(forest, data)
+
+X = data[:100]
+
 
 def test_sv_acv():
-    sv_acv = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, 11))), [[]], 5)
+    sv_acv = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, data.shape[1]))), [[]], 5)
     sv = acvtree.shap_values(X, [[]])
-    assert np.allclose(np.sum(sv_acv, axis=1), np.sum(sv, axis=1))
 
 def test_sv_acv_cyext_nopa():
-    cy = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, 11))), [[]], 5)
-    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[]])
+    cy = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, data.shape[1]))), [[]], 5)
+    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, data.shape[1])), [[]])
     assert np.allclose(cy, py)
 
 
 def test_sv_acv_cyext_coalition_nopa():
-    cy = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, 11))),
+    cy = acvtree.shap_values_acv_nopa(X, np.array(list(range(8))), np.array(list(range(8, data.shape[1]))),
                                        [[0, 1, 2, 3]], 5)
-    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[0, 1, 2, 3]])
+    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, data.shape[1])), [[0, 1, 2, 3]])
     assert np.allclose(cy, py)
 
 def test_sv_cyext():
@@ -65,15 +58,15 @@ def test_sv_cyext_coalition_nopa():
 
 
 def test_sv_acv_cyext():
-    cy = acvtree.shap_values_acv(X, np.array(list(range(8))), np.array(list(range(8, 11))), [[]], 5)
-    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[]])
+    cy = acvtree.shap_values_acv(X, np.array(list(range(8))), np.array(list(range(8, data.shape[1]))), [[]], 5)
+    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, data.shape[1])), [[]])
     assert np.allclose(cy, py)
 
 
 def test_sv_acv_cyext_coalition():
-    cy = acvtree.shap_values_acv(X, np.array(list(range(8))), np.array(list(range(8, 11))),
+    cy = acvtree.shap_values_acv(X, np.array(list(range(8))), np.array(list(range(8, data.shape[1]))),
                                        [[0, 1, 2, 3]], 5)
-    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, 11)), [[0, 1, 2, 3]])
+    py = acvtree.py_shap_values_acv(X, list(range(8)), list(range(8, data.shape[1])), [[0, 1, 2, 3]])
     assert np.allclose(cy, py)
 
 

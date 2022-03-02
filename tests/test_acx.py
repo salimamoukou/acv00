@@ -1,32 +1,17 @@
-import acv_explainers
 from acv_explainers import ACXplainer
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
-import pandas as pd
+from sklearn import datasets
 import random
-import pytest
-import sklearn
-import sklearn.pipeline
-# import shap
-import time
-import pstats, cProfile
 
 random.seed(2021)
 np.random.seed(2021)
-data_frame = pd.read_csv('/home/samoukou/Documents/ACV/data/lucas0_train.csv')
+data, y = datasets.load_breast_cancer(return_X_y=True)
 
-y = data_frame.Lung_cancer.values
-data_frame.drop(['Lung_cancer'], axis=1, inplace=True)
 
-forest = RandomForestClassifier(n_estimators=5, min_samples_leaf=2, random_state=212, max_depth=8)
-forest.fit(data_frame, y)
-
-# X = np.array(data_frame.values, dtype=np.float)[:100]
-# data = np.array(data_frame.values, dtype=np.float)
-data = data_frame
-x_test = data.iloc[:100]
+x_test = data[:100]
 y_test = y[:100]
-x = x_test.iloc[:1]
+x = x_test[:1]
 y_x = y_test[:1]
 ac_xplainer = ACXplainer(classifier=True, n_estimators=1)
 
