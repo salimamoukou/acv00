@@ -17,12 +17,12 @@ cy_extcache = Extension('cyext_acv_cache', ['acv_explainers/cyext_acv/cyext_acv_
                         extra_link_args=['-fopenmp'])
 
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text()
+long_description = (this_directory/"README.md").read_text()
 
 setup(name='acv-exp',
       author='Salim I. Amoukou',
       author_email='salim.ibrahim-amoukou@universite-paris-saclay.fr',
-      version='1.2.1',
+      version='1.2.2',
       description='ACV is a library that provides robust and accurate explanations for machine learning models or data',
       long_description=long_description,
       long_description_content_type="text/markdown",
@@ -33,7 +33,7 @@ setup(name='acv-exp',
       setup_requires=['numpy<1.22'],
       install_requires=['numpy<1.22', 'scipy', 'scikit-learn', 'matplotlib', 'pandas', 'tqdm', 'ipython', 'seaborn',
                         'streamlit', 'skranger == 0.7.0'],
-      extras_require={'test': ['xgboost', 'lightgbm', 'catboost', 'pyspark', 'shap', 'rpy2 == 2.9.4']},
+      extras_require={'test': ['xgboost', 'lightgbm', 'catboost', 'pyspark', 'shap', 'rpy2 == 2.9.4', 'pytest']},
       packages=['acv_explainers', 'experiments', 'acv_app', 'acv_app.colors'],
       license='MIT',
       zip_safe=False

@@ -1,0 +1,64 @@
+name: Install & Test
+on: push
+
+jobs:
+  build_test_publish:
+    name: "Build & Test"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip wheel auditwheel
+        pip install flake8 pytest setuptools build
+        pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+#    - name: Build ACV
+#      run: |
+#        python -m build
+#
+#    - name: Repair build_wheel Python 3.7
+#      if: matrix.python-version == 3.7
+#      run: |
+#        auditwheel repair dist/acv_dev-0.0.1-cp37-cp37m-linux_x86_64.whl --plat manylinux_2_24_x86_64
+#        mv wheelhouse/acv_dev-0.0.1-cp37-cp37m-manylinux_2_24_x86_64.whl dist
+#        rm dist/acv_dev-0.0.1-cp37-cp37m-linux_x86_64.whl
+#
+#    - name: Repair build_wheel Python 3.8
+#      if: matrix.python-version == 3.8
+#      run: |
+#        auditwheel repair dist/acv_dev-0.0.1-cp38-cp38-linux_x86_64.whl --plat manylinux_2_24_x86_64
+#        mv wheelhouse/acv_dev-0.0.1-cp38-cp38-manylinux_2_24_x86_64.whl dist
+#        rm dist/acv_dev-0.0.1-cp38-cp38-linux_x86_64.whl
+#
+#    - name: Repair build_wheel Python 3.9
+#      if: matrix.python-version  == 3.9
+#      run: |
+#        auditwheel repair dist/acv_dev-0.0.1-cp39-cp39-linux_x86_64.whl --plat manylinux_2_24_x86_64
+#        mv wheelhouse/acv_dev-0.0.1-cp39-cp39-manylinux_2_24_x86_64.whl dist
+#        rm dist/acv_dev-0.0.1-cp39-cp39-linux_x86_64.whl
+#
+    - name: Install ACV
+      run: |
+        python setup.py install
+
+    - name: Test with pytest
+      run: |
+        pytest
+
+#      - name: Lint with flake8
+#      run: |
+#         stop the build if there are Python syntax errors or undefined names
+#        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+#        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
