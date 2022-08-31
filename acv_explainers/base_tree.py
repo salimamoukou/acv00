@@ -610,6 +610,9 @@ class BaseTree:
             # data_leaves_trees = -np.ones(shape=(len(self.leaves_nb), np.max(self.leaves_nb), self.data.shape[0], self.data.shape[1]), dtype=np.int)
             for i in range(len(self.leaves_nb)):
                 leaf_idx_trees[i, :self.leaves_nb[i]] = np.array(self.leaf_idx_trees[i], dtype=np.int)
+
+                if self.data.shape[1] == 1:
+                    self.partition_leaves_trees[i] = np.expand_dims(self.partition_leaves_trees[i], axis=1)
                 partition_leaves_trees[i, :self.leaves_nb[i]] = np.array(self.partition_leaves_trees[i])
                 # data_leaves_trees[i, :self.leaves_nb[i]] = np.array(self.data_leaves_trees[i], dtype=np.int)
 

@@ -46,17 +46,14 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def compute_sdp(nb, x_train, y_train, x_test, y_test, pi_level, t):
         sufficient_coal, sdp_coal, sdp_global = acvtree.sufficient_expl_rf(x_test[:nb], y_test[:nb], x_train, y_train,
-                                                                           stop=False, pi_level=pi_level,
-                                                                           t=t)
-        for i in range(len(sufficient_coal)):
-            sufficient_coal[i].pop(0)
-            sdp_coal[i].pop(0)
+                                                                           stop=False, pi_level=pi_level)
+
         return sufficient_coal, sdp_coal, sdp_global
 
     @st.cache(allow_output_mutation=True)
     def compute_sdp_rule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S):
         sdp, rules = acvtree.compute_sdp_rule(x_test_np[obs:obs+1], y_test_np[obs:obs+1],
-                                              x_train_np, y_train_np, S=[S], t=t)
+                                              x_train_np, y_train_np, S=[S])
         rule = rules[0]
         columns = [x_train.columns[i] for i in range(x_train.shape[1])]
         rule_string = ['{} <= {} <= {}'.format(rule[i, 0] if rule[i, 0] > -1e+10 else -np.inf, columns[i],
@@ -67,7 +64,7 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     @st.cache(allow_output_mutation=True)
     def compute_sdp_maxrule(obs, x_train_np, y_train_np, x_test_np, y_test_np, t, S, pi):
         sdp, rules, sdp_all, rules_data, w = acvtree.compute_sdp_maxrules(x_test_np[obs:obs + 1], y_test_np[obs:obs + 1],
-                                              x_train_np, y_train_np, S=[S], t=t, pi_level=pi)
+                                              x_train_np, y_train_np, S=[S], pi_level=pi)
 
         acvtree.fit_global_rules(x_train_np, y_train_np, rules, [S])
 
@@ -180,7 +177,6 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
     sufficient_coal, sdp_coal, sdp_global = compute_sdp(nb, x_train.values.astype(np.double),
                                                         y_train.astype(np.double), x_test.values.astype(np.double),
                                                         y_test.astype(np.double), pi_level=pi_level, t=t)
-
     sufficient_coal_names = transform_scoal_to_col(sufficient_coal, x_train.columns)
     # explantions_load_state.text("SDP explanation Done!")
 
@@ -197,7 +193,6 @@ def write_pg(x_train, x_test, y_train, y_test, acvtree):
                                   'SDP': sdp_coal[idx]}
 
             sufficient_coal_df = pd.DataFrame(sufficient_coal_df)
-            # print(sufficient_coal_df.head())
             st.dataframe(sufficient_coal_df, 6000, 6000)
 
         with col2:

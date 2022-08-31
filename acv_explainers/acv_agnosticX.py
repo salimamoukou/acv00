@@ -11,6 +11,9 @@ from sklearn.utils.validation import check_is_fitted, check_X_y, column_or_1d, c
 from sklearn.exceptions import NotFittedError
 import random
 
+
+# TODO: add model in exp and define by thr CRP and the regression pb
+
 class ACXplainer:
     def __init__(
             self,
@@ -100,35 +103,35 @@ class ACXplainer:
         self.rules_s_star_ori = None
 
         if self.classifier:
-            self.model = RangerForestClassifier(self.n_estimators,
-                                                self.verbose,
-                                                self.mtry,
-                                                self.importance,
-                                                self.min_node_size,
-                                                self.max_depth,
-                                                self.replace,
-                                                self.sample_fraction,
-                                                self.keep_inbag,
-                                                self.inbag,
-                                                self.split_rule,
-                                                self.num_random_splits,
+            self.model = RangerForestClassifier(n_estimators=self.n_estimators,
+                                                verbose=self.verbose,
+                                                mtry=self.mtry,
+                                                importance=self.importance,
+                                                min_node_size=self.min_node_size,
+                                                max_depth=self.max_depth,
+                                                replace=self.replace,
+                                                sample_fraction=self.sample_fraction,
+                                                keep_inbag=self.keep_inbag,
+                                                inbag=self.inbag,
+                                                split_rule=self.split_rule,
+                                                num_random_splits=self.num_random_splits,
                                                 seed=self.seed,
                                                 enable_tree_details=True)
         else:
             if self.split_rule == 'gini':
                 self.split_rule = 'variance'
-            self.model = RangerForestRegressor(self.n_estimators,
-                                               self.verbose,
-                                               self.mtry,
-                                               self.importance,
-                                               self.min_node_size,
-                                               self.max_depth,
-                                               self.replace,
-                                               self.sample_fraction,
-                                               self.keep_inbag,
-                                               self.inbag,
-                                               self.split_rule,
-                                               self.num_random_splits,
+            self.model = RangerForestRegressor(n_estimators=self.n_estimators,
+                                               verbose=self.verbose,
+                                               mtry=self.mtry,
+                                               importance=self.importance,
+                                               min_node_size=self.min_node_size,
+                                               max_depth=self.max_depth,
+                                               replace=self.replace,
+                                               sample_fraction=self.sample_fraction,
+                                               keep_inbag=self.keep_inbag,
+                                               inbag=self.inbag,
+                                               split_rule=self.split_rule,
+                                               num_random_splits=self.num_random_splits,
                                                seed=self.seed,
                                                enable_tree_details=True,
                                                quantiles=True)
@@ -227,7 +230,7 @@ class ACXplainer:
             self.ACXplainer = BaseAgnosTree(self.model, self.d)
             self.check_is_explain = True
 
-    def compute_sdp_rf(self, X, y, data, y_data, S, min_node_size=5, t=20):
+    def compute_sdp_rf(self, X, y, data, y_data, S, min_node_size=5, t=None):
         """
          Estimate the Same Decision Probability (SDP) of a set of samples X given subset S using the consistent estimator
          (Projected Forest + Quantile Regression), see Paper [ref]
@@ -262,6 +265,10 @@ class ACXplainer:
             raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
 
         self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
 
         sdp = cyext_acv.compute_sdp_rf(X, y, data, y_data, S, self.ACXplainer.features, self.ACXplainer.thresholds,
                                        self.ACXplainer.children_left,
@@ -269,7 +276,7 @@ class ACXplainer:
                                        self.classifier, t)
         return sdp
 
-    def compute_sdp_rule(self, X, y, data, y_data, S, min_node_size=5, t=20):
+    def compute_sdp_rule(self, X, y, data, y_data, S, min_node_size=5, t=None):
         """
          Estimate the local rule-based explanations of a set of samples X given Sufficient Explanations S using
          the consistent estimator (Projected Forest + Quantile Regression), see Paper [ref]. For each observation x, all
@@ -306,15 +313,208 @@ class ACXplainer:
 
         self.check_is_explainer()
 
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
         sdp, rules = cyext_acv.compute_sdp_rule(X, y, data, y_data, S, self.ACXplainer.features,
+                                                self.ACXplainer.thresholds,
+                                                self.ACXplainer.children_left,
+                                                self.ACXplainer.children_right,
+                                                self.ACXplainer.max_depth,
+                                                min_node_size, self.classifier, t)
+        return sdp, rules
+
+    def compute_sdp_maxrules(self, X, y, data, y_data, S, min_node_size=5, t=None, pi_level=0.95,
+                             verbose=False, algo2=False, p_best=0.85, n_try=50,
+                             batch=50, max_iter=200, temp=1, max_iter_convergence=10):
+        """
+         Estimate the maximal rule-based explanations of a set of samples X given Sufficient Explanations S using the consistent estimator
+         (Projected Forest + Quantile Regression), see Paper [ref]. For each instance x, all
+         observations that falls in the rule of x has its SDP given S above \pi as x.
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+            p_best (double): The probability of chosing the best (maximal) rule instead of rdm among the compatible R
+
+            n_try (int): number of try to find a good candidate (rule)
+
+            max_iter (int): number of steps for the simulated annealing
+
+            max_iter_convergence (int): stop if not improving after steps=max_iter_convergence
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+
+        if not verbose:
+            sdp, rules, sdp_all, rules_data, w = cyext_acv.compute_sdp_maxrule(X, y, data, y_data, S,
+                                                                               self.ACXplainer.features,
+                                                                               self.ACXplainer.thresholds,
+                                                                               self.ACXplainer.children_left,
+                                                                               self.ACXplainer.children_right,
+                                                                               self.ACXplainer.max_depth,
+                                                                               min_node_size, self.classifier, t,
+                                                                               pi_level)
+        else:
+            sdp, rules, sdp_all, rules_data, w = cyext_acv.compute_sdp_maxrule_verbose(X, y, data, y_data, S,
+                                                                                       self.ACXplainer.features,
+                                                                                       self.ACXplainer.thresholds,
+                                                                                       self.ACXplainer.children_left,
+                                                                                       self.ACXplainer.children_right,
+                                                                                       self.ACXplainer.max_depth,
+                                                                                       min_node_size, self.classifier,
+                                                                                       t, pi_level)
+
+        if not algo2:
+            # extend_partition(rules, rules_data, sdp_all, pi=pi_level, S=S)
+            rules, rules_eval = rules_by_annealing(volume_rectangles, rules, rules_data, sdp_all, data,
+                                                   pi_level=pi_level, p_best=p_best, n_try=n_try,
+                                                   batch=batch, max_iter=max_iter, temp=temp,
+                                                   max_iter_convergence=max_iter_convergence)
+        else:
+            # rules_rdm = [rules.copy() for z in range(rdm_size)]
+            # for i in tqdm(range(rdm_size)):
+            #     for a, ru in enumerate(rules_rdm[i]):
+            #         rules_comp = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
+            #         random.shuffle(rules_comp)
+            #         r, _ = return_best(rules_rdm[i][a], rules_comp, S[a])
+            #         rules_rdm[i][a][S[a]] = r
+            # for a in tqdm(range(rules.shape[0])):
+            #     rules_sets = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
+            #     rules[a][S[a]] = overapprox_rule(rules[a], rules_sets, S[a])
+            # return sdp, rules_rdm, sdp_all, rules_data, w
+            extend_partition(rules, rules_data, sdp_all, pi=pi_level, S=S)
+        return sdp, rules, sdp_all, rules_data, w
+
+    def compute_ddp_rf(self, X, y, data, y_data, S, min_node_size=5, t=None):
+        """
+         Estimate the Same Decision Probability (SDP) of a set of samples X given subset S using the consistent estimator
+         (Projected Forest + Quantile Regression), see Paper [ref]
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the column indices of the variable on which we condition to compute the SDP
+                                 for each observation
+
+            min_node_size (int): The minimal node size of the Projected Random Forest
+
+            t (float):  The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+        Returns:
+            sdp (numpy.ndarray):  A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Minimal Sufficient Explanation of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp = cyext_acv.compute_ddp_rf(X, y, data, y_data, S, self.ACXplainer.features, self.ACXplainer.thresholds,
+                                       self.ACXplainer.children_left,
+                                       self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
+                                       self.classifier, t)
+        return ddp
+
+    def compute_ddp_rule(self, X, y, data, y_data, S, min_node_size=5, t=None):
+        """
+         Estimate the local rule-based explanations of a set of samples X given Sufficient Explanations S using
+         the consistent estimator (Projected Forest + Quantile Regression), see Paper [ref]. For each observation x, all
+         observations that falls in the rule of x has the same SDP as x.
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the Sufficient Explanation for each observation
+
+            min_node_size (int): The minimal node size of the Projected Random forest
+
+            t (float): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the local rule of observation i
+        """
+        X, y = check_X_y(X, y, dtype=[np.double, np.double])
+        data, y_data = check_X_y(data, y_data, dtype=[np.double, np.double])
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp, rules = cyext_acv.compute_ddp_rule(X, y, data, y_data, S, self.ACXplainer.features,
                                                 self.ACXplainer.thresholds,
                                                 self.ACXplainer.children_left,
                                                 self.ACXplainer.children_right, self.ACXplainer.max_depth,
                                                 min_node_size, self.classifier, t)
-        return sdp, rules
+        return ddp, rules
 
-    def compute_sdp_maxrules(self, X, y, data, y_data, S, min_node_size=5, t=20, pi_level=0.95,
-                             verbose=False, algo2=False, rdm_size=20):
+    def compute_ddp_weights(self, X, y, data, y_data, S, min_node_size=5, t=None, pi_level=0.95,
+                            verbose=False, algo2=False, rdm_size=20):
         """
          Estimate the maximal rule-based explanations of a set of samples X given Sufficient Explanations S using the consistent estimator
          (Projected Forest + Quantile Regression), see Paper [ref]. For each instance x, all
@@ -354,44 +554,449 @@ class ACXplainer:
             raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
 
         self.check_is_explainer()
-
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
         if not verbose:
-            sdp, rules, sdp_all, rules_data, w = cyext_acv.compute_sdp_maxrule(X, y, data, y_data, S,
-                                                                               self.ACXplainer.features,
-                                                                               self.ACXplainer.thresholds,
-                                                                               self.ACXplainer.children_left,
-                                                                               self.ACXplainer.children_right,
-                                                                               self.ACXplainer.max_depth,
-                                                                               min_node_size, self.classifier, t,
-                                                                               pi_level)
+            ddp, w = cyext_acv.compute_ddp_weights(X, y, data, y_data, S,
+                                                   self.ACXplainer.features,
+                                                   self.ACXplainer.thresholds,
+                                                   self.ACXplainer.children_left,
+                                                   self.ACXplainer.children_right,
+                                                   self.ACXplainer.max_depth,
+                                                   min_node_size, self.classifier, t,
+                                                   pi_level)
         else:
-            sdp, rules, sdp_all, rules_data, w = cyext_acv.compute_sdp_maxrule_verbose(X, y, data, y_data, S,
-                                                                                       self.ACXplainer.features,
-                                                                                       self.ACXplainer.thresholds,
-                                                                                       self.ACXplainer.children_left,
-                                                                                       self.ACXplainer.children_right,
-                                                                                       self.ACXplainer.max_depth,
-                                                                                       min_node_size, self.classifier,
-                                                                                       t, pi_level)
+            ddp, w = cyext_acv.compute_ddp_weights_verbose(X, y, data, y_data, S,
+                                                           self.ACXplainer.features,
+                                                           self.ACXplainer.thresholds,
+                                                           self.ACXplainer.children_left,
+                                                           self.ACXplainer.children_right,
+                                                           self.ACXplainer.max_depth,
+                                                           min_node_size, self.classifier,
+                                                           t, pi_level)
 
-        if not algo2:
-            extend_partition(rules, rules_data, sdp_all, pi=pi_level, S=S)
+        return ddp, w
+
+    def compute_cdp_cond_weights(self, X, y, down, up, data, y_data, S, cond, min_node_size=5, t=None, pi_level=0.95,
+                                 verbose=False, algo2=False, rdm_size=20):
+        """
+         Compute P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}, X_S=x_S)
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        self.check_is_explainer()
+
+        ddp, w = cyext_acv.compute_cdp_cond_weights(X, y, down, up, data, y_data, S,
+                                                    self.ACXplainer.features,
+                                                    self.ACXplainer.thresholds,
+                                                    self.ACXplainer.children_left,
+                                                    self.ACXplainer.children_right,
+                                                    cond,
+                                                    self.ACXplainer.max_depth,
+                                                    min_node_size, self.classifier, t,
+                                                    pi_level)
+
+        return ddp, w
+
+    def compute_cdp_rf(self, X, y, down, up, data, y_data, S, min_node_size=5, t=None):
+        """
+         Estimate the Same Decision Probability (SDP) of a set of samples X given subset S using the consistent estimator
+         (Projected Forest + Quantile Regression), see Paper [ref]
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the column indices of the variable on which we condition to compute the SDP
+                                 for each observation
+
+            min_node_size (int): The minimal node size of the Projected Random Forest
+
+            t (float):  The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+        Returns:
+            sdp (numpy.ndarray):  A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Minimal Sufficient Explanation of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp = cyext_acv.compute_cdp_rf(X, y, down, up, data, y_data, S, self.ACXplainer.features,
+                                       self.ACXplainer.thresholds,
+                                       self.ACXplainer.children_left,
+                                       self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
+                                       self.classifier, t)
+        return ddp
+
+    def compute_cdp_rule(self, X, y, down, up, data, y_data, S, min_node_size=5, t=None):
+        """
+         Estimate the local rule-based explanations of a set of samples X given Sufficient Explanations S using
+         the consistent estimator (Projected Forest + Quantile Regression), see Paper [ref]. For each observation x, all
+         observations that falls in the rule of x has the same SDP as x.
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the Sufficient Explanation for each observation
+
+            min_node_size (int): The minimal node size of the Projected Random forest
+
+            t (float): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the local rule of observation i
+        """
+        X, y = check_X_y(X, y, dtype=[np.double, np.double])
+        data, y_data = check_X_y(data, y_data, dtype=[np.double, np.double])
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp, rules = cyext_acv.compute_cdp_rule(X, y, down, up, data, y_data, S, self.ACXplainer.features,
+                                                self.ACXplainer.thresholds,
+                                                self.ACXplainer.children_left,
+                                                self.ACXplainer.children_right, self.ACXplainer.max_depth,
+                                                min_node_size, self.classifier, t)
+        return ddp, rules
+
+    def compute_cdp_weights(self, X, y, down, up, data, y_data, S, min_node_size=5, t=None, pi_level=0.95,
+                            verbose=False, algo2=False, rdm_size=20):
+        """
+         Estimate the maximal rule-based explanations of a set of samples X given Sufficient Explanations S using the consistent estimator
+         (Projected Forest + Quantile Regression), see Paper [ref]. For each instance x, all
+         observations that falls in the rule of x has its SDP given S above \pi as x.
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        if not verbose:
+            ddp, w = cyext_acv.compute_cdp_weights(X, y, down, up, data, y_data, S,
+                                                   self.ACXplainer.features,
+                                                   self.ACXplainer.thresholds,
+                                                   self.ACXplainer.children_left,
+                                                   self.ACXplainer.children_right,
+                                                   self.ACXplainer.max_depth,
+                                                   min_node_size, self.classifier, t,
+                                                   pi_level)
         else:
-            # rules_rdm = [rules.copy() for z in range(rdm_size)]
-            # for i in tqdm(range(rdm_size)):
-            #     for a, ru in enumerate(rules_rdm[i]):
-            #         rules_comp = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
-            #         random.shuffle(rules_comp)
-            #         r, _ = return_best(rules_rdm[i][a], rules_comp, S[a])
-            #         rules_rdm[i][a][S[a]] = r
-            for a in tqdm(range(rules.shape[0])):
-                rules_sets = [rules_data[a, j] for j in range(rules_data.shape[1]) if sdp_all[a, j] >= sdp[a]]
-                rules[a][S[a]] = overapprox_rule(rules[a], rules_sets, S[a])
-            # return sdp, rules_rdm, sdp_all, rules_data, w
+            ddp, w = cyext_acv.compute_cdp_weights_verbose(X, y, down, up, data, y_data, S,
+                                                           self.ACXplainer.features,
+                                                           self.ACXplainer.thresholds,
+                                                           self.ACXplainer.children_left,
+                                                           self.ACXplainer.children_right,
+                                                           self.ACXplainer.max_depth,
+                                                           min_node_size, self.classifier, t,
+                                                           pi_level)
 
-        return sdp, rules, sdp_all, rules_data, w
+        return ddp, w
 
-    def importance_sdp_rf(self, X, y, data, y_data, min_node_size=5, t=20,
+    def compute_ddp_cond_weights(self, X, y, data, y_data, S, cond, min_node_size=5, t=None, pi_level=0.95,
+                                 verbose=False, algo2=False, rdm_size=20):
+        """
+         Compute P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}, X_S=x_S)
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp, w = cyext_acv.compute_ddp_cond_weights(X, y, data, y_data, S,
+                                                    self.ACXplainer.features,
+                                                    self.ACXplainer.thresholds,
+                                                    self.ACXplainer.children_left,
+                                                    self.ACXplainer.children_right,
+                                                    cond,
+                                                    self.ACXplainer.max_depth,
+                                                    min_node_size, self.classifier, t,
+                                                    pi_level)
+
+        return ddp, w
+
+    def importance_sdp_rf(self, X, y, data, y_data, min_node_size=5, t=None,
+                          C=[[]], pi_level=0.9, minimal=1, stop=True):
+        """
+         Estimate the Minimal Sufficient Explanations and the Global sdp importance of a set of samples X using the
+         consistent estimator (Projected Forest + Quantile Regression), see Paper [ref].
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            min_node_size (int): The minimal node size
+
+            t (float): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            C (list[list[int]]): A list that contains a list of the indices of column for each grouped variables
+
+            pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations.
+                              It should be in (0, 1).
+
+            minimal (int): It will search the Sufficient Explanations from subsets of size "minimal" instead of 1 by default
+
+            stop (bool): If stop=True, it will stop searching for the Sufficient Explanations if it does not find
+                         any Sufficient Explanations smaller than (# features / 2), otherwise it will continues until
+                         end.
+
+        Returns:
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
+                                                 based on samples X. For a given i, sdp_importance[i] corresponds to the
+                                                 frequency of apparition of feature i in the Minimal Sufficient Explanations
+                                                 of the set of samples X
+
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the variables in the
+                                     the Minimal Sufficient Explanations for each sample. For a given i, the positive
+                                     values of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
+                                     observation i.
+
+            size (numpy.ndarray): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
+                                for each sample.
+
+            sdp (numpy.ndarray): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
+                               of the Sufficient Explanation for each sample.
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        self.check_is_explainer()
+
+        # TODO: Deal with Coalition of feature for categorical features in the importance selection
+        if X.shape[1] > 10:
+            feature_importance = -np.array(self.model.feature_importances_)
+            search_space = list(np.argsort(feature_importance))
+            # flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+            # node_idx = pd.Series(flat_list)
+            # search_space = []
+            # for v in (node_idx.value_counts().keys()):
+            #     search_space += [v]
+        else:
+            search_space = [i for i in range(X.shape[1])]
+
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+
+        return cyext_acv.global_sdp_rf(X, y, data, y_data, self.ACXplainer.features, self.ACXplainer.thresholds,
+                                       self.ACXplainer.children_left,
+                                       self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
+                                       self.classifier, t, C,
+                                       pi_level, minimal, stop, search_space[:10])
+
+    def importance_ddp_rf(self, X, y, data, y_data, min_node_size=5, t=None,
+                          C=[[]], pi_level=0.9, minimal=1, stop=True):
+        """
+         Estimate the Minimal Sufficient Explanations and the Global sdp importance of a set of samples X using the
+         consistent estimator (Projected Forest + Quantile Regression), see Paper [ref].
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            min_node_size (int): The minimal node size
+
+            t (float): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            C (list[list[int]]): A list that contains a list of the indices of column for each grouped variables
+
+            pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations.
+                              It should be in (0, 1).
+
+            minimal (int): It will search the Sufficient Explanations from subsets of size "minimal" instead of 1 by default
+
+            stop (bool): If stop=True, it will stop searching for the Sufficient Explanations if it does not find
+                         any Sufficient Explanations smaller than (# features / 2), otherwise it will continues until
+                         end.
+
+        Returns:
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
+                                                 based on samples X. For a given i, sdp_importance[i] corresponds to the
+                                                 frequency of apparition of feature i in the Minimal Sufficient Explanations
+                                                 of the set of samples X
+
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the variables in the
+                                     the Minimal Sufficient Explanations for each sample. For a given i, the positive
+                                     values of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
+                                     observation i.
+
+            size (numpy.ndarray): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
+                                for each sample.
+
+            sdp (numpy.ndarray): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
+                               of the Sufficient Explanation for each sample.
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        self.check_is_explainer()
+
+        # TODO: Deal with Coalition of feature for categorical features in the importance selection
+        if X.shape[1] > 10:
+            feature_importance = -np.array(self.model.feature_importances_)
+            search_space = list(np.argsort(feature_importance))
+            # flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+            # node_idx = pd.Series(flat_list)
+            # search_space = []
+            # for v in (node_idx.value_counts().keys()):
+            #     search_space += [v]
+        else:
+            search_space = [i for i in range(X.shape[1])]
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        return cyext_acv.global_ddp_rf(X, y, data, y_data, self.ACXplainer.features, self.ACXplainer.thresholds,
+                                       self.ACXplainer.children_left,
+                                       self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
+                                       self.classifier, t, C,
+                                       pi_level, minimal, stop, search_space[:10])
+
+    def importance_cdp_rf(self, X, y, down, up, data, y_data, min_node_size=5, t=None,
                           C=[[]], pi_level=0.9, minimal=1, stop=True):
         """
          Estimate the Minimal Sufficient Explanations and the Global sdp importance of a set of samples X using the
@@ -454,14 +1059,19 @@ class ACXplainer:
             #     search_space += [v]
         else:
             search_space = [i for i in range(X.shape[1])]
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
 
-        return cyext_acv.global_sdp_rf(X, y, data, y_data, self.ACXplainer.features, self.ACXplainer.thresholds,
+        return cyext_acv.global_cdp_rf(X, y, down, up, data, y_data, self.ACXplainer.features,
+                                       self.ACXplainer.thresholds,
                                        self.ACXplainer.children_left,
                                        self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
                                        self.classifier, t, C,
                                        pi_level, minimal, stop, search_space[:10])
 
-    def sufficient_expl_rf(self, X, y, data, y_data, min_node_size=5, t=20,
+    def sufficient_expl_rf(self, X, y, data, y_data, min_node_size=5, t=None,
                            C=[[]], pi_level=0.9, minimal=1, stop=True):
 
         """
@@ -518,13 +1128,96 @@ class ACXplainer:
         else:
             search_space = [i for i in range(X.shape[1])]
         # TODO: Remove the [-1] in the Sufficent Coal
-        return cyext_acv.sufficient_expl_rf(X, y, data, y_data, self.ACXplainer.features, self.ACXplainer.thresholds,
+
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        sufficient_expl, sdp_expl, sdp_global = cyext_acv.sufficient_expl_rf(X, y, data, y_data,
+                                                                             self.ACXplainer.features,
+                                                                             self.ACXplainer.thresholds,
+                                                                             self.ACXplainer.children_left,
+                                                                             self.ACXplainer.children_right,
+                                                                             self.ACXplainer.max_depth, min_node_size,
+                                                                             self.classifier, t, C,
+                                                                             pi_level, minimal, stop, search_space[:10])
+
+        sufficient_expl = [sufficient_coal[1:] for sufficient_coal in sufficient_expl]
+        sdp_expl = [sdp_ind[1:] for sdp_ind in sdp_expl]
+        return sufficient_expl, sdp_expl, sdp_global
+
+    def sufficient_cxpl_rf(self, X, y, data, y_data, min_node_size=5, t=None,
+                           C=[[]], pi_level=0.9, minimal=1, stop=True):
+
+        """
+         Estimate all the Sufficient Explanations and the Global sdp importance of a set of samples X using the
+         consistent estimator (Projected Forest + Quantile Regression), see Paper [ref].
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            min_node_size (int): The minimal node size
+
+            t (float): The level of variations around the prediction that defined the SDP for regression (only for regression)
+
+            C (list[list[int]]): A list that contains a list of the indices of the column for each grouped variables
+
+            pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations.
+                              It should be in (0, 1).
+
+            minimal (int): It will search the Sufficient Explanations from subsets of size "minimal" instead of 1 by default
+
+            stop (bool): If stop=True, it will stop searching for the Sufficient Explanations if it does not find
+                         any Sufficient Explanations smaller than (# features / 2), otherwise it will continues until
+                         end.
+
+        Returns:
+            sufficient_coal (list[list[list[int]]]): a list that contains the column indices of the Sufficient Explanations
+                                                     of each sample
+            sdp_coal (list[list[list[int]]]): a list that contains the SDP of the Sufficient Explanations of each sample
+
+            sdp_global (numpy.ndarray): 1-D array (# features), sdp_global[i] corresponds to the frequency of apparition
+            of variable i in the **all** the sufficient explanations over the samples X.
+        """
+
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        self.check_is_explainer()
+        if X.shape[1] > 10:
+
+            feature_importance = -np.array(self.model.feature_importances_)
+            search_space = list(np.argsort(feature_importance))
+            # flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+            # node_idx = pd.Series(flat_list)
+            # search_space = []
+            # for v in (node_idx.value_counts().keys()):
+            #     search_space += [v]
+        else:
+            search_space = [i for i in range(X.shape[1])]
+        # TODO: Remove the [-1] in the Sufficent Coal
+        # TODO: Check S_bar_set for this function
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        c_expl, cdp_expl, cdp_global = cyext_acv.sufficient_cxpl_rf(X, y, data, y_data, self.ACXplainer.features, self.ACXplainer.thresholds,
                                             self.ACXplainer.children_left,
                                             self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
                                             self.classifier, t, C,
                                             pi_level, minimal, stop, search_space[:10])
 
-    def compute_exp_rf(self, X, y, data, y_data, S, min_node_size=5, t=20):
+        c_expl = [sufficient_coal[1:] for sufficient_coal in c_expl]
+        return c_expl, cdp_expl[1:], cdp_global
+
+    def compute_exp_rf(self, X, y, data, y_data, S, min_node_size=5, t=None):
         """
          Estimate the Conditional Expectation (exp) of a set of samples X given subset S using the consistent estimator
          (Projected Forest), see Paper [ref]
@@ -559,14 +1252,17 @@ class ACXplainer:
             raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
 
         self.check_is_explainer()
-
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
         exp = cyext_acv.compute_exp_rf(X, y, data, y_data, S, self.ACXplainer.features, self.ACXplainer.thresholds,
                                        self.ACXplainer.children_left,
                                        self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
                                        self.classifier, t)
         return exp
 
-    def compute_cdf_rf(self, X, y, data, y_data, S, min_node_size=5, t=20):
+    def compute_cdf_rf(self, X, y, data, y_data, S, min_node_size=5, t=None):
         """
          Estimate the Projected Cumulative Distribution Function (P-CDF) of a set of samples X given subset S using the
           consistent estimator (Projected Forest + Quantile Regression), see Paper [ref]
@@ -601,7 +1297,10 @@ class ACXplainer:
             raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
 
         self.check_is_explainer()
-
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
         sdp = cyext_acv.compute_cdf_rf(X, y, data, y_data, S, self.ACXplainer.features, self.ACXplainer.thresholds,
                                        self.ACXplainer.children_left,
                                        self.ACXplainer.children_right, self.ACXplainer.max_depth, min_node_size,
@@ -609,26 +1308,36 @@ class ACXplainer:
         return sdp
 
     @staticmethod
-    def compute_local_sdp(d, sufficient_coal):
-        """
-        Estimate the local explanatory importance of each variable given the set of Sufficient Explanations of each
-        sample
-        Args:
-            d (int): # features
-            sufficient_coal (list[list[list[int]]]): a list that contains the column indices of the Sufficient Explanations
-                                                     of each sample
+    def compute_local_sdp(d, all_sufficient_coal):
 
-        Returns:
-            local_exp_imp (numpy.ndarray): 1-D array (# features) the local explanatory importance of each variable for each
-                                           sample.
-        """
-        flat = [item for sublist in sufficient_coal for item in sublist]
-        flat = pd.Series(flat)
-        flat = dict(flat.value_counts() / len(sufficient_coal))
-        local_sdp = np.zeros(d)
-        for key in flat.keys():
-            local_sdp[key] = flat[key]
-        return local_sdp
+        def compute_local_sdp_one(sufficient_coal):
+            """
+            Estimate the local explanatory importance of each variable given the set of Sufficient Explanations of each
+            sample
+            Args:
+                d (int): # features
+                sufficient_coal (list[list[list[int]]]): a list that contains the column indices of the Sufficient Explanations
+                                                         of each sample
+            Returns:
+                local_exp_imp (numpy.ndarray): 1-D array (# features) the local explanatory importance of each variable for each
+                                               sample.
+            """
+            flat = [item for sublist in sufficient_coal for item in sublist]
+            flat = pd.Series(flat)
+            flat = dict(flat.value_counts() / len(sufficient_coal))
+            local_sdp = np.zeros(d)
+            for key in flat.keys():
+                local_sdp[key] = flat[key]
+            return local_sdp
+
+        nb_obs = len(all_sufficient_coal)
+        lximp = np.zeros(d)
+        for i in range(nb_obs):
+            if len(all_sufficient_coal[i]) == 0:
+                nb_obs -= 1
+                continue
+            lximp += compute_local_sdp_one(all_sufficient_coal[i])
+        return lximp / nb_obs
 
     @staticmethod
     def compute_msdp_clf(X, S, data, model=None):
@@ -701,3 +1410,365 @@ class ACXplainer:
     #                                                           min_node_size,
     #                                                           classifier, t, quantile)
     #     return y_quantiles_diff
+
+    def compute_ddp_intv_weights(self, X, y, data, y_data, S, cond, min_node_size=5, t=None, pi_level=0.95,
+                                 verbose=False, algo2=False, rdm_size=20):
+        """
+        Compute P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}), X_S is missing
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp, w = cyext_acv.compute_ddp_intv_weights(X, y, data, y_data, S,
+                                                    self.ACXplainer.features,
+                                                    self.ACXplainer.thresholds,
+                                                    self.ACXplainer.children_left,
+                                                    self.ACXplainer.children_right,
+                                                    cond,
+                                                    self.ACXplainer.max_depth,
+                                                    min_node_size, self.classifier, t)
+
+        return ddp, w
+
+    def compute_ddp_intv_same(self, X, y, data, y_data, S, cond, min_node_size=5, t=None, pi_level=0.95,
+                              verbose=False, algo2=False, rdm_size=20):
+        """
+         Compute P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}), X_S is missing using same S
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        # try:
+        #     check_consistent_length(X, S)
+        # except ValueError as exp:
+        #     raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp = cyext_acv.compute_ddp_intv_same_set(X, y, data, y_data, S,
+                                                  self.ACXplainer.features,
+                                                  self.ACXplainer.thresholds,
+                                                  self.ACXplainer.children_left,
+                                                  self.ACXplainer.children_right,
+                                                  cond,
+                                                  self.ACXplainer.max_depth,
+                                                  min_node_size, self.classifier, t)
+
+        return ddp
+
+    def importance_ddp_intv(self, X, y, data, y_data, cond, min_node_size=5, t=None,
+                            C=[[]], pi_level=0.9, minimal=1, stop=True):
+        """
+         Find Minimal Divergent Set for Rule P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}), X_S is missing
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            min_node_size (int): The minimal node size
+
+            t (float): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            C (list[list[int]]): A list that contains a list of the indices of column for each grouped variables
+
+            pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations.
+                              It should be in (0, 1).
+
+            minimal (int): It will search the Sufficient Explanations from subsets of size "minimal" instead of 1 by default
+
+            stop (bool): If stop=True, it will stop searching for the Sufficient Explanations if it does not find
+                         any Sufficient Explanations smaller than (# features / 2), otherwise it will continues until
+                         end.
+
+        Returns:
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
+                                                 based on samples X. For a given i, sdp_importance[i] corresponds to the
+                                                 frequency of apparition of feature i in the Minimal Sufficient Explanations
+                                                 of the set of samples X
+
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the variables in the
+                                     the Minimal Sufficient Explanations for each sample. For a given i, the positive
+                                     values of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
+                                     observation i.
+
+            size (numpy.ndarray): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
+                                for each sample.
+
+            sdp (numpy.ndarray): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
+                               of the Sufficient Explanation for each sample.
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        self.check_is_explainer()
+
+        if X.shape[1] > 10:
+            feature_importance = -np.array(self.model.feature_importances_)
+            search_space = list(np.argsort(feature_importance))
+            # flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+            # node_idx = pd.Series(flat_list)
+            # search_space = []
+            # for v in (node_idx.value_counts().keys()):
+            #     search_space += [v]
+        else:
+            search_space = [i for i in range(X.shape[1])]
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        return cyext_acv.global_ddp_intv(X, y, data, y_data, self.ACXplainer.features, self.ACXplainer.thresholds,
+                                         self.ACXplainer.children_left,
+                                         self.ACXplainer.children_right, cond, self.ACXplainer.max_depth, min_node_size,
+                                         self.classifier, t, C,
+                                         pi_level, minimal, stop, search_space[:10])
+
+    def compute_cdp_intv_weights(self, X, y, data, y_data, S, cond, min_node_size=5, t=None, pi_level=0.95,
+                                 verbose=False, algo2=False, rdm_size=20):
+        """
+        Compute P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}), X_S is missing
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        try:
+            check_consistent_length(X, S)
+        except ValueError as exp:
+            raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp, w = cyext_acv.compute_cdp_intv_weights(X, y, data, y_data, S,
+                                                    self.ACXplainer.features,
+                                                    self.ACXplainer.thresholds,
+                                                    self.ACXplainer.children_left,
+                                                    self.ACXplainer.children_right,
+                                                    cond,
+                                                    self.ACXplainer.max_depth,
+                                                    min_node_size, self.classifier, t)
+
+        return ddp, w
+
+    def compute_cdp_intv_same(self, X, y, data, y_data, S, cond, min_node_size=5, t=None, pi_level=0.95,
+                              verbose=False, algo2=False, rdm_size=20):
+        """
+         Compute P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}), X_S is missing using same S
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            S (list[list[int]]): A list that contains the indices of the columns of the variable of the Sufficient
+                                Explanations for each observation
+
+            min_node_size (int): The minimal node size of the Projected Forest
+
+            t (double): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            pi_level (double): The minimal level of SDP for the Sufficient Explanations
+
+        Returns:
+            sdp (numpy.ndarray): A 1-D matrix (# samples), sdp[i] contains the Same Decision Probability (SDP)
+                                 of the Sufficient Explanation of observation i
+            rules (numpy.ndarray): A matrix (# samples x # features x 2), rules[i] that contains the maximal local rule
+                                   of observation i
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        # try:
+        #     check_consistent_length(X, S)
+        # except ValueError as exp:
+        #     raise ValueError('{} for X (samples) and S (coalition)'.format(exp))
+
+        self.check_is_explainer()
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        ddp = cyext_acv.compute_cdp_intv_same_set(X, y, data, y_data, S,
+                                                  self.ACXplainer.features,
+                                                  self.ACXplainer.thresholds,
+                                                  self.ACXplainer.children_left,
+                                                  self.ACXplainer.children_right,
+                                                  cond,
+                                                  self.ACXplainer.max_depth,
+                                                  min_node_size, self.classifier, t)
+
+        return ddp
+
+    def importance_cdp_intv(self, X, y, data, y_data, cond, min_node_size=5, t=None,
+                            C=[[]], pi_level=0.9, minimal=1, stop=True):
+        """
+         Find Minimal Divergent Set for Rule P(Y \neq y | X_{\bar{S}} in rule_{\bar{S}}), X_S is missing
+
+        Args:
+            X (numpy.ndarray): A matrix of samples (# samples X # features) on which to compute the SDP
+
+            y (numpy.ndarray): 1-D array (# samples) the targets of X
+
+            data (numpy.ndarray): The background dataset that is used for the estimation of the SDP. It should be the
+                                training samples.
+
+            y_data (numpy.ndarray): The targets of the background dataset
+
+            min_node_size (int): The minimal node size
+
+            t (float): The level of variations around the prediction that defines the SDP in regression (only for regression)
+
+            C (list[list[int]]): A list that contains a list of the indices of column for each grouped variables
+
+            pi_level (float): The minimal value of the Same Decision Probability (SDP) of the Sufficient Explanations.
+                              It should be in (0, 1).
+
+            minimal (int): It will search the Sufficient Explanations from subsets of size "minimal" instead of 1 by default
+
+            stop (bool): If stop=True, it will stop searching for the Sufficient Explanations if it does not find
+                         any Sufficient Explanations smaller than (# features / 2), otherwise it will continues until
+                         end.
+
+        Returns:
+            global_sdp_importance (numpy.ndarray): A 1-D matrix (# features) that is the global explanatory importance
+                                                 based on samples X. For a given i, sdp_importance[i] corresponds to the
+                                                 frequency of apparition of feature i in the Minimal Sufficient Explanations
+                                                 of the set of samples X
+
+            sdp_index (numpy.ndarray): A matrix (# samples X # features) that contains the indices of the variables in the
+                                     the Minimal Sufficient Explanations for each sample. For a given i, the positive
+                                     values of sdp_index[i] corresponds to the Minimal Sufficient Explanations of
+                                     observation i.
+
+            size (numpy.ndarray): A 1-D matrix (# samples) that contains the size of the Minimal Sufficient Explanation
+                                for each sample.
+
+            sdp (numpy.ndarray): A 1-D matrix (# samples) that contains the Same Decision Probability (SDP)
+                               of the Sufficient Explanation for each sample.
+        """
+        X, y = check_X_y(X, y, dtype=np.double)
+        data, y_data = check_X_y(data, y_data, dtype=np.double)
+        y, y_data = as_float_array(y).astype(np.double), as_float_array(y_data).astype(np.double)
+        self.check_is_explainer()
+
+        if X.shape[1] > 10:
+            feature_importance = -np.array(self.model.feature_importances_)
+            search_space = list(np.argsort(feature_importance))
+            # flat_list = [item for t in self.ACXplainer.node_idx_trees for sublist in t for item in sublist]
+            # node_idx = pd.Series(flat_list)
+            # search_space = []
+            # for v in (node_idx.value_counts().keys()):
+            #     search_space += [v]
+        else:
+            search_space = [i for i in range(X.shape[1])]
+        if not self.classifier and t is None:
+            t = self.model.predict_quantiles(X, quantiles=[0.05, 0.95])
+        elif self.classifier:
+            t = np.zeros(shape=(X.shape[0], 2))
+        return cyext_acv.global_cdp_intv(X, y, data, y_data, self.ACXplainer.features, self.ACXplainer.thresholds,
+                                         self.ACXplainer.children_left,
+                                         self.ACXplainer.children_right, cond, self.ACXplainer.max_depth, min_node_size,
+                                         self.classifier, t, C,
+                                         pi_level, minimal, stop, search_space[:10])

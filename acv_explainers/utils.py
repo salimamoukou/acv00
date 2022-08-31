@@ -15,7 +15,19 @@ import seaborn as sns
 from sklearn.preprocessing import OrdinalEncoder
 # from bigholes import HoleFinder
 from tqdm import tqdm
+from tqdm import tqdm
+from numpy.random import rand
+from numpy.random import seed
+import acv_explainers
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from lightgbm import LGBMClassifier
+from sklearn.ensemble import IsolationForest
+import pickle
 
+import warnings
+
+warnings.filterwarnings('ignore')
 
 
 def plot_feature_importance(importance, names, model_type, xlabel='SHAP values', title=' '):
@@ -1290,7 +1302,6 @@ def return_edges(list_rec):
 
 def mc_approx_rules(rules, rules_data, S_star, strategy='random', maxitr=1000, interiorOnly=False,
                     threshold=None, verbose=False):
-
     #     strategy = 'random' # or 'even' or 'sequential'
     #     maxitr = 1000 # how many queries to do since last best found before satisfied
     # whether to consider only rectangles that are bounded on all sides by points rather than limits of the space
@@ -1321,3 +1332,857 @@ def mc_approx_rules(rules, rules_data, S_star, strategy='random', maxitr=1000, i
         approx_rec[a, S_star[a], 1] = hallOfFame[-1].U
     return approx_rec
 
+
+def return_xy_cnt(x, y_target, S_bar_set, x_train, y_train, w):
+    """
+    return the observations with y=y_target that fall in the projected leaf of x
+    when we condition given S=S_bar of x.
+    """
+
+    x_train_cnt = []
+    for i, wi in enumerate(w):
+        if wi != 0 and y_train[i] == y_target:
+            x_train_cnt.append(x_train[i].copy())
+
+    if len(x_train_cnt) == 0:
+        x_train_cnt = np.array(x).reshape(1, -1)
+        y_train_cnt = np.array(y_target).reshape(1, -1)
+    else:
+        x_train_cnt = np.array(x_train_cnt)
+        #     x_train_cnt[:, S_bar_set] = x[S_bar_set]
+        y_train_cnt = np.array(x_train_cnt.shape[0] * [y_target])
+
+    return x_train_cnt, y_train_cnt
+
+
+def return_leaf_cnt(ac_explainer, S_star, x_train_cnt, y_train_cnt, x_train, y_train, pi=0.9):
+    """
+    return the original leaves of the observations with y=y_target that fall in the projected leaf
+    when we condition given S=S_bar of x.
+    """
+    sdp, rules = ac_explainer.compute_sdp_rule(x_train_cnt, y_train_cnt,
+                                               x_train, y_train,
+                                               x_train_cnt.shape[0] * [list(range(x_train.shape[1]))]
+                                               )
+    if np.sum(sdp >= pi) != 0:
+        rules_unique = np.unique(rules[sdp >= pi], axis=0)
+    else:
+        rules_unique = np.expand_dims(rules[np.argmax(sdp)], axis=0)
+
+    r_buf = rules_unique.copy()
+    for i in range(rules_unique.shape[0]):
+        list_ric = [r.copy() for r in r_buf if not np.allclose(r, rules_unique[i])]
+        find_union(rules_unique[i], list_ric, S=S_star)
+
+    return rules_unique
+
+
+def remove_in(ra):
+    """
+    remove A if A subset of B in the list of compatible leaves
+    """
+    for i in range(ra.shape[0]):
+        for j in range(ra.shape[0]):
+            if i != j and np.prod([(ra[i, s, 1] <= ra[j, s, 1]) * (ra[i, s, 0] >= ra[j, s, 0])
+                                   for s in range(ra.shape[1])], axis=0).astype(bool):
+                ra[i] = ra[j]
+    return np.unique(ra, axis=0)
+
+
+def get_compatible_leaf(acvtree, x, y_target, S_star, S_bar_set, w, x_train, y_train, pi=0.9, acc_level=0.9):
+    """
+    Compute the compatible leaves and order given their accuracy
+    """
+    x_train_cnt, y_train_cnt = return_xy_cnt(x, y_target, S_bar_set, x_train, y_train, w)
+
+    compatible_leaves = return_leaf_cnt(acvtree, S_star, x_train_cnt, y_train_cnt, x_train, y_train, pi)
+    compatible_leaves = np.unique(compatible_leaves, axis=0)
+    compatible_leaves = remove_in(compatible_leaves)
+    #     compatible_leaves = np.rint(compatible_leaves)
+    compatible_leaves = np.round(compatible_leaves, 2)
+
+    partition_leaf = compatible_leaves.copy()
+    d = partition_leaf.shape[1]
+    nb_leaf = partition_leaf.shape[0]
+    leaves_acc = []
+    suf_leaf = []
+
+    for i in range(nb_leaf):
+        x_in = np.prod([(x_train[:, s] <= partition_leaf[i, s, 1]) * (x_train[:, s] > partition_leaf[i, s, 0])
+                        for s in range(d)], axis=0).astype(bool)
+        y_in = y_train[x_in]
+        acc = np.mean(y_in == y_target)
+
+        leaves_acc.append(acc)
+
+        if acc >= acc_level:
+            suf_leaf.append(partition_leaf[i])
+
+    best_id = np.argmax(leaves_acc)
+
+    return suf_leaf, partition_leaf, leaves_acc, partition_leaf[best_id], leaves_acc[best_id]
+
+
+def return_counterfactuals(ac_explainer, suf_leaf, S_star, S_bar_set, x, y, x_train, y_train, pi_level):
+    """
+    Compute the SDP of each C_S and return the ones that has sdp >= pi_level
+    """
+    counterfactuals = []
+    counterfactuals_sdp = []
+    counterfactuals_w = []
+
+    for leaf in suf_leaf:
+
+        cond = np.ones(shape=(1, x_train.shape[1], 2))
+        cond[:, :, 0] = -1e+10
+        cond[:, :, 1] = 1e+10
+
+        for s in S_bar_set:
+            cond[:, s, 0] = x[:, s]
+            cond[:, s, 1] = x[:, s]
+
+        cond[:, S_star] = leaf[S_star]
+        sdp, w = ac_explainer.compute_ddp_cond_weights(x, y, x_train, y_train, S=[S_bar_set], cond=cond,
+                                                       pi_level=pi_level)
+        if sdp >= pi_level:
+            counterfactuals.append(cond)
+            counterfactuals_sdp.append(sdp)
+            counterfactuals_w.append(w)
+
+    return np.unique(counterfactuals, axis=0), np.unique(counterfactuals_sdp, axis=0), \
+           np.unique(counterfactuals_w, axis=0)
+
+
+def return_global_counterfactuals(ac_explainer, data, y_data, s_star, n_star, x_train, y_train, w, acc_level, pi_level):
+    """
+    stack all to compute the C_S for each observations
+    """
+    N = data.shape[0]
+    suf_leaves = []
+    counterfactuals_samples = []
+    counterfactuals_samples_sdp = []
+    counterfactuals_samples_w = []
+
+    for i in tqdm(range(N)):
+        suf_leaf, _, _, _, _ = get_compatible_leaf(ac_explainer, data[i], 1 - y_data[i], s_star[i], n_star[i], w[i],
+                                                   x_train, y_train, pi=pi_level, acc_level=acc_level)
+        suf_leaves.append(suf_leaf)
+        #         print(suf_leaf)
+        #         print(np.unique(suf_leaf, axis=0).shape, len(suf_leaf))
+        counterfactuals, counterfactuals_sdp, w_cond = \
+            return_counterfactuals(ac_explainer, suf_leaf, s_star[i], n_star[i], data[i].reshape(1, -1),
+                                   y_data[i].reshape(1, -1), x_train, y_train, pi_level)
+
+        counterfactuals_samples.append(counterfactuals)
+        counterfactuals_samples_sdp.append(counterfactuals_sdp)
+        counterfactuals_samples_w.append(w_cond)
+
+    return counterfactuals_samples, counterfactuals_samples_sdp, counterfactuals_samples_w
+
+
+# Fonction global explanations
+
+def return_ge_counterfactuals(ac_explainer, suf_leaf, S_star, S_bar_set, x, y, x_train, y_train, cond_s, pi_level):
+    counterfactuals = []
+    counterfactuals_sdp = []
+    counterfactuals_w = []
+
+    for leaf in suf_leaf:
+
+        cond = cond_s.copy()
+        cond[:, S_star] = leaf[S_star]
+
+        sdp, w = ac_explainer.compute_ddp_cond_weights(x, y, x_train, y_train, S=[[-6]], cond=cond)
+        if sdp >= pi_level:
+            counterfactuals.append(cond)
+            counterfactuals_sdp.append(sdp)
+            counterfactuals_w.append(w)
+
+    return counterfactuals, counterfactuals_sdp, counterfactuals_w
+
+
+def return_ge_global_counterfactuals(ac_explainer, data, y_data, s_star, n_star, x_train, y_train, w, acc_level, cond,
+                                     pi_level):
+    N = data.shape[0]
+    suf_leaves = []
+    counterfactuals_samples = []
+    counterfactuals_samples_sdp = []
+    counterfactuals_samples_w = []
+
+    for i in tqdm(range(N)):
+        suf_leaf, _, _, _, _ = get_compatible_leaf(ac_explainer, data[i], 1 - y_data[i], s_star[i], n_star[i], w[i],
+                                                   x_train, y_train, pi=pi_level, acc_level=acc_level)
+        suf_leaves.append(suf_leaf)
+
+        counterfactuals, counterfactuals_sdp, w_cond = return_ge_counterfactuals(ac_explainer, suf_leaf, s_star[i],
+                                                                                 n_star[i],
+                                                                                 data[i].reshape(1, -1),
+                                                                                 y_data[i].reshape(1, -1), x_train,
+                                                                                 y_train,
+                                                                                 np.expand_dims(cond[i], 0),
+                                                                                 pi_level)
+        counterfactuals_samples.append(counterfactuals)
+        counterfactuals_samples_sdp.append(counterfactuals_sdp)
+        counterfactuals_samples_w.append(w_cond)
+
+    return counterfactuals_samples, counterfactuals_samples_sdp, counterfactuals_samples_w
+
+
+def print_rule(col_name, r, decision=None, sdp=True, output=None):
+    for i, col in enumerate(col_name):
+        if not ((r[i, 0] <= -1e+10 and r[i, 1] >= 1e+10)):
+            print('If {} in [{}, {}] and '.format(col, r[i, 0], r[i, 1]))
+            print(' ')
+
+    if sdp == True:
+        print('Then the output is = {}'.format(output))
+        print('SDP Probability = {}'.format(decision))
+    else:
+        print('Then the output is different from {}'.format(output))
+        print('Counterfactual DDP Probability = {}'.format(decision))
+
+
+def generate_candidate(x, S, x_train, cond, n_iterations):
+    x_poss = [x_train[(cond[i, 0] <= x_train[:, i]) * (x_train[:, i] <= cond[i, 1]), i] for i in S]
+
+    x_cand = np.repeat(x.reshape(1, -1), repeats=n_iterations, axis=0)
+    for i in range(len(S)):
+        rdm_id = np.random.randint(0, x_poss[i].shape[0], n_iterations)
+        x_cand[:, S[i]] = x_poss[i][rdm_id]
+
+    return x_cand
+
+
+def simulated_annealing(outlier_score, x, S, x_train, cond, batch, max_iter, temp,
+                        max_iter_convergence=10):
+    """
+    Generate sample s.t. (X | X_S \in cond) using simulated annealing and outlier score.
+    Args:
+        outlier_score (lambda functon): outlier_score(X) return a outlier score. If the value are negative, then the observation is an outlier.
+        x (numpy.ndarray)): 1-D array, an observation
+        S (list): contains the indices of the variables on which to condition
+        x_train (numpy.ndarray)): 2-D array represent the training samples
+        cond (numpy.ndarray)): 3-D (#variables x 2 x 1) representing the hyper-rectangle on which to condition
+        batch (int): number of sample by iteration
+        max_iter (int): number of iteration of the algorithm
+        temp (double): the temperature of the simulated annealing algorithm
+        max_iter_convergence (double): minimun number of iteration to stop the algorithm if it find an in-distribution observation
+
+    Returns:
+        The generated sample, and its outlier score
+    """
+    best = generate_candidate(x, S, x_train, cond, 1)
+    best_eval = outlier_score(best)[0]
+    curr, curr_eval = best, best_eval
+
+    move = 0
+    for i in range(max_iter):
+
+        x_cand = generate_candidate(curr, S, x_train, cond, batch)
+        score_candidates = outlier_score(x_cand)
+
+        candidate_eval = np.max(score_candidates)
+        candidate = x_cand[np.argmax(score_candidates)]
+
+        if candidate_eval > best_eval:
+            best, best_eval = candidate, candidate_eval
+            move = 0
+        else:
+            move += 1
+
+        # check convergence
+        if best_eval > 0 and move > max_iter_convergence:
+            break
+
+        diff = candidate_eval - curr_eval
+        t = temp / np.log(float(i + 1))
+        metropolis = np.exp(-diff / t)
+
+        if diff > 0 or rand() < metropolis:
+            curr, curr_eval = candidate, candidate_eval
+
+    return best, best_eval
+
+
+dataset = 'none'
+
+
+def save_model(model, name='{}'.format(dataset)):
+    with open('{}.pickle'.format(name), 'wb') as f:
+        pickle.dump(model, f)
+
+
+def load_model(name='{}'.format(dataset)):
+    with open('{}.pickle'.format(name), 'rb') as f:
+        loaded_obj = pickle.load(f)
+    return loaded_obj
+
+
+class RunExperiments:
+
+    def __init__(self, acv_explainer, x_train, x_test, y_train, y_test, columns_name, model=None):
+        self.model = None
+        self.columns_name = columns_name
+        self.acv_explainer = acv_explainer
+        self.x_train = x_train
+        self.x_test = x_test
+        self.y_train = y_train
+        self.y_test = y_test
+        self.ddp_importance_local, self.ddp_index_local, self.size_local, self.ddp_local = None, None, None, None
+        self.S_star_local, self.S_bar_set_local = None, None
+        self.ddp_local, self.w_local = None, None
+        self.counterfactuals_samples_local, self.counterfactuals_samples_sdp_local, \
+        self.counterfactuals_samples_w_local = None, None, None
+        self.isolation = None, None
+        self.dist_local = None
+        self.score_local = None
+        self.errs_local = None
+        self.errs_local_original = None
+        self.accuracy_local = None
+        self.accuracy_local_original = None
+        self.coverage_local = None
+        self.sdp_importance_se, self.sdp_index_se, self.size_se, self.sdp_se = None, None, None, None
+        self.S_star_se, self.N_star_se = None, None
+        self.sdp_rules, self.rules, self.sdp_all, self.rules_data, self.w_rules = None, None, None, None, None
+
+        self.ddp_importance_regional, self.ddp_index_regional, self.size_regional, self.ddp_regional = None, None, None, None
+        self.S_star_regional, self.S_bar_set_regional = None, None
+        self.counterfactuals_samples_regional, self.counterfactuals_samples_sdp_regional, \
+        self.counterfactuals_samples_w_regional = None, None, None
+        self.dist_regional = None
+        self.score_regional = None
+        self.errs_regional = None
+        self.errs_regional_original = None
+        self.accuracy_regional = None
+        self.accuracy_regional_original = None
+        self.coverage_regional = None
+
+    def run_local_divergent_set(self, x, y, t=20, stop=True, pi_level=0.8):
+        print('### Computing the local divergent set of (x, y)')
+
+        self.ddp_importance_local, self.ddp_index_local, self.size_local, self.ddp_local = \
+            self.acv_explainer.importance_ddp_rf(x, y, self.x_train, self.y_train, t=t,
+                                                 stop=stop, pi_level=pi_level)
+
+        self.S_star_local, self.S_bar_set_local = \
+            acv_explainers.utils.get_active_null_coalition_list(self.ddp_index_local, self.size_local)
+        self.ddp_local, self.w_local = self.acv_explainer.compute_ddp_weights(x, y, self.x_train, self.y_train,
+                                                                              S=self.S_bar_set_local)
+
+    def run_local_counterfactual_rules(self, x, y, acc_level=0.8, pi_level=0.8):
+        print('### Computing the local counterfactual rules of (x, y)')
+
+        self.counterfactuals_samples_local, self.counterfactuals_samples_sdp_local, \
+        self.counterfactuals_samples_w_local = return_global_counterfactuals(self.acv_explainer, x, y,
+                                                                             self.S_star_local, self.S_bar_set_local,
+                                                                             self.x_train, self.y_train, self.w_local,
+                                                                             acc_level=acc_level,
+                                                                             pi_level=pi_level)
+
+    def run_sampling_local_counterfactuals(self, x, y, batch=1000, max_iter=1000, temp=0.5):
+        print('### Sampling using the local counterfactual rules of (x, y)')
+
+        self.isolation = IsolationForest()
+        self.isolation.fit(self.x_train)
+        outlier_score = lambda x: self.isolation.decision_function(x)
+
+        self.dist_local = []
+        self.score_local = []
+        self.errs_local = []
+        self.errs_local_original = []
+        for i in tqdm(range(x.shape[0])):
+            if len(self.counterfactuals_samples_local[i]) != 0:
+                a, sco = simulated_annealing(outlier_score, x[i], self.S_star_local[i], self.x_train,
+                                             self.counterfactuals_samples_local[i][
+                                                 np.argmax(self.counterfactuals_samples_sdp_local[i])][0],
+                                             batch, max_iter, temp)
+                self.dist_local.append(np.squeeze(a))
+                self.score_local.append(sco)
+                self.errs_local.append(
+                    self.acv_explainer.predict(self.dist_local[-1].reshape(1, -1)) != self.acv_explainer.predict(
+                        x[i].reshape(1, -1)))
+                if self.model != None:
+                    self.errs_local_original.append(
+                        self.model.predict(self.dist_local[-1].reshape(1, -1)) != self.model.predict(
+                            x[i].reshape(1, -1)))
+
+        self.accuracy_local = np.mean(self.errs_local)
+        self.accuracy_local_original = np.mean(self.errs_local_original)
+        self.coverage_local = len(self.errs_local) / x.shape[0]
+
+    def run_sufficient_rules(self, x_rule, y_rule, pi_level=0.9):
+        print('### Computing the Sufficient Explanations and the Sufficient Rules')
+        self.x_rules, self.y_rules = x_rule, y_rule
+        self.sdp_importance_se, self.sdp_index_se, self.size_se, self.sdp_se = \
+            self.acv_explainer.importance_sdp_rf(x_rule, y_rule,
+                                                 self.x_train, self.y_train,
+                                                 stop=False,
+                                                 pi_level=pi_level)
+
+        self.S_star_se, self.N_star_se = get_active_null_coalition_list(self.sdp_index_se, self.size_se)
+        self.sdp_rules, self.rules, self.sdp_all, self.rules_data, self.w_rules = self.acv_explainer.compute_sdp_maxrules(
+            x_rule, y_rule,
+            self.x_train, self.y_train, self.S_star_se, verbose=True)
+
+    def run_regional_divergent_set(self, stop=True, pi_level=0.8):
+        print('### Computing the regional divergent set of (x, y)')
+
+        self.ddp_importance_regional, self.ddp_index_regional, self.size_regional, self.ddp_regional = \
+            self.acv_explainer.importance_ddp_intv(self.x_rules, self.y_rules,
+                                                   self.x_train, self.y_train,
+                                                   self.rules,
+                                                   stop=stop,
+                                                   pi_level=pi_level)
+
+        self.S_star_regional, self.S_bar_set_regional = \
+            acv_explainers.utils.get_active_null_coalition_list(self.ddp_index_regional, self.size_regional)
+        self.ddp_regional, self.w_regional = self.acv_explainer.compute_ddp_weights(self.x_rules, self.y_rules,
+                                                                                    self.x_train, self.y_train,
+                                                                                    S=self.S_bar_set_regional)
+
+    def run_regional_counterfactual_rules(self, acc_level=0.8, pi_level=0.8):
+        print('### Computing the regional counterfactual rules of (x, y)')
+
+        self.counterfactuals_samples_regional, self.counterfactuals_samples_sdp_regional, \
+        self.counterfactuals_samples_w_regional = \
+            return_ge_global_counterfactuals(self.acv_explainer, self.x_rules, self.y_rules,
+                                             self.S_star_regional, self.S_bar_set_regional,
+                                             self.x_train, self.y_train, self.w_regional, acc_level, self.rules,
+                                             pi_level)
+
+    def run_sampling_regional_counterfactuals(self, max_obs=2, batch=1000, max_iter=1000, temp=0.5):
+        print('### Sampling using the regional counterfactual rules')
+
+        outlier_score = lambda x: self.isolation.decision_function(x)
+
+        self.dist_regional = []
+        self.score_regional = []
+        self.errs_regional = []
+        self.errs_regional_original = []
+        nb = 0
+        for i in range(self.x_rules.shape[0]):
+            if len(self.counterfactuals_samples_regional[i]) != 0:
+                x_in = np.prod([(self.x_test[:, s] <= self.rules[i, s, 1]) * (self.x_test[:, s] > self.rules[i, s, 0])
+                                for s in range(self.x_train.shape[1])], axis=0).astype(bool)
+                nb += np.sum(x_in) if np.sum(x_in) <= max_obs else max_obs
+                print('observations in rule = {}'.format(np.sum(x_in)))
+                if np.sum(x_in) > 0:
+                    for xi in tqdm(self.x_test[x_in][:max_obs]):
+                        a, sco = simulated_annealing(outlier_score, xi, self.S_star_regional[i], self.x_train,
+                                                     self.counterfactuals_samples_regional[i][
+                                                         np.argmax(self.counterfactuals_samples_sdp_regional[i])][0],
+                                                     batch, max_iter, temp)
+                        self.dist_regional.append(np.squeeze(a))
+                        self.score_regional.append(sco)
+                        self.errs_regional.append(self.acv_explainer.predict(
+                            self.dist_regional[-1].reshape(1, -1)) != self.acv_explainer.predict(xi.reshape(1, -1)))
+                        if self.model != None:
+                            self.errs_regional_original.append(self.model.predict(
+                                self.dist_regional[-1].reshape(1, -1)) != self.model.predict(xi.reshape(1, -1)))
+
+        self.accuracy_regional = np.mean(self.errs_regional)
+        self.accuracy_regional_original = np.mean(self.errs_regional_original)
+        self.coverage_regional = len(self.errs_regional) / nb
+
+    def run_sampling_regional_counterfactuals_alltests(self, max_obs=2, batch=1000, max_iter=1000, temp=0.5):
+        print('### Sampling using the regional counterfactual rules')
+
+        outlier_score = lambda x: self.isolation.decision_function(x)
+
+        self.dist_regional = []
+        self.score_regional = []
+        self.errs_regional = []
+        self.errs_regional_original = []
+        x_test_pb = []
+
+        for i in range(self.x_rules.shape[0]):
+            x_in = np.prod([(self.x_test[:, s] <= self.rules[i, s, 1]) * (self.x_test[:, s] > self.rules[i, s, 0])
+                            for s in range(self.x_train.shape[1])], axis=0)
+            if len(self.counterfactuals_samples_regional[i]) != 0:
+                x_in = np.max(self.counterfactuals_samples_sdp_regional[i]) * x_in
+            else:
+                x_in = 0 * x_in
+            x_test_pb.append(x_in)
+
+        x_test_pb = np.array(x_test_pb)
+        best_counterfactuals = np.argmax(x_test_pb, axis=0)
+
+        for i in tqdm(range(self.x_test.shape[0])):
+            xi = self.x_test[i]
+            best_id = best_counterfactuals[i]
+            if len(self.counterfactuals_samples_regional[best_id]) != 0:
+                a, sco = simulated_annealing(outlier_score, xi, self.S_star_regional[best_id], self.x_train,
+                                             self.counterfactuals_samples_regional[best_id][
+                                                 np.argmax(self.counterfactuals_samples_sdp_regional[best_id])][0],
+                                             batch, max_iter, temp)
+                self.dist_regional.append(np.squeeze(a))
+                self.score_regional.append(sco)
+                self.errs_regional.append(self.acv_explainer.predict(
+                    self.dist_regional[-1].reshape(1, -1)) != self.acv_explainer.predict(xi.reshape(1, -1)))
+
+                if self.model != None:
+                    self.errs_regional_original.append(self.model.predict(
+                        self.dist_regional[-1].reshape(1, -1)) != self.model.predict(xi.reshape(1, -1)))
+
+        self.accuracy_regional = np.mean(self.errs_regional)
+        self.accuracy_regional_original = np.mean(self.errs_regional_original)
+        self.coverage_regional = len(self.errs_regional) / self.x_test.shape[0]
+
+    def show_global_counterfactuals(self):
+
+        for idt in range(self.rules.shape[0]):
+            print('Example {}'.format(idt))
+            r = self.rules[idt]
+
+            print_rule(self.columns_name, r, self.sdp_rules[idt], True, self.y_rules[idt])
+
+            print('  ')
+            print('  ')
+            print('  ')
+            for l in range(len(self.counterfactuals_samples_sdp_regional[idt])):
+                print('Example {} - Counterfactual {}'.format(idt, l))
+                print_rule(self.columns_name, self.counterfactuals_samples_regional[idt][l][0],
+                           self.counterfactuals_samples_sdp_regional[idt][l], False, False)
+                print('  ')
+            print(' ')
+
+    def show_local_counterfactuals(self, x, y):
+
+        for idt in range(x.shape[0]):
+            print(self.columns_name)
+            print('Example {} = {}'.format(idt, x[idt]))
+
+            print('  ')
+            print('  ')
+            print('  ')
+            for l in range(len(self.counterfactuals_samples_sdp_local[idt])):
+                print('Example {} - Counterfactual {}'.format(idt, l))
+                print_rule(self.columns_name, self.counterfactuals_samples_local[idt][l][0],
+                           self.counterfactuals_samples_sdp_local[idt][l], False, False)
+                print('  ')
+            print(' ')
+
+
+def return_xy_cnt_reg(x, y_target, down, up, S_bar_set, x_train, y_train, w):
+    """
+    return the observations with y=y_target that fall in the projected leaf of x
+    when we condition given S=S_bar of x.
+    """
+
+    x_train_cnt = []
+    y_train_cnt = []
+    for i, wi in enumerate(w):
+        if wi != 0 and down <= y_train[i] <= up:
+            x_train_cnt.append(x_train[i].copy())
+            y_train_cnt.append(y_train[i].copy())
+
+    x_train_cnt = np.array(x_train_cnt)
+    y_train_cnt = np.array(y_train_cnt)
+
+    return x_train_cnt, y_train_cnt
+
+
+def return_leaf_cnt_reg(ac_explainer, S_star, x_train_cnt, y_train_cnt, down, up, x_train, y_train, pi):
+    """
+    return the original leaves of the observations with y=y_target that fall in the projected leaf
+    when we condition given S=S_bar of x.
+    """
+    size = x_train_cnt.shape[0]
+    sdp, rules = ac_explainer.compute_cdp_rule(x_train_cnt, y_train_cnt, np.array(size * [down]), np.array(size * [up]),
+                                               x_train, y_train,
+                                               size * [list(range(x_train.shape[1]))]
+                                               )
+    #     print(sdp)
+    if np.sum(sdp >= pi) != 0:
+        rules_unique = np.unique(rules[sdp >= pi], axis=0)
+    else:
+        rules_unique = np.expand_dims(rules[np.argmax(sdp)], axis=0)
+
+    r_buf = rules_unique.copy()
+    for i in range(rules_unique.shape[0]):
+        list_ric = [r.copy() for r in r_buf if not np.allclose(r, rules_unique[i])]
+        find_union(rules_unique[i], list_ric, S=S_star)
+
+    return rules_unique
+
+
+def remove_in(ra):
+    """
+    remove A if A subset of B in the list of compatible leaves
+    """
+    for i in range(ra.shape[0]):
+        for j in range(ra.shape[0]):
+            if i != j and np.prod([(ra[i, s, 1] <= ra[j, s, 1]) * (ra[i, s, 0] >= ra[j, s, 0])
+                                   for s in range(ra.shape[1])], axis=0).astype(bool):
+                ra[i] = ra[j]
+    return np.unique(ra, axis=0)
+
+
+def get_compatible_leaf_reg(acvtree, x, y_target, down, up, S_star, S_bar_set, w, x_train, y_train, pi, acc_level):
+    """
+    Compute the compatible leaves and order given their accuracy
+    """
+    x_train_cnt, y_train_cnt = return_xy_cnt_reg(x, y_target, down, up, S_bar_set, x_train, y_train, w)
+    compatible_leaves = return_leaf_cnt_reg(acvtree, S_star, x_train_cnt, y_train_cnt, down, up, x_train, y_train, pi)
+    compatible_leaves = np.unique(compatible_leaves, axis=0)
+    compatible_leaves = remove_in(compatible_leaves)
+    compatible_leaves = np.round(compatible_leaves, 2)
+
+    partition_leaf = compatible_leaves.copy()
+    d = partition_leaf.shape[1]
+    nb_leaf = partition_leaf.shape[0]
+    leaves_acc = []
+    suf_leaf = []
+
+    for i in range(nb_leaf):
+        x_in = np.prod([(x_train[:, s] <= partition_leaf[i, s, 1]) * (x_train[:, s] > partition_leaf[i, s, 0])
+                        for s in range(d)], axis=0).astype(bool)
+
+        y_in = y_train[x_in]
+        acc = np.mean((down <= y_in) * (y_in <= up))
+        leaves_acc.append(acc)
+
+        if acc >= acc_level:
+            suf_leaf.append(partition_leaf[i])
+
+    best_id = np.argmax(leaves_acc)
+    return suf_leaf, partition_leaf, leaves_acc, partition_leaf[best_id], leaves_acc[best_id]
+
+
+def return_counterfactuals_reg(ac_explainer, suf_leaf, S_star, S_bar_set, x, y, down, up, x_train, y_train, pi_level):
+    """
+    Compute the SDP of each C_S and return the ones that has sdp >= pi_level
+    """
+    counterfactuals = []
+    counterfactuals_sdp = []
+    counterfactuals_w = []
+
+    for leaf in suf_leaf:
+
+        cond = np.ones(shape=(1, x_train.shape[1], 2))
+        cond[:, :, 0] = -1e+10
+        cond[:, :, 1] = 1e+10
+
+        for s in S_bar_set:
+            cond[:, s, 0] = x[:, s]
+            cond[:, s, 1] = x[:, s]
+
+        cond[:, S_star] = leaf[S_star]
+
+        size = x.shape[0]
+        sdp, w = ac_explainer.compute_cdp_cond_weights(x, y, np.array(size * [down]), np.array(size * [up]), x_train,
+                                                       y_train, S=[S_bar_set], cond=cond,
+                                                       pi_level=pi_level)
+        #         print(sdp)
+        if sdp >= pi_level:
+            counterfactuals.append(cond)
+            counterfactuals_sdp.append(sdp)
+            counterfactuals_w.append(w)
+
+    return np.unique(counterfactuals, axis=0), np.unique(counterfactuals_sdp, axis=0), \
+           np.unique(counterfactuals_w, axis=0)
+
+
+def return_global_counterfactuals_reg(ac_explainer, data, y_data, down, up, s_star, n_star, x_train, y_train, w,
+                                      acc_level, pi_level):
+    """
+    stack all to compute the C_S for each observations
+    """
+    N = data.shape[0]
+    suf_leaves = []
+    counterfactuals_samples = []
+    counterfactuals_samples_sdp = []
+    counterfactuals_samples_w = []
+
+    for i in tqdm(range(N)):
+        suf_leaf, _, _, _, _ = get_compatible_leaf_reg(ac_explainer, data[i], 1 - y_data[i], down[i], up[i], s_star[i],
+                                                       n_star[i], w[i],
+                                                       x_train, y_train, pi=pi_level, acc_level=acc_level)
+        suf_leaves.append(suf_leaf)
+        #         print(suf_leaf)
+        #         print(np.unique(suf_leaf, axis=0).shape, len(suf_leaf))
+        counterfactuals, counterfactuals_sdp, w_cond = \
+            return_counterfactuals_reg(ac_explainer, suf_leaf, s_star[i], n_star[i], data[i].reshape(1, -1),
+                                       y_data[i].reshape(1, -1), down[i], up[i], x_train, y_train, pi_level)
+
+        counterfactuals_samples.append(counterfactuals)
+        counterfactuals_samples_sdp.append(counterfactuals_sdp)
+        counterfactuals_samples_w.append(w_cond)
+    #     print(counterfactuals_samples)
+    return counterfactuals_samples, counterfactuals_samples_sdp, counterfactuals_samples_w
+
+
+def return_possible_values(rule, rule_data, sdp_all, pi_level):
+    d = rule.shape[0]
+    adj_rules = np.array([rule_data[i] for i in range(sdp_all.shape[0]) if sdp_all[i] >= pi_level])
+
+    left_by_var = []
+    right_by_var = []
+
+    for var in range(d):
+        left = set([adj_rules[i, var, 0] for i in range(adj_rules.shape[0]) if adj_rules[i, var, 0] <= rule[var, 0]])
+        right = set([adj_rules[i, var, 1] for i in range(adj_rules.shape[0]) if adj_rules[i, var, 1] >= rule[var, 1]])
+
+        left.add(rule[var, 0])
+        right.add(rule[var, 1])
+
+        left_by_var.append(list(left))
+        right_by_var.append(list(right))
+    return left_by_var, right_by_var
+
+
+def rdm_sample_fromlist(list_values):
+    return list_values[np.random.randint(0, len(list_values))]
+
+
+def generate_newrule(rule, left_by_var, right_by_var, p_best=0.6):
+    d = rule.shape[0]
+    rule_c = rule.copy()
+    if np.random.rand() > p_best:
+        for i in range(d):
+            rule_c[i, 0] = rdm_sample_fromlist(left_by_var[i])
+            rule_c[i, 1] = rdm_sample_fromlist(right_by_var[i])
+    else:
+        for i in range(d):
+            left = [left_by_var[i][j] for j in range(len(left_by_var[i])) if left_by_var[i][j] <= rule_c[i, 0]]
+            right = [right_by_var[i][j] for j in range(len(right_by_var[i])) if right_by_var[i][j] >= rule_c[i, 1]]
+
+            rule_c[i, 0] = rdm_sample_fromlist(left)
+            rule_c[i, 1] = rdm_sample_fromlist(right)
+
+    return rule_c
+
+
+def check_rule(rule, x_train, bad_sample):
+    x_in = np.prod([(x_train[:, s] <= rule[s, 1]) * (x_train[:, s] >= rule[s, 0])
+                    for s in range(x_train.shape[1])], axis=0)
+    return np.sum(x_in * bad_sample) == 0
+
+
+def generate_valid_rule(rule, left_by_var, right_by_var, x_train, bad_sample, p_best=0.9, n_try=100):
+    valid = False
+    it = 0
+    while valid == False and it <= n_try:
+        gen_rule = generate_newrule(rule, left_by_var, right_by_var, p_best)
+        valid = check_rule(gen_rule, x_train, bad_sample)
+        it += 1
+    if valid:
+        return gen_rule
+    else:
+        return rule
+
+
+def generate_rules(rule, left_by_var, right_by_var, x_train, bad_sample, p_best=0.6, n_try=100, n_gen=10):
+    rules = [generate_valid_rule(rule, left_by_var, right_by_var, x_train, bad_sample, p_best, n_try) for i in
+             range(n_gen)]
+    return rules
+
+
+def convert_boundvalues(rules, max_values, min_values):
+    for i in range(rules.shape[0]):
+        if rules[i, 0] <= -1e+10:
+            rules[i, 0] = min_values[i]
+        if rules[i, 1] <= -1e+10:
+            rules[i, 1] = min_values[i]
+        if rules[i, 0] >= 1e+10:
+            rules[i, 0] = max_values[i]
+        if rules[i, 1] >= 1e+10:
+            rules[i, 1] = max_values[i]
+    return rules
+
+
+def volume_rectangle(rec, max_values, min_values):
+    d = rec.shape[0]
+    rec_c = rec.copy()
+    rec_c = convert_boundvalues(rec_c, max_values, min_values)
+    v = 1
+    for i in range(d):
+        v *= (rec_c[i, 1] - rec_c[i, 0])
+    return v
+
+
+def volume_rectangles(recs, max_values, min_values):
+    return [volume_rectangle(recs[i], max_values, min_values) for i in range(len(recs))]
+
+
+def max_dens(recs, x_train, bad_sample):
+    d = x_train.shape[1]
+    x_in = np.prod([(x_train[:, s] <= recs[s, 1]) * (x_train[:, s] > recs[s, 0])
+                    for s in range(d)], axis=0)
+    return np.sum(x_in * (1 - bad_sample)) / np.sum(1 - bad_sample)
+
+
+def max_denss(recs, x_train, bad_sample):
+    return [max_dens(recs[i], x_train, bad_sample) for i in range(len(recs))]
+
+
+def rules_simulated_annealing(value_function, rule, left_by_var, right_by_var, x_train, bad_sample, p_best=0.9,
+                              n_try=100,
+                              batch=100, max_iter=200, temp=1,
+                              max_iter_convergence=50):
+    max_values = [np.max(x_train[:, i]) for i in range(x_train.shape[1])]
+    min_values = [np.min(x_train[:, i]) for i in range(x_train.shape[1])]
+
+    best = generate_rules(rule, left_by_var, right_by_var, x_train, bad_sample, p_best, n_try, n_gen=1)
+    best_eval = value_function(best, max_values, min_values)[0]
+    curr, curr_eval = np.squeeze(best[0]), best_eval
+
+    move = 0
+    for i in range(max_iter):
+
+        x_cand = generate_rules(curr, left_by_var, right_by_var, x_train, bad_sample, p_best, n_try, n_gen=batch)
+        score_candidates = value_function(x_cand, max_values, min_values)
+
+        candidate_eval = np.max(score_candidates)
+        candidate = x_cand[np.argmax(score_candidates)]
+
+        if candidate_eval > best_eval:
+            best, best_eval = candidate, candidate_eval
+            move = 0
+        else:
+            move += 1
+
+        # check convergence
+        if move > max_iter_convergence:
+            break
+
+        diff = candidate_eval - curr_eval
+        t = temp / np.log(float(i + 1))
+        metropolis = np.exp(-diff / t)
+
+        if diff > 0 or rand() < metropolis:
+            curr, curr_eval = candidate, candidate_eval
+
+    return best, best_eval
+
+
+def rules_by_annealing(value_function, rules, rules_data, sdp_all, x_train, pi_level=0.9, p_best=0.6, n_try=50,
+                       batch=100, max_iter=200, temp=1, max_iter_convergence=50):
+    sr, sr_eval = [], []
+    for idx in tqdm(range(rules.shape[0])):
+        rule = rules[idx]
+        rule_data = rules_data[idx]
+        bad_sample = 1. - (sdp_all[idx] >= pi_level)
+        sdp_rule = sdp_all[idx]
+
+        left_by_var, right_by_var = return_possible_values(rule, rule_data, sdp_rule, pi_level)
+        best, best_eval = rules_simulated_annealing(value_function, rule, left_by_var, right_by_var, x_train,
+                                                    bad_sample,
+                                                    p_best, n_try,
+                                                    batch, max_iter, temp, max_iter_convergence)
+        sr.append(np.squeeze(best))
+        sr_eval.append(best_eval)
+    return np.array(sr), sr_eval
+
+
+def remove_in_wsdp(ra, sa):
+    """
+    remove A if A subset of B in the list of compatible leaves
+    """
+    for i in range(ra.shape[0]):
+        for j in range(ra.shape[0]):
+            if i != j and np.prod([(ra[i, s, 1] <= ra[j, s, 1]) * (ra[i, s, 0] >= ra[j, s, 0])
+                                   for s in range(ra.shape[1])], axis=0).astype(bool):
+                ra[i] = ra[j]
+                sa[i] = sa[j]
+    return np.unique(ra, axis=0), np.unique(sa, axis=0)

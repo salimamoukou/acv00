@@ -12,7 +12,7 @@ catboost
 imodels
 keras
 tensorflow
-skranger==0.7.0
+skranger
 streamlit
 anchor-exp
 shap
